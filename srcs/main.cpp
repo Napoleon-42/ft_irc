@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/17 21:28:48 by lnelson           #+#    #+#             */
-/*   Updated: 2022/06/25 22:45:04 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/06/27 15:41:26 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ int main(int ac, char **av)
 {
 	/**************************************************************************/
 	
-	logStream = set_log_file(ac == 2 ? STD_OUTPUT : FILE_OUTPUT);
+	logStream = set_log_file(ac == 2 ? FILE_OUTPUT : STD_OUTPUT);
 	(void)ac;
 	(void)av;
 
