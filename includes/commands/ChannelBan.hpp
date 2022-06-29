@@ -1,15 +1,14 @@
-#ifndef Nick_HPP
-# define Nick_HPP
+#ifndef ChannelBan_HPP
+# define ChannelBan_HPP
 
 #include "../Command.hpp"
 
-
-class Nick : public Command {
+class ChannelBan : public Command {
     protected :
         Client *_user;
     public :
-        Nick();
-        Nick(Client &user);
+        ChannelBan();
+        ChannelBan(Client &user);
 
         std::string help_msg();
         void    execute(std::string line);

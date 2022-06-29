@@ -29,12 +29,28 @@ class Client
 		Client(): _userName("non-spec")
 		{
 			clientLogMssg(std::string("Client " + _userName + " created"));
-			commands.insert("nick", new Nick(this));
+			commands.insert(std::make_pair("nick", new Nick(this)));
+			commands.insert(std::make_pair("oper", new Oper(this)));
 		}
 		
 		~Client()
 		{
 			clientLogMssg(" Client " + _userName + " destroyed");
+		}
+
+		void	execute(std::string &command, std::string &restline) {
+			commands::iteraor cit = commands.find(command);
+			if (cit == commands.end())
+				std::cout << "Command '" << command <<"' not found in available commands for the client : " << _userName << std::endl
+			cit->execute(restline);
+		}
+
+		void	becomeOperator() {
+			this = new Operator(this);
+		}
+
+		void	changeName(std::string &newname) {
+			_userName = newname;
 		}
 };
 

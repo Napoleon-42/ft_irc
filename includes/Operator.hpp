@@ -7,14 +7,17 @@ class Operator : public Client
 {
 	public:
 
-		Operator(): _userName("non-spec")
+		Operator(): Client("non-spec")
 		{
-			OperatorLogMssg(std::string("Operator " + _userName + " created"));
+			this->commands.insert(std::make_pair("kban", new ChannelBan(this)));
 		}
 		
+		Operator(Client user) : Client(_userName) {
+			this->commands.insert(std::make_pair("kban", new ChannelBan(this)));
+		}
+
 		~Operator()
 		{
-			OperatorLogMssg(" Operator " + _userName + " destroyed");
 		}
 };
 

@@ -1,15 +1,15 @@
-#ifndef Nick_HPP
-# define Nick_HPP
+#ifndef Oper_HPP
+# define Oper_HPP
 
 #include "../Command.hpp"
 
 
-class Nick : public Command {
+class Oper : public Command {
     protected :
         Client *_user;
     public :
-        Nick();
-        Nick(Client &user);
+        Oper();
+        Oper(Client &user);
 
         std::string help_msg();
         void    execute(std::string line);

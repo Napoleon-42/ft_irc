@@ -9,14 +9,16 @@ class Command {
     public :
         Command() {}
         Command(Client &user) : _user(&user) {}
+        virtual ~Command() {}
 
         bool hasUser() {
             if (_user)
                 return (true);
             return (false);
         }
-        std::string help_msg() = 0;
-        void    execute() = 0;
+
+        virtual std::string help_msg() const = 0;
+        virtual void    execute(std::string line) = 0;
 }
 
 #endif
