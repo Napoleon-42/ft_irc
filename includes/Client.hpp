@@ -14,17 +14,22 @@
 #define CLIENT_HPP
 #include "ft_irc.hpp"
 
+class Command;
+class Nick;
+
 class Client
 {
 	private:
 
 		std::string _userName;
+		std::map<std::string, Command *> commands;
 
 	public:
 
 		Client(): _userName("non-spec")
 		{
 			clientLogMssg(std::string("Client " + _userName + " created"));
+			commands.insert("nick", new Nick(this));
 		}
 		
 		~Client()
