@@ -17,7 +17,7 @@
 class Server
 {
 	private:
-	
+
 		int _socket;
 		struct sockaddr_in _client;
 		struct sockaddr_in _address;
@@ -26,19 +26,19 @@ class Server
 
 		Server()
 		{
-			serverLogMssg("Server created");
+			//serverLogMssg("Server created");
 			init_socket();
 		}
 
 		~Server()
 		{
-			serverLogMssg("Server downed");
+			//serverLogMssg("Server downed");
 		}
 
 		void	init_socket()
 		{
 			_socket = socket(AF_INET, SOCK_STREAM, 0);
-			serverLogMssg("socket created");
+			//serverLogMssg("socket created");
 			
 			memset(&_address, 0, sizeof(_address));
 			_address.sin_family = AF_INET;
@@ -47,19 +47,19 @@ class Server
 
 			if ((bind(_socket, (struct sockaddr *)&_address, sizeof(_address))) != 0)
 			{
-				serverLogMssg("socket bind failure");
+				//serverLogMssg("socket bind failure");
 				return ;
 			}
 			else
-				serverLogMssg("socket bind succeded");
+				//serverLogMssg("socket bind succeded");
 
 			if ((listen(_socket, 5)) != 0)
 			{
-				serverLogMssg("listen() failure");
+				//serverLogMssg("listen() failure");
 				return ;
 			}
 			else
-				serverLogMssg("server is listening");
+				//serverLogMssg("server is listening");
 			
 			(void)_client;
 			/*

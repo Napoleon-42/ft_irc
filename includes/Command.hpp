@@ -19,6 +19,6 @@ class Command {
 
         virtual std::string help_msg() const = 0;
         virtual void    execute(std::string line) = 0;
-}
+};
 
 #endif

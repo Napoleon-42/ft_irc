@@ -7,7 +7,7 @@ Nick::Nick(Client &user) : Command(user) {
 
 }
 
-std::string Nick::help_msg() {
+std::string Nick::help_msg() const {
     return ("/nick newname (allows you to change your username in the server)");
 }
 

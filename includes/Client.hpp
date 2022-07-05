@@ -12,46 +12,49 @@
 
 #ifndef CLIENT_HPP
 #define CLIENT_HPP
+#include <map>
 #include "ft_irc.hpp"
 
+/*
+** Pre-declared class needed to initialize Clients
+*/
+class Server;
 class Command;
-class Nick;
 
 class Client
 {
 	private:
 
-		std::string _userName;
-		std::map<std::string, Command *> commands;
+		std::string							_userName;
+		std::string							_hostname;
+		std::string							_servername;
+		Server*								_serv;
+		std::map<std::string, Command>	commands;
 
+		void addBasicCommands();
+		void addOpCommands();
 	public:
 
-		Client(): _userName("non-spec")
-		{
-			clientLogMssg(std::string("Client " + _userName + " created"));
-			commands.insert(std::make_pair("nick", new Nick(this)));
-			commands.insert(std::make_pair("oper", new Oper(this)));
-		}
-		
-		~Client()
-		{
-			clientLogMssg(" Client " + _userName + " destroyed");
-		}
+		Client();
+		Client(Server *current, std::string uname, std::string hname, std::string sname);
+		~Client();
 
-		void	execute(std::string &command, std::string &restline) {
-			commands::iteraor cit = commands.find(command);
-			if (cit == commands.end())
-				std::cout << "Command '" << command <<"' not found in available commands for the client : " << _userName << std::endl
-			cit->execute(restline);
-		}
+		void	execute(std::string &command, std::string &restline);
 
-		void	becomeOperator() {
-			this = new Operator(this);
-		}
+		Command *searchCommand(std::string cmd);
+
+		void	becomeOperator();
 
 		void	changeName(std::string &newname) {
 			_userName = newname;
 		}
 };
+
+#include "Server.hpp"
+#include "Command.hpp"
+#include "commands/Nick.hpp"
+#include "commands/Help.hpp"
+#include "commands/Oper.hpp"
+#include "commands/ChannelBan.hpp"
 
 #endif

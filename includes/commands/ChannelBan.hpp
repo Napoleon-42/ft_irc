@@ -10,7 +10,7 @@ class ChannelBan : public Command {
         ChannelBan();
         ChannelBan(Client &user);
 
-        std::string help_msg();
+        std::string help_msg() const;
         void    execute(std::string line);
 }
 

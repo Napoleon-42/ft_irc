@@ -6,7 +6,7 @@ ChannelBan::ChannelBan() {
 ChannelBan::ChannelBan(Client &user) : Command(user) {
 }
 
-std::string ChannelBan::help_msg() {
+std::string ChannelBan::help_msg() const {
     return ("/kban username (allows you to ban this user from the channel)");
 }
 

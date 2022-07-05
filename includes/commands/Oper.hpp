@@ -11,8 +11,8 @@ class Oper : public Command {
         Oper();
         Oper(Client &user);
 
-        std::string help_msg();
+        std::string help_msg() const;
         void    execute(std::string line);
-}
+};
 
 #endif
