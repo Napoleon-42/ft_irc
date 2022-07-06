@@ -5,10 +5,10 @@
 
 class Command {
     protected :
-        Client *_user;
+        Server *_serv;
     public :
         Command() {}
-        Command(Client &user) : _user(&user) {}
+        Command(Server &serv) : _serv(&serv) {}
         virtual ~Command() {}
 
         bool hasUser() {
@@ -18,7 +18,7 @@ class Command {
         }
 
         virtual std::string help_msg() const = 0;
-        virtual void    execute(std::string line) = 0;
+        virtual void    execute(std::string line, Client &user) = 0;
 };
 
 #endif

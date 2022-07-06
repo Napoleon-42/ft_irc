@@ -29,7 +29,7 @@ class Client
 		std::string							_hostname;
 		std::string							_servername;
 		Server*								_serv;
-		std::map<std::string, Command>	commands;
+		std::map<std::string, Command *>		commands;
 
 		void addBasicCommands();
 		void addOpCommands();
@@ -52,9 +52,5 @@ class Client
 
 #include "Server.hpp"
 #include "Command.hpp"
-#include "commands/Nick.hpp"
-#include "commands/Help.hpp"
-#include "commands/Oper.hpp"
-#include "commands/ChannelBan.hpp"
 
 #endif

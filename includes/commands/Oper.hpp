@@ -5,14 +5,12 @@
 
 
 class Oper : public Command {
-    protected :
-        Client *_user;
     public :
         Oper();
-        Oper(Client &user);
+        Oper(Server &serv);
 
         std::string help_msg() const;
-        void    execute(std::string line);
+        void    execute(std::string line, Client &user);
 };
 
 #endif

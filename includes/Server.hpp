@@ -13,6 +13,11 @@
 #ifndef SERVER_HPP
 #define SERVER_HPP
 #include "ft_irc.hpp"
+#include "Command.hpp"
+#include "commands/Nick.hpp"
+#include "commands/Help.hpp"
+#include "commands/Oper.hpp"
+#include "commands/ChannelBan.hpp"
 
 class Server
 {
@@ -21,6 +26,8 @@ class Server
 		int _socket;
 		struct sockaddr_in _client;
 		struct sockaddr_in _address;
+		std::map<std::string, Command>		_servercommands;
+		std::map<std::string, Command>		_opcommands;
 
 	public:
 
@@ -28,11 +35,39 @@ class Server
 		{
 			//serverLogMssg("Server created");
 			init_socket();
+			_servercommands.insert(std::make_pair("nick", Nick(this)));
+			_servercommands.insert(std::make_pair("oper", Oper(this)));
+			_servercommands.insert(std::make_pair("help", Help(this)));
+			/* TO DO
+			INFO [<target>]
+			INVITE <nickname> <channel>
+			ISON <nicknames>
+			JOIN <channels> [<keys>]
+			LIST [<channels> [<server>]]
+			PASS <password>
+			PRIVMSG <msgtarget> :<message>
+			QUIT [<message>]
+			USER <username> <hostname> <servername> <realname>
+			*/
+    		_opcommands.insert(std::make_pair("kban", ChannelBan(this)));
+			/* TO DO
+			KICK <channel> <client> :[<message>] (does not ban just kick)
+			KILL <client> <comment>
+			DIE (command to shutdown server)
+			*/
 		}
 
 		~Server()
 		{
 			//serverLogMssg("Server downed");
+		}
+
+		std::map<std::string, Command> getServCommands() const {
+			return (_servercommands);
+		}
+
+		std::map<std::string, Command> getOpCommands() const {
+			return (_opcommands);
 		}
 
 		void	init_socket()

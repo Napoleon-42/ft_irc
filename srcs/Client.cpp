@@ -1,29 +1,21 @@
 #include "Client.hpp"
 
 void        Client::addBasicCommands() {
-    commands.insert(std::make_pair("nick", Nick(this)));
-    commands.insert(std::make_pair("oper", Oper(this)));
-    commands.insert(std::make_pair("help", Help(this)));
-    /* TO DO
-    INFO [<target>]
-    INVITE <nickname> <channel>
-    ISON <nicknames>
-    JOIN <channels> [<keys>]
-    LIST [<channels> [<server>]]
-    PASS <password>
-    PRIVMSG <msgtarget> :<message>
-    QUIT [<message>]
-    USER <username> <hostname> <servername> <realname>
-    */
+    std::map<std::string, Command>::iterator it = _serv->getServCommands.begin();
+    std::map<std::string, Command>::iterator ite = _serv->getServCommands.end();
+    while (it != ite) {
+        commands.insert(std::make_pair(it->first, &(it->second)));
+        ++it;
+    }
 }
 
 void        Client::addOpCommands() {
-    this->commands.insert(std::make_pair("kban", ChannelBan(this)));
-    /* TO DO
-    KICK <channel> <client> :[<message>] (does not ban just kick)
-    KILL <client> <comment>
-    DIE (command to shutdown server)
-    */
+    std::map<std::string, Command>::iterator it = _serv->getOpCommands.begin();
+    std::map<std::string, Command>::iterator ite = _serv->getOpCommands.end();
+    while (it != ite) {
+        commands.insert(std::make_pair(it->first, &(it->second)));
+        ++it;
+    }
 }
 
 Client::Client(): _userName("non-spec")
@@ -54,7 +46,7 @@ void	    Client::execute(std::string &command, std::string &restline) {
     commands::iterator cit = commands.find(command);
     if (cit == commands.end())
         std::cout << "Command '" << command <<"' not found in available commands for the client : " << _userName << std::endl;
-    cit->execute(restline);
+    cit->execute(restline, *this);
 }
 
 Command&    Client::searchCommand(std::string cmd) {

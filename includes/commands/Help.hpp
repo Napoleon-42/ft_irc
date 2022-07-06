@@ -4,14 +4,12 @@
 #include "../Command.hpp"
 
 class Help : public Command {
-    protected :
-        Client *_user;
     public :
         Help();
-        Help(Client &user);
+        Help(Server &serv);
 
         std::string help_msg() const;
-        void    execute(std::string line);
+        void    execute(std::string line, Client &user);
 };
 
 #endif

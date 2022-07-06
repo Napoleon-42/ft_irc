@@ -4,14 +4,12 @@
 #include "../Command.hpp"
 
 class ChannelBan : public Command {
-    protected :
-        Client *_user;
     public :
         ChannelBan();
-        ChannelBan(Client &user);
+        ChannelBan(Server &serv);
 
         std::string help_msg() const;
-        void    execute(std::string line);
+        void    execute(std::string line, Client &user);
 }
 
 #endif

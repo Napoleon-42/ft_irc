@@ -3,7 +3,7 @@
 Oper::Oper() {
 }
 
-Oper::Oper(Client &user) : Command(user) {
+Oper::Oper(Server &serv) : Command(serv) {
 
 }
 
@@ -11,6 +11,6 @@ std::string Oper::help_msg() const {
     return ("/oper (allows you to become an operator in the server)");
 }
 
-void Oper::execute(std::string line) {
-    _user->becomeOperator();
+void Oper::execute(std::string line, Client &user) {
+    user->becomeOperator();
 }
