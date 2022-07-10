@@ -20,6 +20,7 @@
 */
 class Server;
 class Command;
+class Channel;
 
 class Client
 {
@@ -29,6 +30,7 @@ class Client
 		std::string							_hostname;
 		std::string							_servername;
 		Server*								_serv;
+		Channel*							_currentChannel;
 		std::map<std::string, Command *>		commands;
 
 		void addBasicCommands();
@@ -44,9 +46,24 @@ class Client
 		Command *searchCommand(std::string cmd);
 
 		void	becomeOperator();
-
 		void	changeName(std::string &newname) {
 			_userName = newname;
+		}
+		void	changeChannel(Channel *chan) {
+			_currentChannel = chan;
+		}
+		/*
+		** getters
+		*/
+
+		std::string getUname() {
+			return (_userName);
+		}
+		Channel *getChannel() {
+			return (_currentChannel);
+		}
+		Server *getServer() {
+			return (_serv);
 		}
 };
 

@@ -22,12 +22,14 @@
 class Server
 {
 	private:
-
+		typedef typename std::map<std::string, Command> commandmap;
+		typedef typename std::map<std::string, Channel> channelmap;
 		int _socket;
 		struct sockaddr_in _client;
 		struct sockaddr_in _address;
-		std::map<std::string, Command>		_servercommands;
-		std::map<std::string, Command>		_opcommands;
+		commandmap		_servercommands;
+		commandmap		_opcommands;
+		channelmap		_channels;
 
 	public:
 
@@ -68,6 +70,13 @@ class Server
 
 		std::map<std::string, Command> getOpCommands() const {
 			return (_opcommands);
+		}
+
+		Channel *searchChannel(std::string channame) {
+			channelmap::iterator it = _channels.find(channame);
+			if (it == _channels.end())
+				return (NULL);
+			return (&(it->second));
 		}
 
 		void	init_socket()

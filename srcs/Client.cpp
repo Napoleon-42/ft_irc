@@ -21,6 +21,7 @@ void        Client::addOpCommands() {
 Client::Client(): _userName("non-spec")
 {
     clientLogMssg(std::string("Client " + _userName + " created"));
+    _currentChannel = NULL;
     addBasicCommands();
 }
 
@@ -28,6 +29,7 @@ Client::Client(Server *current, std::string uname, std::string hname, std::strin
     _serv(current), _userName(uname), _hostname(hname), _servername(sname)
 {
     clientLogMssg(std::string("Client " + _userName + " created"));
+    _currentChannel = NULL;
     addBasicCommands();
 
 }
