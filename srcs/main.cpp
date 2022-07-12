@@ -6,12 +6,13 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/17 21:28:48 by lnelson           #+#    #+#             */
-/*   Updated: 2022/06/27 15:41:26 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/07/11 17:18:51 by aedouard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_irc.hpp"
+#include "../includes/ft_irc.hpp"
 #include <fstream>
+
 
 std::ostream * logStream;
 

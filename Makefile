@@ -1,59 +1,29 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2022/06/22 17:56:55 by lnelson           #+#    #+#              #
-#    Updated: 2022/06/27 15:34:20 by lnelson          ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
+NAME = ircserv
 
-# **************************************************************************** #
-#							FT_IRC MAKEFILE									   #
-# **************************************************************************** #
+SRCS = srcs/main.cpp
 
-NAME		= ft_irc
+CXX = c++
 
-SRCS_DIR	= srcs/
+OBJS = ${SRCS:.cpp=.o}
 
-OBJS_DIR	= objs/
+INCL_DIR = includes/
 
-INCL_DIR	= includes/
+CXXFLAGS = -Wall -Wextra -Werror -std=c++98 -g3
 
-CC			= c++
+all : $(NAME)
 
-CFLAGS		= -Wall -Wextra -Werror -std=c++98 -I ${INCL_DIR}
+.cpp.o :
+		${CXX} ${CXXFLAGS} -c $< -o ${<:.cpp=.o}
 
-FLAGS		= 
+$(NAME): ${OBJS}
+		${CXX} -o ${NAME} ${OBJS}
 
-# **************************************************************************** #
+clean :
+		rm -rf ${OBJS}
 
-INCL		= ${INCL_DIR}ft_irc.hpp
+fclean: clean
+		rm -rf ${NAME}
 
-SRCS		=	main.cpp \
-				utils.cpp
+re:		fclean all
 
-# **************************************************************************** #
-
-OBJS		:= ${addprefix ${OBJS_DIR}, ${SRCS:.cpp=.o}}
-
-${NAME}:	${OBJS} ${INCL}
-		${CC} -o ${NAME} ${OBJS} ${FLAGS} 
-
-${OBJS}:	$(addprefix ${SRCS_DIR}, ${SRCS})
-				${CC} ${CFLAGS} -c $< -o $@
-
-###############################################################################
-
-all:	${NAME}
-
-
-clean:	
-		rm ${OBJS}
-
-fclean:	clean
-		rm ${NAME}
-
-re:	fclean all
+.PHONY: all clean fclean res

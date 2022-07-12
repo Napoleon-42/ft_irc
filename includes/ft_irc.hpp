@@ -40,8 +40,16 @@ extern	std::ostream * logStream;
 /*									UTILS									 */
 /*****************************************************************************/
 
-void	serverLogMssg(std::string to_print);
-void	clientLogMssg(std::string to_print);
+void	serverLogMssg(std::string to_print)
+{
+	*logStream << "(SERVER): " << to_print << std::endl;
+}
+
+std::ostream clientLogMssg(std::string to_print)
+{
+	*logStream << "(CLIENT): " << to_print << std::endl;
+}
+
 
 
 
