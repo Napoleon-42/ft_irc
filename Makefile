@@ -6,7 +6,7 @@
 #    By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/06/22 17:56:55 by lnelson           #+#    #+#              #
-#    Updated: 2022/06/27 15:34:20 by lnelson          ###   ########.fr        #
+#    Updated: 2022/07/12 18:06:28 by lnelson          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -33,13 +33,12 @@ FLAGS		=
 INCL		= ${INCL_DIR}ft_irc.hpp
 
 SRCS		=	main.cpp \
-				utils.cpp
 
 # **************************************************************************** #
 
 OBJS		:= ${addprefix ${OBJS_DIR}, ${SRCS:.cpp=.o}}
 
-${NAME}:	${OBJS} ${INCL}
+${NAME}:	${OBJS} ${INCL} ${INCL_DIR}
 		${CC} -o ${NAME} ${OBJS} ${FLAGS} 
 
 ${OBJS}:	$(addprefix ${SRCS_DIR}, ${SRCS})
