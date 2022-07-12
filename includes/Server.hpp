@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 15:47:37 by lnelson           #+#    #+#             */
-/*   Updated: 2022/07/12 18:41:26 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/07/12 19:14:21 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,17 +68,13 @@ class Server
 			return ;
 		}
 
-		void	addClient()
-		{
-			
-		}
 
 		void	acceptClients()
 		{
 			socklen_t len = sizeof(_client);
 			int	client_fd = 0;
-			char buff[50];
-			buff[49] = 0;
+			char buff[552];
+			buff[551] = 0;
 			while (1)
 			{
 				std::string temp;
@@ -87,8 +83,8 @@ class Server
 				{
 					serverLogMssg(" new client accepted");
 					_clientSockets.push_back(client_fd);
-					_usersMap.insert(std::make_pair(client_fd, Client(/*resultat du parsing*/)));
-					send(client_fd, "Hello, wolrd\r\n", 13, 0);
+					_usersMap.insert(std::make_pair(client_fd, Client("test client")));
+					send(client_fd, "Hello world lnelson \r\n", 22, 0);
 				}
 				else
 				{	
@@ -98,8 +94,9 @@ class Server
 
 				if (client_fd != 0)
 				{
-					recv(client_fd, (void *)buff, 49, 0);
-					*logStream << "(SERVER) received mssg : " << buff << std::endl;
+					buff[recv(client_fd, (void *)buff, 551, 0)] = 0;
+
+					*logStream << "(SERVER) received mssg : "<< std::endl << buff << std::endl;
 				}
 				//std::cin >> temp;
 				//if (temp == "exit")
