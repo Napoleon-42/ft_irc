@@ -32,18 +32,26 @@ FLAGS		=
 
 INCL		= ${INCL_DIR}ft_irc.hpp
 
-SRCS		=	main.cpp \
-				utils.cpp
+SRCS		=	srcs/main.cpp \
+				srcs/utils.cpp \
+				srcs/Client.cpp \
+				srcs/commands/Help.cpp \
+				srcs/commands/Join.cpp \
+				srcs/commands/ChannelBan.cpp \
+				srcs/commands/Nick.cpp \
+				srcs/commands/Oper.cpp
+
+
 
 # **************************************************************************** #
 
-OBJS		:= ${addprefix ${OBJS_DIR}, ${SRCS:.cpp=.o}}
+OBJS		= ${SRCS:.cpp=.o}
+
+.cpp.o :
+	${CC} ${CFLAGS} -c $< -o ${<:.cpp=.o}
 
 ${NAME}:	${OBJS} ${INCL}
 		${CC} -o ${NAME} ${OBJS} ${FLAGS} 
-
-${OBJS}:	$(addprefix ${SRCS_DIR}, ${SRCS})
-				${CC} ${CFLAGS} -c $< -o $@
 
 ###############################################################################
 

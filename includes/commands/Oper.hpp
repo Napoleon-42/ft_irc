@@ -7,7 +7,7 @@
 class Oper : public Command {
     public :
         Oper();
-        Oper(Server &serv);
+        Oper(Server *serv);
 
         std::string help_msg() const;
         void    execute(std::string line, Client &user);

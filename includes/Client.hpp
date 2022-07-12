@@ -13,7 +13,7 @@
 #ifndef CLIENT_HPP
 #define CLIENT_HPP
 #include <map>
-#include "ft_irc.hpp"
+#include "Server.hpp"
 
 /*
 ** Pre-declared class needed to initialize Clients
@@ -25,13 +25,13 @@ class Channel;
 class Client
 {
 	private:
-
-		std::string							_userName;
-		std::string							_hostname;
-		std::string							_servername;
-		Server*								_serv;
-		Channel*							_currentChannel;
-		std::map<std::string, Command *>		commands;
+		typedef typename std::map<std::string, Command *> commandmap;
+		std::string		_userName;
+		std::string		_hostname;
+		std::string		_servername;
+		Server*			_serv = NULL;
+		Channel*		_currentChannel = NULL;
+		commandmap		commands;
 
 		void addBasicCommands();
 		void addOpCommands();
@@ -67,7 +67,7 @@ class Client
 		}
 };
 
-#include "Server.hpp"
 #include "Command.hpp"
+#include "Channel.hpp"
 
 #endif

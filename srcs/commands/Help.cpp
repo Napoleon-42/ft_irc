@@ -1,9 +1,10 @@
 #include "commands/Help.hpp"
+#include "Server.hpp"
 
 Help::Help() {
 }
 
-Help::Help(Server &serv) : Command(serv) {
+Help::Help(Server *serv) : Command(serv) {
 
 }
 
@@ -12,7 +13,7 @@ std::string Help::help_msg() const {
 }
 
 void Help::execute(std::string line, Client &user) {
-    Command *cmd = user->searchCommand(line);
+    Command *cmd = user.searchCommand(line);
     if (cmd)
         std::cout << cmd->help_msg() << std::endl;
 }

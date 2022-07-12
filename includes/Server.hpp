@@ -12,7 +12,8 @@
 
 #ifndef SERVER_HPP
 #define SERVER_HPP
-#include "ft_irc.hpp"
+#include "Client.hpp"
+#include "Channel.hpp"
 #include "Command.hpp"
 #include "commands/Nick.hpp"
 #include "commands/Help.hpp"
@@ -21,9 +22,11 @@
 
 class Server
 {
-	private:
-		typedef typename std::map<std::string, Command> commandmap;
+	public:
+		typedef typename std::map<std::string, Command *> commandmap;
 		typedef typename std::map<std::string, Channel> channelmap;
+	
+	private:
 		int _socket;
 		struct sockaddr_in _client;
 		struct sockaddr_in _address;
@@ -37,9 +40,9 @@ class Server
 		{
 			//serverLogMssg("Server created");
 			init_socket();
-			_servercommands.insert(std::make_pair("nick", Nick(this)));
-			_servercommands.insert(std::make_pair("oper", Oper(this)));
-			_servercommands.insert(std::make_pair("help", Help(this)));
+			_servercommands.insert(std::make_pair("nick", new Nick(this)));
+			_servercommands.insert(std::make_pair("oper", new Oper(this)));
+			_servercommands.insert(std::make_pair("help", new Help(this)));
 			/* TO DO
 			INFO [<target>]
 			INVITE <nickname> <channel>
@@ -51,7 +54,7 @@ class Server
 			QUIT [<message>]
 			USER <username> <hostname> <servername> <realname>
 			*/
-    		_opcommands.insert(std::make_pair("kban", ChannelBan(this)));
+    		_opcommands.insert(std::make_pair("kban", new ChannelBan(this)));
 			/* TO DO
 			KICK <channel> <client> :[<message>] (does not ban just kick)
 			KILL <client> <comment>
@@ -64,12 +67,21 @@ class Server
 			//serverLogMssg("Server downed");
 		}
 
-		std::map<std::string, Command> getServCommands() const {
+		const commandmap &getServCommands() const {
 			return (_servercommands);
 		}
 
-		std::map<std::string, Command> getOpCommands() const {
+		const commandmap &getOpCommands() const {
 			return (_opcommands);
+		}
+
+		const channelmap &getChannels() const {
+			return(_channels);
+		}
+
+		channelmap::iterator addChannel(Channel &newchan) {
+			return _channels.insert(std::make_pair(newchan.getName(), newchan)).first;
+
 		}
 
 		Channel *searchChannel(std::string channame) {
@@ -78,9 +90,9 @@ class Server
 				return (NULL);
 			return (&(it->second));
 		}
-
+		
 		void	init_socket()
-		{
+		{/*
 			_socket = socket(AF_INET, SOCK_STREAM, 0);
 			//serverLogMssg("socket created");
 			
@@ -106,7 +118,7 @@ class Server
 				//serverLogMssg("server is listening");
 			
 			(void)_client;
-			/*
+			
 			socklen_t len = sizeof(_client);
 			int client_fd;
 			while (1)
@@ -123,8 +135,8 @@ class Server
 				if (temp == "exit")
 					_exit(0);
 			}
-			*/
 			
+			*/
 			return ;
 		}
 

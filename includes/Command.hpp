@@ -1,18 +1,20 @@
 #ifndef COMMAND_HPP
 # define COMMAND_HPP
+# include <string>
 
-#include "Client.hpp"
+class Server;
+class Client;
 
 class Command {
     protected :
         Server *_serv;
     public :
         Command() {}
-        Command(Server &serv) : _serv(&serv) {}
+        Command(Server *serv) : _serv(serv) {}
         virtual ~Command() {}
 
-        bool hasUser() {
-            if (_user)
+        bool hasServer() {
+            if (_serv)
                 return (true);
             return (false);
         }

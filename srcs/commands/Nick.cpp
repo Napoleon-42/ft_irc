@@ -1,9 +1,10 @@
 #include "commands/Nick.hpp"
+#include "Client.hpp"
 
 Nick::Nick() {
 }
 
-Nick::Nick(Server &serv) : Command(serv) {
+Nick::Nick(Server *serv) : Command(serv) {
 
 }
 
@@ -12,5 +13,5 @@ std::string Nick::help_msg() const {
 }
 
 void Nick::execute(std::string line, Client &user) {
-    user->changeName(line);
+    user.changeName(line);
 }

@@ -6,7 +6,7 @@
 class Help : public Command {
     public :
         Help();
-        Help(Server &serv);
+        Help(Server *serv);
 
         std::string help_msg() const;
         void    execute(std::string line, Client &user);

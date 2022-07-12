@@ -1,19 +1,19 @@
 #include "Client.hpp"
 
 void        Client::addBasicCommands() {
-    std::map<std::string, Command>::iterator it = _serv->getServCommands.begin();
-    std::map<std::string, Command>::iterator ite = _serv->getServCommands.end();
+    Server::commandmap::const_iterator it = _serv->getServCommands().begin();
+    Server::commandmap::const_iterator ite = _serv->getServCommands().end();
     while (it != ite) {
-        commands.insert(std::make_pair(it->first, &(it->second)));
+        commands.insert(std::make_pair(it->first, it->second));
         ++it;
     }
 }
 
 void        Client::addOpCommands() {
-    std::map<std::string, Command>::iterator it = _serv->getOpCommands.begin();
-    std::map<std::string, Command>::iterator ite = _serv->getOpCommands.end();
+    Server::commandmap::const_iterator it = _serv->getOpCommands().begin();
+    Server::commandmap::const_iterator ite = _serv->getOpCommands().end();
     while (it != ite) {
-        commands.insert(std::make_pair(it->first, &(it->second)));
+        commands.insert(std::make_pair(it->first, it->second));
         ++it;
     }
 }
@@ -26,8 +26,9 @@ Client::Client(): _userName("non-spec")
 }
 
 Client::Client(Server *current, std::string uname, std::string hname, std::string sname) :
-    _serv(current), _userName(uname), _hostname(hname), _servername(sname)
+    _userName(uname), _hostname(hname), _servername(sname)
 {
+    _serv = current;
     clientLogMssg(std::string("Client " + _userName + " created"));
     _currentChannel = NULL;
     addBasicCommands();
@@ -45,21 +46,17 @@ void	    Client::becomeOperator() {
 }
 
 void	    Client::execute(std::string &command, std::string &restline) {
-    commands::iterator cit = commands.find(command);
+    commandmap::iterator cit = commands.find(command);
     if (cit == commands.end())
         std::cout << "Command '" << command <<"' not found in available commands for the client : " << _userName << std::endl;
-    cit->execute(restline, *this);
+    cit->second->execute(restline, *this);
 }
 
-Command&    Client::searchCommand(std::string cmd) {
-    commands::iteraor cit = commands.find(command);
+Command*    Client::searchCommand(std::string cmd) {
+    commandmap::iterator cit = commands.find(cmd);
     if (cit == commands.end()) {
-        std::cout << "Command '" << command <<"' not found in available commands for the client : " << _userName << std::endl;
+        std::cout << "Command '" << cmd <<"' not found in available commands for the client : " << _userName << std::endl;
         return (NULL);
     }
-    return (*cit);
-}
-
-void        Client::becomeOperator() {
-    this = new Operator(this);
+    return (cit->second);
 }

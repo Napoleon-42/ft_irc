@@ -1,9 +1,10 @@
 #include "commands/Oper.hpp"
+#include "Client.hpp"
 
 Oper::Oper() {
 }
 
-Oper::Oper(Server &serv) : Command(serv) {
+Oper::Oper(Server *serv) : Command(serv) {
 
 }
 
@@ -12,5 +13,6 @@ std::string Oper::help_msg() const {
 }
 
 void Oper::execute(std::string line, Client &user) {
-    user->becomeOperator();
+    (void)line; //need to check if he used operator password
+    user.becomeOperator();
 }
