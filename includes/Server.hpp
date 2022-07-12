@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 15:47:37 by lnelson           #+#    #+#             */
-/*   Updated: 2022/07/12 18:26:17 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/07/12 18:41:26 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,9 @@ class Server
 		void	acceptClients()
 		{
 			socklen_t len = sizeof(_client);
-			int	client_fd;
+			int	client_fd = 0;
+			char buff[50];
+			buff[49] = 0;
 			while (1)
 			{
 				std::string temp;
@@ -85,7 +87,7 @@ class Server
 				{
 					serverLogMssg(" new client accepted");
 					_clientSockets.push_back(client_fd);
-					_usersMap.insert(std::make_pair(client_fd, Client()));
+					_usersMap.insert(std::make_pair(client_fd, Client(/*resultat du parsing*/)));
 					send(client_fd, "Hello, wolrd\r\n", 13, 0);
 				}
 				else
@@ -94,6 +96,11 @@ class Server
 					*logStream << client_fd << std::endl;
 				}
 
+				if (client_fd != 0)
+				{
+					recv(client_fd, (void *)buff, 49, 0);
+					*logStream << "(SERVER) received mssg : " << buff << std::endl;
+				}
 				//std::cin >> temp;
 				//if (temp == "exit")
 				//	_exit(0);
