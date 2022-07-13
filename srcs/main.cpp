@@ -53,8 +53,16 @@ int main(int ac, char **av)
 	/***************************************************************************/
 	
 	Server irc;
+	Channel chan(&irc, "chan1");
+	Channel *ret;
+
+	irc.addChannel(chan);
+	ret = irc.searchChannel("chan1");
+	*logStream << ret << std::endl;
 
 	irc.acceptClients();
+
+	
 
 
 	/***************************************************************************/

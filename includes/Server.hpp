@@ -43,29 +43,11 @@ class Server
 		Server();
 		~Server();
 
-		const commandmap &getServCommands() const {
-			return (_servercommands);
-		}
-
-		const commandmap &getOpCommands() const {
-			return (_opcommands);
-		}
-
-		const channelmap &getChannels() const {
-			return(_channels);
-		}
-
-		channelmap::iterator addChannel(Channel &newchan) {
-			return _channels.insert(std::make_pair(newchan.getName(), newchan)).first;
-
-		}
-
-		Channel *searchChannel(std::string channame) {
-			channelmap::iterator it = _channels.find(channame);
-			if (it == _channels.end())
-				return (NULL);
-			return (&(it->second));
-		}
+		const commandmap &getServCommands() const;
+		const commandmap &getOpCommands() const;
+		const channelmap &getChannels() const;
+		channelmap::iterator addChannel(Channel &newchan);
+		Channel *searchChannel(std::string channame);
 		void	init_socket();
 		void	acceptClients();
 };

@@ -105,9 +105,35 @@ void	Server::acceptClients()
     }
 }
 
+Server::channelmap::iterator Server::addChannel(Channel &newchan)
+{
+	return _channels.insert(std::make_pair(newchan.getName(), newchan)).first;
+}
+
+Channel *Server::searchChannel(std::string channame)
+ {
+    channelmap::iterator it = _channels.find(channame);
+    if (it == _channels.end())
+        return (NULL);
+    return (&(it->second));
+}
+
 /*
 ** --------------------------------- ACCESSOR ---------------------------------
 */
+
+const Server::commandmap &Server::getServCommands() const {
+    return (_servercommands);
+}
+
+const Server::commandmap &Server::getOpCommands() const {
+    return (_opcommands);
+}
+
+const Server::channelmap &Server::getChannels() const {
+    return(_channels);
+}
+
 
 
 /* ************************************************************************** */
