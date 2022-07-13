@@ -19,21 +19,24 @@
 #include "commands/Nick.hpp"
 #include "commands/Help.hpp"
 #include "commands/Oper.hpp"
+#include "commands/Join.hpp"
+#include "commands/List.hpp"
+#include "commands/Usercmd.hpp"
 #include "commands/ChannelBan.hpp"
 
 class Server
 {
 	public:
-		typedef std::map<std::string, Command *> commandmap;
-		typedef std::map<std::string, Channel> channelmap;
+		typedef std::map<std::string, Command *>	commandmap;
+		typedef std::map<std::string, Channel>		channelmap;
+		typedef std::map<int, Client>				clientmap;
 	
 		int _entrySocket;
 		std::vector<int> _clientSockets;
-		struct sockaddr_in _client;
-
-		std::map<int, Client> _usersMap;
-		
+		clientmap			_usersMap;
 		struct sockaddr_in _address;
+		struct sockaddr_in _client;
+		std::string		_passop;
 		commandmap		_servercommands;
 		commandmap		_opcommands;
 		channelmap		_channels;
@@ -44,22 +47,24 @@ class Server
 		{
 			//serverLogMssg("Server created");
 			init_socket();
-			_servercommands.insert(std::make_pair("nick", new Nick(this)));
-			_servercommands.insert(std::make_pair("oper", new Oper(this)));
-			_servercommands.insert(std::make_pair("help", new Help(this)));
+			_servercommands.insert(std::make_pair("NICK", new Nick(this)));
+			_servercommands.insert(std::make_pair("OPER", new Oper(this)));
+			_servercommands.insert(std::make_pair("HELP", new Help(this)));
+			_servercommands.insert(std::make_pair("JOIN", new Join(this)));
+			_servercommands.insert(std::make_pair("LIST", new List(this)));
+			_servercommands.insert(std::make_pair("USER", new Usercmd(this)));
 			/* TO DO
 			INFO [<target>]
 			INVITE <nickname> <channel>
 			ISON <nicknames>
-			JOIN <channels> [<keys>]
-			LIST [<channels> [<server>]]
 			PASS <password>
 			PRIVMSG <msgtarget> :<message>
 			QUIT [<message>]
 			USER <username> <hostname> <servername> <realname>
 			*/
-    		_opcommands.insert(std::make_pair("kban", new ChannelBan(this)));
+    		_opcommands.insert(std::make_pair("BAN", new ChannelBan(this)));
 			/* TO DO
+			MUTE <nicknames ?>
 			KICK <channel> <client> :[<message>] (does not ban just kick)
 			KILL <client> <comment>
 			DIE (command to shutdown server)
@@ -81,6 +86,20 @@ class Server
 
 		const channelmap &getChannels() const {
 			return(_channels);
+		}
+
+		const clientmap &getClients() const {
+			return(_usersMap);
+		}
+
+		std::string		&serverhash(std::string &toHash) const {
+			return (toHash);
+		}
+
+		bool			checkOpPass(std::string pass) const {
+			if (serverhash(pass) == _passop)
+				return (true);
+			return (false);
 		}
 
 		channelmap::iterator addChannel(Channel &newchan) {

@@ -1,12 +1,12 @@
-#ifndef Nick_HPP
-# define Nick_HPP
+#ifndef List_HPP
+# define List_HPP
 
 #include "../Command.hpp"
 
-class Nick : public Command {
+class List : public Command {
     public :
-        Nick();
-        Nick(Server *serv);
+        List();
+        List(Server *serv);
 
         std::string help_msg() const;
         void    execute(std::string line, Client &user);

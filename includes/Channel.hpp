@@ -45,6 +45,7 @@ class Channel
 
         bool    addClient(Client *toAdd);
 		Client *searchClient(std::string username);
+        const clientlist    &getClients() const;
         std::string getName();
 
 };

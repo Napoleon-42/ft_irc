@@ -30,6 +30,9 @@ Channel&    Channel::operator=(const Channel& other){
 
 }
 
+const Channel::clientlist    &Channel::getClients() const {
+    return (_clients);
+}
 
 bool        Channel::addClient(Client *toAdd){
     //lack Check if ban
