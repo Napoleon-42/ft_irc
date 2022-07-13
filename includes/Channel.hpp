@@ -49,6 +49,7 @@ class Channel
 		Client *searchClient(std::string username);
         Client *searchBanned(std::string username);
         const clientlist getBannedClients() const;
+        const clientlist    &getClients() const;
         std::string getName();
 
 };
