@@ -39,7 +39,8 @@ SRCS		=	srcs/main.cpp \
 				srcs/commands/Join.cpp \
 				srcs/commands/ChannelBan.cpp \
 				srcs/commands/Nick.cpp \
-				srcs/commands/Oper.cpp
+				srcs/commands/Oper.cpp\
+				srcs/Server.cpp
 
 OBJS		= ${SRCS:.cpp=.o}
 
