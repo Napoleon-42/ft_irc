@@ -6,7 +6,7 @@
 #    By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/06/22 17:56:55 by lnelson           #+#    #+#              #
-#    Updated: 2022/07/12 18:06:28 by lnelson          ###   ########.fr        #
+#    Updated: 2022/07/13 19:49:27 by aedouard         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -43,7 +43,6 @@ SRCS		=	srcs/main.cpp \
 				srcs/commands/List.cpp \
 				srcs/commands/Usercmd.cpp \
 				srcs/commands/Oper.cpp
->>>>>>> Makefile
 
 OBJS		= ${SRCS:.cpp=.o}
 
