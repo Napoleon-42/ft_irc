@@ -6,12 +6,14 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/17 21:28:48 by lnelson           #+#    #+#             */
-/*   Updated: 2022/06/27 15:41:26 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/07/12 18:09:53 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_irc.hpp"
 #include <fstream>
+#include "Server.hpp"
+#include "Client.hpp"
 
 std::ostream * logStream;
 
@@ -30,6 +32,16 @@ std::ostream *	set_log_file(short key)
 	return (outFile);
 }
 
+void	serverLogMssg(std::string to_print)
+{
+	*logStream << "(SERVER): " << to_print << std::endl;
+}
+
+void	clientLogMssg(std::string to_print)
+{
+	*logStream << "(CLIENT): " << to_print << std::endl;
+}
+
 int main(int ac, char **av)
 {
 	/**************************************************************************/
@@ -41,7 +53,11 @@ int main(int ac, char **av)
 	/***************************************************************************/
 	
 	Server irc;
-	Client client;
+
+	irc.acceptClients();
+
+
+	/***************************************************************************/
 
 	std::string temp;
 	while(1)
@@ -50,4 +66,6 @@ int main(int ac, char **av)
 		if (temp == "exit")
 			_exit(0);
 	}
+
+	/***************************************************************************/
 }

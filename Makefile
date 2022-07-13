@@ -6,7 +6,7 @@
 #    By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/06/22 17:56:55 by lnelson           #+#    #+#              #
-#    Updated: 2022/06/27 15:34:20 by lnelson          ###   ########.fr        #
+#    Updated: 2022/07/12 18:06:28 by lnelson          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,21 +14,21 @@
 #							FT_IRC MAKEFILE									   #
 # **************************************************************************** #
 
-NAME		= ft_irc
+NAME = server
 
-SRCS_DIR	= srcs/
+SRCS = srcs/main.cpp
 
-OBJS_DIR	= objs/
+CXX = c++
 
-INCL_DIR	= includes/
+OBJS = ${SRCS:.cpp=.o}
 
-CC			= c++
+INCL_DIR = includes/
 
-CFLAGS		= -Wall -Wextra -Werror -std=c++98 -I ${INCL_DIR}
+CXXFLAGS = -Wall -Wextra -Werror -std=c++98 -g3 -I ${INCL_DIR}
 
-FLAGS		= 
+all : $(NAME)
 
-# **************************************************************************** #
+std: ${NAME_STD}
 
 INCL		= ${INCL_DIR}ft_irc.hpp
 
@@ -42,27 +42,20 @@ SRCS		=	srcs/main.cpp \
 				srcs/commands/Nick.cpp \
 				srcs/commands/Oper.cpp
 
-
-
-# **************************************************************************** #
-
 OBJS		= ${SRCS:.cpp=.o}
 
 .cpp.o :
-	${CC} ${CFLAGS} -c $< -o ${<:.cpp=.o}
+		${CXX} ${CXXFLAGS} -c $< -o ${<:.cpp=.o}
 
-${NAME}:	${OBJS} ${INCL}
-		${CC} -o ${NAME} ${OBJS} ${FLAGS} 
+$(NAME): ${OBJS}
+		${CXX} ${CXXFLAGS} -o ${NAME} ${OBJS}
 
-###############################################################################
+clean :
+		rm -rf ${OBJS}
 
-all:	${NAME}
+fclean: clean
+		rm -rf ${NAME}
 
+re:		fclean all
 
-clean:	
-		rm ${OBJS}
-
-fclean:	clean
-		rm ${NAME}
-
-re:	fclean all
+.PHONY: all clean fclean res
