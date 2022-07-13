@@ -55,14 +55,19 @@ int main(int ac, char **av)
 	Server irc;
 	Channel chan(&irc, "chan1");
 	Channel *ret;
+	Client client(&irc, "Client1");
 
 	irc.addChannel(chan);
 	ret = irc.searchChannel("chan1");
+	chan.addClient(&client);
+	std::cout << chan.searchClient("Client1") << std::endl;
+	std::cout << chan.addToBanList(&client) << std::endl;
+	std::cout << chan.searchBanned("Client1") << std::endl;
+	chan.kickFromChannel(&client);
+	std::cout << chan.searchClient("Client1") << std::endl;
 	*logStream << ret << std::endl;
 
 	irc.acceptClients();
-
-	
 
 
 	/***************************************************************************/

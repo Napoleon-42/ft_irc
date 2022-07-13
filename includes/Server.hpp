@@ -42,7 +42,6 @@ class Server
 
 		Server();
 		~Server();
-
 		const commandmap &getServCommands() const;
 		const commandmap &getOpCommands() const;
 		const channelmap &getChannels() const;

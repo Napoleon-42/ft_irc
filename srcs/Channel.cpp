@@ -30,15 +30,42 @@ Channel&    Channel::operator=(const Channel& other){
 
 }
 
-
 bool        Channel::addClient(Client *toAdd){
-    //lack Check if ban
+    if (toAdd == searchBanned(toAdd->getUname()))
+    {
+        clientLogMssg("client can't be added (banned)");
+        return (false);
+    }
     return _clients.insert(std::make_pair(toAdd->getUname(), toAdd)).second;
+}
+
+bool    Channel::addToBanList(Client *toBan)
+{
+    return _clientsban.insert(std::make_pair(toBan->getUname(), toBan)).second;
+}
+
+bool    Channel::kickFromChannel(Client *toKick)
+{
+    clientlist::iterator it = _clients.find(toKick->getUname());
+    if (it == _clients.end())
+        return (0);
+    else
+    {
+        _clients.erase(it);
+        return (true);
+    }
 }
 
 Client      *Channel::searchClient(std::string username){
     clientlist::iterator it = _clients.find(username);
     if (it == _clients.end())
+        return (NULL);
+    return (it->second);
+}
+
+Client      *Channel::searchBanned(std::string username){
+    clientlist::iterator it = _clientsban.find(username);
+    if (it == _clientsban.end())
         return (NULL);
     return (it->second);
 }
