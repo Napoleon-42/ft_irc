@@ -57,7 +57,7 @@ class Client
 		** getters
 		*/
 
-		std::string getUname() {
+		const std::string &getUname() const {
 			return (_userName);
 		}
 		Channel *getChannel() {
