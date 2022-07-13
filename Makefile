@@ -30,11 +30,25 @@ all : $(NAME)
 
 std: ${NAME_STD}
 
+INCL		= ${INCL_DIR}ft_irc.hpp
+
+SRCS		=	srcs/main.cpp \
+				srcs/utils.cpp \
+				srcs/Client.cpp \
+				srcs/Channel.cpp \
+				srcs/commands/Help.cpp \
+				srcs/commands/Join.cpp \
+				srcs/commands/ChannelBan.cpp \
+				srcs/commands/Nick.cpp \
+				srcs/commands/Oper.cpp
+
+OBJS		= ${SRCS:.cpp=.o}
+
 .cpp.o :
-		${CXX} ${STDFLAGS} ${CXXFLAGS} -c $< -o ${<:.cpp=.o}
+		${CXX} ${CXXFLAGS} -c $< -o ${<:.cpp=.o}
 
 $(NAME): ${OBJS}
-		${CXX} -o ${NAME} ${OBJS}
+		${CXX} ${CXXFLAGS} -o ${NAME} ${OBJS}
 
 clean :
 		rm -rf ${OBJS}

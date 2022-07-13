@@ -28,6 +28,7 @@
 #include <poll.h>
 #include <vector>
 #include <map>
+#include "Server.hpp"
 
 #define LOG_FILE "ft_irc.log"
 #define FILE_OUTPUT 0

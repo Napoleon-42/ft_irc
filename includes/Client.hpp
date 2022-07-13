@@ -12,30 +12,62 @@
 
 #ifndef CLIENT_HPP
 #define CLIENT_HPP
-#include "ft_irc.hpp"
+#include <map>
+#include "Server.hpp"
+
+/*
+** Pre-declared class needed to initialize Clients
+*/
+class Server;
+class Command;
+class Channel;
 
 class Client
 {
 	private:
+		typedef typename std::map<std::string, Command *> commandmap;
+		std::string		_userName;
+		std::string		_hostname;
+		std::string		_servername;
+		Server*			_serv = NULL;
+		Channel*		_currentChannel = NULL;
+		commandmap		commands;
 
-		std::string _userName;
-
+		void addBasicCommands();
+		void addOpCommands();
 	public:
 
-		Client(): _userName("non-spec")
-		{
-			clientLogMssg(std::string("Client " + _userName + " created"));
-		}
+		Client();
+		Client(Server *current, std::string uname, std::string hname, std::string sname);
+		~Client();
 
-		Client(std::string name): _userName(name)
-		{
-			clientLogMssg(std::string("Client " + _userName + " created"));
+		void	execute(std::string &command, std::string &restline);
+
+		Command *searchCommand(std::string cmd);
+
+		void	becomeOperator();
+		void	changeName(std::string &newname) {
+			_userName = newname;
 		}
-		
-		~Client()
-		{
-			clientLogMssg(" Client " + _userName + " destroyed");
+		void	changeChannel(Channel *chan) {
+			_currentChannel = chan;
+		}
+		/*
+		** getters
+		*/
+
+		std::string getUname() {
+			return (_userName);
+		}
+		Channel *getChannel() {
+			return (_currentChannel);
+		}
+		Server *getServer() {
+			return (_serv);
 		}
 };
+
+#include "Command.hpp"
+#include "Channel.hpp"
 
 #endif
