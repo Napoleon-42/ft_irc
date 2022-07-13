@@ -27,7 +27,7 @@ struct s_client_info {
 class Channel
 {
 	public:
-        typedef typename std::map<std::string, Client *> clientlist;
+        typedef std::map<std::string, Client *> clientlist;
 
 	private:
 		std::string							_name;

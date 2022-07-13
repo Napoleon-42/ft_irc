@@ -24,8 +24,8 @@
 class Server
 {
 	public:
-		typedef typename std::map<std::string, Command *> commandmap;
-		typedef typename std::map<std::string, Channel> channelmap;
+		typedef std::map<std::string, Command *> commandmap;
+		typedef std::map<std::string, Channel> channelmap;
 	
 		int _entrySocket;
 		std::vector<int> _clientSockets;
@@ -138,7 +138,7 @@ class Server
 				{
 					serverLogMssg(" new client accepted");
 					_clientSockets.push_back(client_fd);
-					_usersMap.insert(std::make_pair(client_fd, Client("test client")));
+					_usersMap.insert(std::make_pair(client_fd, Client(this, "test client")));
 					send(client_fd, "Hello world lnelson \r\n", 22, 0);
 				}
 				else

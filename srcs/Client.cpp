@@ -25,6 +25,16 @@ Client::Client(): _userName("non-spec")
     addBasicCommands();
 }
 
+Client::Client(Server *current, std::string uname) :
+    _userName(uname)
+{
+    _serv = current;
+    clientLogMssg(std::string("Client " + _userName + " created"));
+    _currentChannel = NULL;
+    addBasicCommands();
+
+}
+
 Client::Client(Server *current, std::string uname, std::string hname, std::string sname) :
     _userName(uname), _hostname(hname), _servername(sname)
 {

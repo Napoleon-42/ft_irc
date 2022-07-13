@@ -13,8 +13,7 @@
 #ifndef CLIENT_HPP
 #define CLIENT_HPP
 #include <map>
-#include "Server.hpp"
-
+#include <string>
 /*
 ** Pre-declared class needed to initialize Clients
 */
@@ -25,12 +24,13 @@ class Channel;
 class Client
 {
 	private:
-		typedef typename std::map<std::string, Command *> commandmap;
+		typedef std::map<std::string, Command *> commandmap;
+
 		std::string		_userName;
 		std::string		_hostname;
 		std::string		_servername;
-		Server*			_serv = NULL;
-		Channel*		_currentChannel = NULL;
+		Server*			_serv;
+		Channel*		_currentChannel;
 		commandmap		commands;
 
 		void addBasicCommands();
@@ -38,6 +38,7 @@ class Client
 	public:
 
 		Client();
+		Client(Server *current, std::string uname);
 		Client(Server *current, std::string uname, std::string hname, std::string sname);
 		~Client();
 
@@ -67,6 +68,7 @@ class Client
 		}
 };
 
+#include "Server.hpp"
 #include "Command.hpp"
 #include "Channel.hpp"
 
