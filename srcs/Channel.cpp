@@ -73,3 +73,8 @@ Client      *Channel::searchBanned(std::string username){
 std::string Channel::getName(){
     return (_name);
 }
+
+const Channel::clientlist Channel::getBannedClients() const
+{
+    return _clientsban;
+}

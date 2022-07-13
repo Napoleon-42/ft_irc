@@ -48,6 +48,7 @@ class Channel
         bool    kickFromChannel(Client *toKick);
 		Client *searchClient(std::string username);
         Client *searchBanned(std::string username);
+        const clientlist getBannedClients() const;
         std::string getName();
 
 };

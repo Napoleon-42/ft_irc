@@ -66,6 +66,7 @@ int main(int ac, char **av)
 	chan.kickFromChannel(&client);
 	std::cout << chan.searchClient("Client1") << std::endl;
 	*logStream << ret << std::endl;
+	chan.addClient(&client);
 
 	irc.acceptClients();
 
