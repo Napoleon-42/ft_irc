@@ -13,6 +13,10 @@ std::string Oper::help_msg() const {
 }
 
 void Oper::execute(std::string line, Client &user) {
-    (void)line; //need to check if he used operator password
-    user.becomeOperator();
+    if (_serv->checkOpPass(line)) {
+        user.becomeOperator();
+        clientLogMssg("You have become an operator.");
+    }
+    else
+        clientLogMssg("Wrong password");
 }

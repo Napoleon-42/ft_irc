@@ -29,6 +29,7 @@ class Client
 		std::string		_userName;
 		std::string		_hostname;
 		std::string		_servername;
+		std::string		_realname;
 		Server*			_serv;
 		Channel*		_currentChannel;
 		commandmap		commands;
@@ -49,6 +50,12 @@ class Client
 		void	becomeOperator();
 		void	changeName(std::string &newname) {
 			_userName = newname;
+		}
+		void	update_all_name(std::string uname, std::string hname, std::string sname, std::string rname) {
+			_userName = uname;
+			_hostname = hname;
+			_servername = sname;
+			_realname = rname;
 		}
 		void	changeChannel(Channel *chan) {
 			_currentChannel = chan;

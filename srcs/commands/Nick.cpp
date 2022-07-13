@@ -14,4 +14,5 @@ std::string Nick::help_msg() const {
 
 void Nick::execute(std::string line, Client &user) {
     user.changeName(line);
+    serverLogMssg("Nick command executed");
 }
