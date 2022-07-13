@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/17 21:28:48 by lnelson           #+#    #+#             */
-/*   Updated: 2022/07/12 18:09:53 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/07/13 18:00:35 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ std::ostream *	set_log_file(short key)
 	return (outFile);
 }
 
+/*
 void	serverLogMssg(std::string to_print)
 {
 	*logStream << "(SERVER): " << to_print << std::endl;
@@ -41,6 +42,7 @@ void	clientLogMssg(std::string to_print)
 {
 	*logStream << "(CLIENT): " << to_print << std::endl;
 }
+*/
 
 int main(int ac, char **av)
 {
@@ -58,14 +60,5 @@ int main(int ac, char **av)
 
 
 	/***************************************************************************/
-
-	std::string temp;
-	while(1)
-	{	
-		std::cin >> temp;
-		if (temp == "exit")
-			_exit(0);
-	}
-
 	/***************************************************************************/
 }

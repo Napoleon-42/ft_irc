@@ -1,31 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Help.cpp                                           :+:      :+:    :+:   */
+/*   utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/07/13 18:02:47 by lnelson           #+#    #+#             */
-/*   Updated: 2022/07/13 18:02:49 by lnelson          ###   ########.fr       */
+/*   Created: 2022/07/13 17:37:07 by lnelson           #+#    #+#             */
+/*   Updated: 2022/07/13 17:40:10 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "commands/Help.hpp"
-#include "Server.hpp"
+#include "ft_irc.hpp"
 
-Help::Help() {
+void	serverLogMssg(std::string to_print)
+{
+	*logStream << "(SERVER): " << to_print << std::endl;
 }
 
-Help::Help(Server *serv) : Command(serv) {
-
-}
-
-std::string Help::help_msg() const {
-    return ("/help command (show usage of command)");
-}
-
-void Help::execute(std::string line, Client &user) {
-    Command *cmd = user.searchCommand(line);
-    if (cmd)
-        std::cout << cmd->help_msg() << std::endl;
+void	clientLogMssg(std::string to_print)
+{
+	*logStream << "(CLIENT): " << to_print << std::endl;
 }

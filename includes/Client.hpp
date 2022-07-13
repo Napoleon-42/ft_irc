@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 15:48:04 by lnelson           #+#    #+#             */
-/*   Updated: 2022/07/12 19:11:55 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/07/13 17:44:16 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ class Client
 		std::string		_servername;
 		Server*			_serv;
 		Channel*		_currentChannel;
-		commandmap		commands;
+		commandmap		_commands;
 
 		void addBasicCommands();
 		void addOpCommands();

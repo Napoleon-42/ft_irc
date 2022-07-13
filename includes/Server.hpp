@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 15:47:37 by lnelson           #+#    #+#             */
-/*   Updated: 2022/07/12 19:14:21 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/07/13 17:59:43 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ class Server
 
 		Server()
 		{
-			//serverLogMssg("Server created");
+			serverLogMssg("Server created");
 			init_socket();
 			_servercommands.insert(std::make_pair("nick", new Nick(this)));
 			_servercommands.insert(std::make_pair("oper", new Oper(this)));
@@ -68,7 +68,7 @@ class Server
 
 		~Server()
 		{
-			//serverLogMssg("Server downed");
+			serverLogMssg("Server downed");
 		}
 
 		const commandmap &getServCommands() const {
@@ -107,15 +107,15 @@ class Server
 
 			if ((bind(_entrySocket, (struct sockaddr *)&_address, sizeof(_address))) != 0)
 			{
-				//serverLogMssg("socket bind failure");
+				serverLogMssg("socket bind failure");
 				return ;
 			}
 			else
-				//serverLogMssg("socket bind succeded");
+				serverLogMssg("socket bind succeded");
 
 			if ((listen(_entrySocket, 5)) != 0)
 			{
-				//serverLogMssg("listen() failure");
+				serverLogMssg("listen() failure");
 				return ;
 			}
 			else
@@ -123,6 +123,18 @@ class Server
 			return ;
 		}
 
+		void	deleteClient(std::string uname)
+		{
+			std::map<int, Client>::iterator it = _usersMap.begin();
+			while (it != _usersMap.end())
+			{
+				if (it->second.getUname() == uname)
+				{
+					_usersMap.erase(it);
+					break;
+				}
+			}
+		}
 
 		void	acceptClients()
 		{
@@ -138,7 +150,7 @@ class Server
 				{
 					serverLogMssg(" new client accepted");
 					_clientSockets.push_back(client_fd);
-					_usersMap.insert(std::make_pair(client_fd, Client(this, "test client")));
+					_usersMap.insert(std::make_pair(client_fd, Client(this, "unspec client")));
 					send(client_fd, "Hello world lnelson \r\n", 22, 0);
 				}
 				else

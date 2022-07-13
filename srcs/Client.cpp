@@ -1,10 +1,22 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Client.cpp                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/07/13 18:02:32 by lnelson           #+#    #+#             */
+/*   Updated: 2022/07/13 18:02:34 by lnelson          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "Client.hpp"
 
 void        Client::addBasicCommands() {
     Server::commandmap::const_iterator it = _serv->getServCommands().begin();
     Server::commandmap::const_iterator ite = _serv->getServCommands().end();
     while (it != ite) {
-        commands.insert(std::make_pair(it->first, it->second));
+        _commands.insert(std::make_pair(it->first, it->second));
         ++it;
     }
 }
@@ -13,7 +25,7 @@ void        Client::addOpCommands() {
     Server::commandmap::const_iterator it = _serv->getOpCommands().begin();
     Server::commandmap::const_iterator ite = _serv->getOpCommands().end();
     while (it != ite) {
-        commands.insert(std::make_pair(it->first, it->second));
+        _commands.insert(std::make_pair(it->first, it->second));
         ++it;
     }
 }
@@ -56,15 +68,15 @@ void	    Client::becomeOperator() {
 }
 
 void	    Client::execute(std::string &command, std::string &restline) {
-    commandmap::iterator cit = commands.find(command);
-    if (cit == commands.end())
+    commandmap::iterator cit = _commands.find(command);
+    if (cit == _commands.end())
         std::cout << "Command '" << command <<"' not found in available commands for the client : " << _userName << std::endl;
     cit->second->execute(restline, *this);
 }
 
 Command*    Client::searchCommand(std::string cmd) {
-    commandmap::iterator cit = commands.find(cmd);
-    if (cit == commands.end()) {
+    commandmap::iterator cit = _commands.find(cmd);
+    if (cit == _commands.end()) {
         std::cout << "Command '" << cmd <<"' not found in available commands for the client : " << _userName << std::endl;
         return (NULL);
     }
