@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/17 21:28:48 by lnelson           #+#    #+#             */
-/*   Updated: 2022/07/13 18:00:35 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/07/13 18:32:12 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ int main(int ac, char **av)
 	ret = irc.searchChannel("chan1");
 	*logStream << ret << std::endl;
 
-	irc.acceptClients();
+	irc.routine();
 
 	
 

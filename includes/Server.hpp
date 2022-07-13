@@ -6,12 +6,13 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 15:47:37 by lnelson           #+#    #+#             */
-/*   Updated: 2022/07/13 18:06:45 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/07/13 19:30:44 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SERVER_HPP
 #define SERVER_HPP
+
 #include "ft_irc.hpp"
 #include "Client.hpp"
 #include "Channel.hpp"
@@ -28,7 +29,7 @@ class Server
 		typedef std::map<std::string, Channel> channelmap;
 	
 		int _entrySocket;
-		std::vector<int> _clientSockets;
+		std::vector<struct pollfd> _clientSockets;
 		struct sockaddr_in _client;
 
 		std::map<int, Client> _usersMap;
@@ -49,7 +50,10 @@ class Server
 		channelmap::iterator addChannel(Channel &newchan);
 		Channel *searchChannel(std::string channame);
 		void	init_socket();
-		void	acceptClients();
+		void	routine();
+		void	acceptClient();
+		void	addClient(Client const & user, int fd);
+		void	deleteClient(std::string uname);
 };
 
 #endif
