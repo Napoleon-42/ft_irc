@@ -35,6 +35,7 @@ INCL		= ${INCL_DIR}ft_irc.hpp
 SRCS		=	srcs/main.cpp \
 				srcs/utils.cpp \
 				srcs/Client.cpp \
+				srcs/Channel.cpp \
 				srcs/commands/Help.cpp \
 				srcs/commands/Join.cpp \
 				srcs/commands/ChannelBan.cpp \

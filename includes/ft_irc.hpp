@@ -26,16 +26,7 @@
 #include <signal.h>
 #include <sys/stat.h>
 #include <poll.h>
-
 #include "Server.hpp"
-#include "Client.hpp"
-#include "Channel.hpp"
-#include "Command.hpp"
-#include "commands/Nick.hpp"
-#include "commands/Help.hpp"
-#include "commands/Oper.hpp"
-#include "commands/Join.hpp"
-#include "commands/ChannelBan.hpp"
 
 #define LOG_FILE "ft_irc.log"
 #define FILE_OUTPUT 0

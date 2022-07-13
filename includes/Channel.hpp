@@ -1,8 +1,7 @@
 #ifndef Channel_HPP
 #define Channel_HPP
 #include <map>
-#include "ft_irc.hpp"
-
+#include <string>
 /*
 ** Pre-declared class needed to initialize Channels
 */
@@ -27,15 +26,17 @@ struct s_client_info {
 */
 class Channel
 {
-	private:
+	public:
+        typedef typename std::map<std::string, Client *> clientlist;
 
+	private:
 		std::string							_name;
 		Server*								_serv;
 		std::map<std::string, bool>         _params;
-		std::map<std::string, Client *>		_clients;
+		clientlist                  		_clients;
+		clientlist                  		_clientsban;
 
 	public:
-
 		Channel();
 		Channel(Server *current, std::string cname);
         Channel(const Channel &other);
