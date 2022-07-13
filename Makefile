@@ -14,45 +14,34 @@
 #							FT_IRC MAKEFILE									   #
 # **************************************************************************** #
 
-NAME		= ft_irc
+NAME = server
 
-SRCS_DIR	= srcs/
+SRCS = srcs/main.cpp
 
-OBJS_DIR	= objs/
+CXX = c++
 
-INCL_DIR	= includes/
+OBJS = ${SRCS:.cpp=.o}
 
-CC			= c++
+INCL_DIR = includes/
 
-CFLAGS		= -Wall -Wextra -Werror -std=c++98 -I ${INCL_DIR}
+CXXFLAGS = -Wall -Wextra -Werror -std=c++98 -g3 -I ${INCL_DIR}
 
-FLAGS		= 
+all : $(NAME)
 
-# **************************************************************************** #
+std: ${NAME_STD}
 
-INCL		= ${INCL_DIR}ft_irc.hpp
+.cpp.o :
+		${CXX} ${STDFLAGS} ${CXXFLAGS} -c $< -o ${<:.cpp=.o}
 
-SRCS		=	main.cpp \
+$(NAME): ${OBJS}
+		${CXX} -o ${NAME} ${OBJS}
 
-# **************************************************************************** #
+clean :
+		rm -rf ${OBJS}
 
-OBJS		:= ${addprefix ${OBJS_DIR}, ${SRCS:.cpp=.o}}
+fclean: clean
+		rm -rf ${NAME}
 
-${NAME}:	${OBJS} ${INCL} ${INCL_DIR}
-		${CC} -o ${NAME} ${OBJS} ${FLAGS} 
+re:		fclean all
 
-${OBJS}:	$(addprefix ${SRCS_DIR}, ${SRCS})
-				${CC} ${CFLAGS} -c $< -o $@
-
-###############################################################################
-
-all:	${NAME}
-
-
-clean:	
-		rm ${OBJS}
-
-fclean:	clean
-		rm ${NAME}
-
-re:	fclean all
+.PHONY: all clean fclean res
