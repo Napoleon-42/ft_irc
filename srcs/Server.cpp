@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 18:06:57 by lnelson           #+#    #+#             */
-/*   Updated: 2022/07/13 19:44:17 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/07/14 13:46:03 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 Server::Server()
 {
 	init_socket();
+	addClient(Client(this, "Server Machine Admin"), 0);
     _servercommands.insert(std::make_pair("nick", new Nick(this)));
 	_servercommands.insert(std::make_pair("oper", new Oper(this)));
 	_servercommands.insert(std::make_pair("help", new Help(this)));
@@ -81,7 +82,6 @@ void Server::init_socket()
     return ;
 }
 
-
 void	Server::routine()
 {
 	char buff[552];
@@ -90,11 +90,25 @@ void	Server::routine()
 		this->acceptClient();
 		if (poll(&(*(_clientSockets.begin())), _clientSockets.size(), 500) > 0)
 		{
-			serverLogMssg(" pool detected something");
+			serverLogMssg(" pool detected something:");
+			for (unsigned int i = 0; i < _clientSockets.size(); i++)
+			{
+				if (_clientSockets[i].revents != 0)
+				{
+					*logStream << "\t_clientSockets[" << i << "] had a revent, fd = " << _clientSockets[i].fd << std::endl;
+					if (_clientSockets[i].fd == 0)
+						buff[read(0, buff, 552)] = 0;
+					else
+						buff[recv(_clientSockets[i].fd, (void*)buff, 551,0)] = 0;
+					*logStream << "\treceived mssg = " << buff;
+					_clientSockets[i].revents = 0;
+				}
+			}
 		}
-		int read_ret = read(0, buff, 552);
-		buff[read_ret] = 0;
-		*logStream << "(SERVER): read on stdin, read_ret = " << read_ret << " \n str == " << buff << std::endl;
+		/*
+		else
+			serverLogMssg(" poll didn't detect new entry's");
+		*/
 	}
 }
 
@@ -111,21 +125,15 @@ void	Server::acceptClient()
     if (client_fd >= 0)
     {
 		buff[recv(client_fd, (void*)buff, 551, 0)] = 0;
+		*logStream << "(SERVER): new client try to join, the client message:" << std::endl << buff;
+		Client 
 		this->addClient(Client(this, "test user"), client_fd);
     	send(client_fd, ":ft_irc.42.fr 001 lnelson :Welcome to our ft_irc server\r\n", 57, 0);
     }
+	/*
     else
-    {	
-    	 serverLogMssg(" failure to accept new client");
-        *logStream << client_fd << std::endl;
-	}
-
-    if (client_fd != 0)
-    {
-    	buff[recv(client_fd, (void *)buff, 551, 0)] = 0;
-
-        *logStream << "(SERVER) received mssg : "<< std::endl << buff << std::endl;
-    }
+    	serverLogMssg(" no new client tryed to join");
+	*/
 }
 
 void	Server::addClient(Client const & user, int fd)
@@ -134,10 +142,10 @@ void	Server::addClient(Client const & user, int fd)
 	struct pollfd &tmp2 = *tmp;
 	tmp->fd = fd;
 	tmp->events = POLLIN;
-	tmp->revents = POLLIN;
+	tmp->revents = 0;
 	_clientSockets.push_back(tmp2);
 	_usersMap.insert(std::make_pair(fd, user));
-	serverLogMssg("new client accepted");
+	serverLogMssg("new client added");
 }
 
 void	Server::deleteClient(std::string uname)
