@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 18:06:57 by lnelson           #+#    #+#             */
-/*   Updated: 2022/07/14 13:50:49 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/07/14 14:05:25 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,8 @@
 Server::Server()
 {
 	init_socket();
-	addClient(Client(this, "Server Machine Admin"), 0);
+	Client &tmp = *(new Client(this, "Server_Machine_Admin"));
+	addClient(tmp, 0);
     _servercommands.insert(std::make_pair("nick", new Nick(this)));
 	_servercommands.insert(std::make_pair("oper", new Oper(this)));
 	_servercommands.insert(std::make_pair("help", new Help(this)));
@@ -82,6 +83,16 @@ void Server::init_socket()
     return ;
 }
 
+void	Server::executeMachCmds(char * buff)
+{
+	buff[read(0, buff, 552)] = 0;
+	*logStream << "\treceived mssg = " << buff;
+	std::string tmp(buff);
+
+	if (tmp.compare("exit\n") == 0)
+		exit(0);
+}
+
 void	Server::routine()
 {
 	char buff[552];
@@ -97,10 +108,12 @@ void	Server::routine()
 				{
 					*logStream << "\t_clientSockets[" << i << "] had a revent, fd = " << _clientSockets[i].fd << std::endl;
 					if (_clientSockets[i].fd == 0)
-						buff[read(0, buff, 552)] = 0;
+						this->executeMachCmds(buff);
 					else
+					{
 						buff[recv(_clientSockets[i].fd, (void*)buff, 551,0)] = 0;
-					*logStream << "\treceived mssg = " << buff;
+						*logStream << "\treceived mssg = " << buff;
+					}
 					_clientSockets[i].revents = 0;
 				}
 			}

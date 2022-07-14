@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 15:47:37 by lnelson           #+#    #+#             */
-/*   Updated: 2022/07/13 19:30:44 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/07/14 13:56:32 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ class Server
 		channelmap::iterator addChannel(Channel &newchan);
 		Channel *searchChannel(std::string channame);
 		void	init_socket();
+		void	executeMachCmds(char * buff);
 		void	routine();
 		void	acceptClient();
 		void	addClient(Client const & user, int fd);
