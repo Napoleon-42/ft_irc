@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 18:06:57 by lnelson           #+#    #+#             */
-/*   Updated: 2022/07/14 13:46:03 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/07/14 13:50:49 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,8 +126,8 @@ void	Server::acceptClient()
     {
 		buff[recv(client_fd, (void*)buff, 551, 0)] = 0;
 		*logStream << "(SERVER): new client try to join, the client message:" << std::endl << buff;
-		Client 
-		this->addClient(Client(this, "test user"), client_fd);
+		Client &tmp = *(new Client(this, "test user"));
+		this->addClient(tmp, client_fd);
     	send(client_fd, ":ft_irc.42.fr 001 lnelson :Welcome to our ft_irc server\r\n", 57, 0);
     }
 	/*
