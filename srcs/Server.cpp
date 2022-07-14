@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 18:06:57 by lnelson           #+#    #+#             */
-/*   Updated: 2022/07/14 14:05:25 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/07/14 17:41:01 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ Server::Server()
 {
 	init_socket();
 	Client &tmp = *(new Client(this, "Server_Machine_Admin"));
+	tmp.becomeOperator();
 	addClient(tmp, 0);
     _servercommands.insert(std::make_pair("nick", new Nick(this)));
 	_servercommands.insert(std::make_pair("oper", new Oper(this)));
@@ -95,36 +96,45 @@ void	Server::executeMachCmds(char * buff)
 
 void	Server::routine()
 {
-	char buff[552];
 	while (1)
 	{
 		this->acceptClient();
-		if (poll(&(*(_clientSockets.begin())), _clientSockets.size(), 500) > 0)
-		{
-			serverLogMssg(" pool detected something:");
-			for (unsigned int i = 0; i < _clientSockets.size(); i++)
-			{
-				if (_clientSockets[i].revents != 0)
-				{
-					*logStream << "\t_clientSockets[" << i << "] had a revent, fd = " << _clientSockets[i].fd << std::endl;
-					if (_clientSockets[i].fd == 0)
-						this->executeMachCmds(buff);
-					else
-					{
-						buff[recv(_clientSockets[i].fd, (void*)buff, 551,0)] = 0;
-						*logStream << "\treceived mssg = " << buff;
-					}
-					_clientSockets[i].revents = 0;
-				}
-			}
-		}
-		/*
-		else
-			serverLogMssg(" poll didn't detect new entry's");
-		*/
+		this->pollRoutine();
 	}
 }
 
+void	Server::pollRoutine()
+{
+	char buff[552];
+	if (poll(&(*(_clientSockets.begin())), _clientSockets.size(), 500) > 0)
+	{
+		serverLogMssg(" pool detected something:");
+		for (unsigned int i = 0; i < _clientSockets.size(); i++)
+		{
+			if (_clientSockets[i].revents != 0)
+			{
+				*logStream << "\t_clientSockets[" << i << "] had a revent, fd = " << _clientSockets[i].fd << " | REVENTS == " << _clientSockets[i].revents << std::endl;
+				if (_clientSockets[i].fd == 0)
+					this->executeMachCmds(buff);
+				else
+				{
+					int recvRet = recv(_clientSockets[i].fd, (void*)buff, 551,0);
+					if (recvRet == 0)
+					{
+						*logStream << "this client disconected, closing the corresponding socket" << std::endl;
+						this->deleteClient(_usersMap.find(_clientSockets[i].fd)->second.getUname());
+					}
+					else
+					{
+						buff[recvRet] = 0;
+						*logStream << "\treceived mssg = " << buff;
+					}
+				}
+				_clientSockets[i].revents = 0;
+			}
+		}
+	}
+}
 
 void	Server::acceptClient()
 {

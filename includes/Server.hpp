@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 15:47:37 by lnelson           #+#    #+#             */
-/*   Updated: 2022/07/14 15:03:00 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/07/14 17:33:45 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,7 @@ class Server
 		void	init_socket();
 		void	executeMachCmds(char * buff);
 		void	routine();
+		void	pollRoutine();
 		void	acceptClient();
 		void	addClient(Client const & user, int fd);
 		void	deleteClient(std::string uname);
