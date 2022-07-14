@@ -28,6 +28,7 @@ void Join::execute(std::string line, Client &user) {
     std::string channame = line; //To parse
     Channel toadd = Channel(_serv, channame);
     Server::channelmap::iterator it = _serv->addChannel(toadd);
-    it->second.addClient(&user);
-    user.changeChannel(&(it->second));
+    if (it->second.addClient(&user))
+        user.changeChannel(&(it->second));
+    serverLogMssg("a user has changed channel");
 }

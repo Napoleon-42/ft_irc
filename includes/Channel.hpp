@@ -44,7 +44,12 @@ class Channel
         Channel& operator=(const Channel& other);
 
         bool    addClient(Client *toAdd);
+        bool    addToBanList(Client *toBan);
+        bool    kickFromChannel(Client *toKick);
 		Client *searchClient(std::string username);
+        Client *searchBanned(std::string username);
+        const clientlist getBannedClients() const;
+        const clientlist    &getClients() const;
         std::string getName();
 
 };

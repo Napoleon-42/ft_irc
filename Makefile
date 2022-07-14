@@ -6,7 +6,7 @@
 #    By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/06/22 17:56:55 by lnelson           #+#    #+#              #
-#    Updated: 2022/07/13 18:00:59 by lnelson          ###   ########.fr        #
+#    Updated: 2022/07/14 15:01:27 by lnelson          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -40,8 +40,10 @@ SRCS		=	srcs/main.cpp \
 				srcs/commands/Join.cpp \
 				srcs/commands/ChannelBan.cpp \
 				srcs/commands/Nick.cpp \
-				srcs/commands/Oper.cpp\
-				srcs/Server.cpp
+				srcs/Server.cpp \
+				srcs/commands/List.cpp \
+				srcs/commands/Usercmd.cpp \
+				srcs/commands/Oper.cpp
 
 OBJS		= ${SRCS:.cpp=.o}
 
