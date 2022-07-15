@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/22 17:54:18 by lnelson           #+#    #+#             */
-/*   Updated: 2022/07/13 19:37:50 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/07/15 16:00:21 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,8 @@
 #define LOG_FILE "ft_irc.log"
 #define FILE_OUTPUT 0
 #define STD_OUTPUT 1
+
+#define SERVER_NAME ":ft_irc.42.fr"
 
 extern	std::ostream * logStream;
 
