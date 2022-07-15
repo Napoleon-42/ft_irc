@@ -28,7 +28,10 @@ void ChannelBan::execute(std::string line, Client &user) {
     if (!chan)
         return ;
     Client *toban = chan->searchClient(line);
-    (void) toban;
-    //add to ban list so he can't rejoin channel
-    //then kick him out of channel
+    if (!toban) {
+        clientLogMssg("There is no user with this name on this channel.");
+        return ;
+    }
+    chan->addToBanList(toban);
+    chan->kickFromChannel(toban);
 }

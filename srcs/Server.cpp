@@ -20,9 +20,13 @@ Server::Server()
 	init_socket();
 	Client &tmp = *(new Client(this, "Server_Machine_Admin"));
 	addClient(tmp, 0);
-    _servercommands.insert(std::make_pair("nick", new Nick(this)));
-	_servercommands.insert(std::make_pair("oper", new Oper(this)));
-	_servercommands.insert(std::make_pair("help", new Help(this)));
+	_servercommands.insert(std::make_pair("NICK", new Nick(this)));
+	_servercommands.insert(std::make_pair("OPER", new Oper(this)));
+	_servercommands.insert(std::make_pair("HELP", new Help(this)));
+	_servercommands.insert(std::make_pair("JOIN", new Join(this)));
+	_servercommands.insert(std::make_pair("LIST", new List(this)));
+	_servercommands.insert(std::make_pair("USER", new Usercmd(this)));
+	_servercommands.insert(std::make_pair("QUIT", new Quit(this)));
     /* TO DO
     INFO [<target>]
     INVITE <nickname> <channel>
@@ -34,7 +38,7 @@ Server::Server()
     QUIT [<message>]
     USER <username> <hostname> <servername> <realname>
     */
-    _opcommands.insert(std::make_pair("kban", new ChannelBan(this)));
+    _opcommands.insert(std::make_pair("BAN", new ChannelBan(this)));
     /* TO DO
     KICK <channel> <client> :[<message>] (does not ban just kick)
     KILL <client> <comment>
@@ -199,6 +203,16 @@ Channel *Server::searchChannel(std::string channame)
 }
 
 
+std::string		&Server::serverhash(std::string &toHash) const {
+	return (toHash);
+}
+
+bool			Server::checkOpPass(std::string pass) const {
+	if (serverhash(pass) == _passop)
+		return (true);
+	return (false);
+}
+
 /*
 ** --------------------------------- ACCESSOR ---------------------------------
 */
@@ -215,6 +229,8 @@ const Server::channelmap &Server::getChannels() const {
     return(_channels);
 }
 
-
+const Server::clientmap &Server::getClients() const {
+	return(_usersMap);
+}
 
 /* ************************************************************************** */

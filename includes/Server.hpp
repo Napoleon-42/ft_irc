@@ -22,6 +22,7 @@
 #include "commands/Oper.hpp"
 #include "commands/Join.hpp"
 #include "commands/List.hpp"
+#include "commands/Quit.hpp"
 #include "commands/Usercmd.hpp"
 #include "commands/ChannelBan.hpp"
 
@@ -44,6 +45,9 @@ class Server
 		commandmap		_opcommands;
 		channelmap		_channels;
 
+
+		std::string		&serverhash(std::string &toHash) const;
+
 	public:
 
 		Server();
@@ -51,6 +55,7 @@ class Server
 		const commandmap &getServCommands() const;
 		const commandmap &getOpCommands() const;
 		const channelmap &getChannels() const;
+		const clientmap &getClients() const;
 		channelmap::iterator addChannel(Channel &newchan);
 		Channel *searchChannel(std::string channame);
 		void	init_socket();
@@ -59,26 +64,13 @@ class Server
 		void	acceptClient();
 		void	addClient(Client const & user, int fd);
 		void	deleteClient(std::string uname);
+		bool			checkOpPass(std::string pass) const;
 		/*
 			_servercommands.insert(std::make_pair("LIST", new List(this)));
 			_servercommands.insert(std::make_pair("USER", new Usercmd(this)));
     		_opcommands.insert(std::make_pair("BAN", new ChannelBan(this)));
 
 			*/
-
-		const clientmap &getClients() const {
-			return(_usersMap);
-		}
-
-		std::string		&serverhash(std::string &toHash) const {
-			return (toHash);
-		}
-
-		bool			checkOpPass(std::string pass) const {
-			if (serverhash(pass) == _passop)
-				return (true);
-			return (false);
-		}
 };
 
 #endif
