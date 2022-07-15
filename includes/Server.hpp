@@ -24,6 +24,7 @@
 #include "commands/List.hpp"
 #include "commands/Quit.hpp"
 #include "commands/Usercmd.hpp"
+#include "commands/PrivMsg.hpp"
 #include "commands/ChannelBan.hpp"
 
 class Server
@@ -63,7 +64,7 @@ class Server
 		channelmap::iterator addChannel(Channel &newchan);
 		Channel *searchChannel(std::string channame);
 		void	routine();
-		void	sendToClient(Client sendTo, std::string mssg);
+		void	sendToClient(Client const &sendTo, std::string mssg);
 		void	addClient(Client const & user, int fd);
 		void	deleteClient(std::string uname);
 		bool			checkOpPass(std::string pass) const;

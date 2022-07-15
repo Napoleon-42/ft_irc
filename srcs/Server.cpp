@@ -28,17 +28,13 @@ Server::Server()
 	_servercommands.insert(std::make_pair("LIST", new List(this)));
 	_servercommands.insert(std::make_pair("USER", new Usercmd(this)));
 	_servercommands.insert(std::make_pair("QUIT", new Quit(this)));
+	_servercommands.insert(std::make_pair("PRIVMSG", new PrivMsg(this)));
     /* TO DO
     INFO [<target>]
 	PONG -----
     INVITE <nickname> <channel>
     ISON <nicknames>
-    JOIN <channels> [<keys>]
-    LIST [<channels> [<server>]]
     PASS <password>
-    PRIVMSG <msgtarget> :<message>
-    QUIT [<message>]
-    USER <username> <hostname> <servername> <realname>
     */
     _opcommands.insert(std::make_pair("BAN", new ChannelBan(this)));
     /* TO DO
@@ -61,7 +57,7 @@ Server::~Server()
 ** --------------------------------- PUBLIC METHODS ----------------------------
 */
 
-void	Server::sendToClient(Client sendTo, std::string mssg)
+void	Server::sendToClient(Client const &sendTo, std::string mssg)
 {
 	int size;
 
@@ -241,56 +237,6 @@ void	Server::acceptClient()
     	serverLogMssg(" no new client tryed to join");
 	*/
 }
-
-void	Server::addClient(Client const & user, int fd)
-{
-	struct pollfd *tmp = (struct pollfd*)malloc(sizeof(struct pollfd));
-	struct pollfd &tmp2 = *tmp;
-	tmp->fd = fd;
-	tmp->events = POLLIN;
-	tmp->revents = 0;
-	_clientSockets.push_back(tmp2);
-	_usersMap.insert(std::make_pair(fd, user));
-	serverLogMssg("new client added");
-}
-
-void	Server::deleteClient(std::string uname)
-{
-	std::map<int, Client>::iterator it = _usersMap.begin();
-	std::map<int, Client>::iterator ite = _usersMap.end();
-	while (it != ite)
-	{
-		if (it->second.getUname() == uname)
-		{
-			std::vector<struct pollfd>::iterator itt = _clientSockets.begin();
-			std::vector<struct pollfd>::iterator itte = _clientSockets.end();
-			while (itt != itte)
-			{
-				if (itt->fd == it->first)
-					_clientSockets.erase(itt);
-				itt++;
-			}
-			close(it->first);
-			_usersMap.erase(it);
-			break;
-		}
-		it++;
-	}
-}
-
-Server::channelmap::iterator Server::addChannel(Channel &newchan)
-{
-	return _channels.insert(std::make_pair(newchan.getName(), newchan)).first;
-}
-
-Channel *Server::searchChannel(std::string channame)
- {
-    channelmap::iterator it = _channels.find(channame);
-    if (it == _channels.end())
-        return (NULL);
-    return (&(it->second));
-}
-
 
 std::string		&Server::serverhash(std::string &toHash) const {
 	return (toHash);

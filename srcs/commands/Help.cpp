@@ -27,6 +27,5 @@ std::string Help::help_msg() const {
 void Help::execute(std::string line, Client &user) {
     Command *cmd = user.searchCommand(line);
     if (cmd)
-        std::cout << cmd->help_msg() << std::endl;
-    serverLogMssg("a user has asked for help on a command");
+        _serv->sendToClient(user, cmd->help_msg());
 }

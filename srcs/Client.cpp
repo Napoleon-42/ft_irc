@@ -72,17 +72,20 @@ void	    Client::becomeOperator() {
     this->addOpCommands();
 }
 
-void	    Client::execute(std::string &command, std::string &restline) {
-    commandmap::iterator cit = _commands.find(command);
-    if (cit == _commands.end())
-        std::cout << "Command '" << command <<"' not found in available commands for the client : " << _userName << std::endl;
+void	    Client::execute(std::string &cmd, std::string &restline) {
+    commandmap::iterator cit = _commands.find(cmd);
+    if (cit == _commands.end()) {
+        clientLogMssg("Command '" + cmd + "' not found in available commands for the client : " + _userName);
+        _serv->sendToClient(*this, "Command not found.");
+    }
     cit->second->execute(restline, *this);
+    clientLogMssg("Executed " + cmd + " command.");
 }
 
 Command*    Client::searchCommand(std::string cmd) {
     commandmap::iterator cit = _commands.find(cmd);
     if (cit == _commands.end()) {
-        std::cout << "Command '" << cmd <<"' not found in available commands for the client : " << _userName << std::endl;
+        clientLogMssg("Command '" + cmd + "' not found for the client : " + _userName);
         return (NULL);
     }
     return (cit->second);

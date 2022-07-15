@@ -44,6 +44,7 @@ SRCS		=	srcs/main.cpp \
 				srcs/commands/List.cpp \
 				srcs/commands/Usercmd.cpp \
 				srcs/commands/Quit.cpp \
+				srcs/commands/PrivMsg.cpp \
 				srcs/commands/Oper.cpp
 
 OBJS		= ${SRCS:.cpp=.o}

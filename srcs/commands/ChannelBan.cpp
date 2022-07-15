@@ -29,7 +29,7 @@ void ChannelBan::execute(std::string line, Client &user) {
         return ;
     Client *toban = chan->searchClient(line);
     if (!toban) {
-        clientLogMssg("There is no user with this name on this channel.");
+        _serv->sendToClient(user, "There is no user with this name on this channel.");
         return ;
     }
     chan->addToBanList(toban);
