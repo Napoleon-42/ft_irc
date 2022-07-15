@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 15:47:37 by lnelson           #+#    #+#             */
-/*   Updated: 2022/07/14 15:03:00 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/07/15 16:01:47 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,11 @@ class Server
 		commandmap		_opcommands;
 		channelmap		_channels;
 
-
+		void	proccessEventFd(int i);
+		void	pollRoutine();
+		void	acceptClient();
+		void	executeMachCmds(char * buff);
+		void	init_socket();
 		std::string		&serverhash(std::string &toHash) const;
 
 	public:
@@ -58,19 +62,11 @@ class Server
 		const clientmap &getClients() const;
 		channelmap::iterator addChannel(Channel &newchan);
 		Channel *searchChannel(std::string channame);
-		void	init_socket();
-		void	executeMachCmds(char * buff);
 		void	routine();
-		void	acceptClient();
+		void	sendToClient(Client sendTo, std::string mssg);
 		void	addClient(Client const & user, int fd);
 		void	deleteClient(std::string uname);
 		bool			checkOpPass(std::string pass) const;
-		/*
-			_servercommands.insert(std::make_pair("LIST", new List(this)));
-			_servercommands.insert(std::make_pair("USER", new Usercmd(this)));
-    		_opcommands.insert(std::make_pair("BAN", new ChannelBan(this)));
-
-			*/
 };
 
 #endif

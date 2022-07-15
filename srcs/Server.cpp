@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 18:06:57 by lnelson           #+#    #+#             */
-/*   Updated: 2022/07/14 14:05:25 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/07/15 16:18:33 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ Server::Server()
 {
 	init_socket();
 	Client &tmp = *(new Client(this, "Server_Machine_Admin"));
+	tmp.becomeOperator();
 	addClient(tmp, 0);
 	_servercommands.insert(std::make_pair("NICK", new Nick(this)));
 	_servercommands.insert(std::make_pair("OPER", new Oper(this)));
@@ -29,6 +30,7 @@ Server::Server()
 	_servercommands.insert(std::make_pair("QUIT", new Quit(this)));
     /* TO DO
     INFO [<target>]
+	PONG -----
     INVITE <nickname> <channel>
     ISON <nicknames>
     JOIN <channels> [<keys>]
@@ -56,7 +58,77 @@ Server::~Server()
 }
 
 /*
-** --------------------------------- METHODS ----------------------------------
+** --------------------------------- PUBLIC METHODS ----------------------------
+*/
+
+void	Server::sendToClient(Client sendTo, std::string mssg)
+{
+	int size;
+
+	size = mssg.size() + std::string(std::string(SERVER_NAME) + std::string(" ")).size() + 3;
+	send(sendTo.getFd(), (void *)std::string(std::string(SERVER_NAME) + std::string(" ") + mssg + std::string("\r\n")).c_str(), size, 0);
+}
+
+void	Server::routine()
+{
+	while (1)
+	{
+		this->acceptClient();
+		this->pollRoutine();
+	}
+}
+
+void	Server::addClient(Client const & user, int fd)
+{
+	struct pollfd *tmp = (struct pollfd*)malloc(sizeof(struct pollfd));
+	struct pollfd &tmp2 = *tmp;
+	tmp->fd = fd;
+	tmp->events = POLLIN;
+	tmp->revents = 0;
+	_clientSockets.push_back(tmp2);
+	_usersMap.insert(std::make_pair(fd, user));
+	serverLogMssg("new client added");
+}
+
+void	Server::deleteClient(std::string uname)
+{
+	std::map<int, Client>::iterator it = _usersMap.begin();
+	std::map<int, Client>::iterator ite = _usersMap.end();
+	while (it != ite)
+	{
+		if (it->second.getUname() == uname)
+		{
+			std::vector<struct pollfd>::iterator itt = _clientSockets.begin();
+			std::vector<struct pollfd>::iterator itte = _clientSockets.end();
+			while (itt != itte)
+			{
+				if (itt->fd == it->first)
+					_clientSockets.erase(itt);
+				itt++;
+			}
+			close(it->first);
+			_usersMap.erase(it);
+			break;
+		}
+		it++;
+	}
+}
+
+Server::channelmap::iterator Server::addChannel(Channel &newchan)
+{
+	return _channels.insert(std::make_pair(newchan.getName(), newchan)).first;
+}
+
+Channel *Server::searchChannel(std::string channame)
+ {
+    channelmap::iterator it = _channels.find(channame);
+    if (it == _channels.end())
+        return (NULL);
+    return (&(it->second));
+}
+
+/*
+** --------------------------------- PRIVATE METHODS ---------------------------
 */
 
 void Server::init_socket()
@@ -97,38 +169,52 @@ void	Server::executeMachCmds(char * buff)
 		exit(0);
 }
 
-void	Server::routine()
+void	Server::proccessEventFd(int i)
 {
 	char buff[552];
-	while (1)
+	*logStream << "\t_clientSockets[" << i << "] had a revent, fd = " << _clientSockets[i].fd;
+	*logStream << " | REVENTS == " << _clientSockets[i].revents << std::endl;
+	if (_clientSockets[i].fd == 0)
+		this->executeMachCmds(buff);
+	else
 	{
-		this->acceptClient();
-		if (poll(&(*(_clientSockets.begin())), _clientSockets.size(), 500) > 0)
+		int recvRet = recv(_clientSockets[i].fd, (void*)buff, 551,0);
+		if (recvRet == 0)
 		{
-			serverLogMssg(" pool detected something:");
-			for (unsigned int i = 0; i < _clientSockets.size(); i++)
-			{
-				if (_clientSockets[i].revents != 0)
-				{
-					*logStream << "\t_clientSockets[" << i << "] had a revent, fd = " << _clientSockets[i].fd << std::endl;
-					if (_clientSockets[i].fd == 0)
-						this->executeMachCmds(buff);
-					else
-					{
-						buff[recv(_clientSockets[i].fd, (void*)buff, 551,0)] = 0;
-						*logStream << "\treceived mssg = " << buff;
-					}
-					_clientSockets[i].revents = 0;
-				}
-			}
+			*logStream << "this client disconected, closing the corresponding socket" << std::endl;
+			clientmap::iterator it =  _usersMap.find(_clientSockets[i].fd);
+			if (it != _usersMap.end())
+				this->deleteClient(it->second.getUname());
 		}
-		/*
 		else
-			serverLogMssg(" poll didn't detect new entry's");
-		*/
+		{
+			buff[recvRet] = 0;
+			*logStream << "\treceived mssg = " << buff;
+			/*
+			parse -> list_commds
+			execute_commds_list
+			*/
+		}
 	}
+	_clientSockets[i].revents = 0;
 }
 
+void	Server::pollRoutine()
+{
+	if (poll(&(*(_clientSockets.begin())), _clientSockets.size(), 500) > 0)
+	{
+		serverLogMssg(" pool detected something:");
+		for (unsigned int i = 0; i < _clientSockets.size(); i++)
+		{
+			if (_clientSockets[i].revents != 0)
+				this->proccessEventFd(i);
+		}
+	}
+	/*
+	else
+		servLogMssg("poll didn't found any events in given fd's");
+	*/
+}
 
 void	Server::acceptClient()
 {
@@ -143,9 +229,12 @@ void	Server::acceptClient()
     {
 		buff[recv(client_fd, (void*)buff, 551, 0)] = 0;
 		*logStream << "(SERVER): new client try to join, the client message:" << std::endl << buff;
-		Client &tmp = *(new Client(this, "test user"));
+		Client &tmp = *(new Client(this, "test user", client_fd));
+		/*
+			client commands for setting
+		*/
 		this->addClient(tmp, client_fd);
-    	send(client_fd, ":ft_irc.42.fr 001 lnelson :Welcome to our ft_irc server\r\n", 57, 0);
+		this->sendToClient(tmp, "Welcome to our first IRC server for 42.paris!");
     }
 	/*
     else

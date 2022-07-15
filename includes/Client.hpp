@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 15:48:04 by lnelson           #+#    #+#             */
-/*   Updated: 2022/07/13 17:44:16 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/07/15 16:17:19 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,20 +26,23 @@ class Client
 	private:
 		typedef std::map<std::string, Command *> commandmap;
 
+		Server*			_serv;
 		std::string		_userName;
 		std::string		_hostname;
 		std::string		_servername;
 		std::string		_realname;
-		Server*			_serv;
+		int				_fd;
 		Channel*		_currentChannel;
 		commandmap		_commands;
 
 		void addBasicCommands();
 		void addOpCommands();
+
 	public:
 
 		Client();
 		Client(Server *current, std::string uname);
+		Client(Server *current, std::string uname, int fd);
 		Client(Server *current, std::string uname, std::string hname, std::string sname);
 		~Client();
 
@@ -63,6 +66,10 @@ class Client
 		/*
 		** getters
 		*/
+
+		int		getFd() const {
+			return (_fd);
+		}
 
 		const std::string &getUname() const {
 			return (_userName);
