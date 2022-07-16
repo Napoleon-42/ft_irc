@@ -24,8 +24,9 @@ void List::execute(std::string line, Client &user) {
         Server::clientmap::const_iterator ite = _serv->getClients().end();
         while (it != ite) {
             s += it->second.getUname() + "\n";
-            _serv->sendToClient(user, s);
+            ++it;
         }
+        _serv->sendToClient(user, s);
     } else { //list users on channel
         Channel *chan = _serv->searchChannel(line);
         if (!chan) {
@@ -36,7 +37,8 @@ void List::execute(std::string line, Client &user) {
         Channel::clientlist::const_iterator ite = chan->getClients().end();
         while (it != ite) {
             s += it->second->getUname() + "\n";
-            _serv->sendToClient(user, s);
+            ++it;
         }
+        _serv->sendToClient(user, s);
     }
 }

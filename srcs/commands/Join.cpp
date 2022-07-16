@@ -21,7 +21,7 @@ Join::Join(Server *serv) : Command(serv) {
 }
 
 std::string Join::help_msg() const {
-    return ("/join channel (allows you to join this channel, and creates it if it does not exist yet)");
+    return ("/join <channel> (allows you to join this channel, and creates it if it does not exist yet)");
 }
 
 void Join::execute(std::string line, Client &user) {

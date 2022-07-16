@@ -21,7 +21,7 @@ Nick::Nick(Server *serv) : Command(serv) {
 }
 
 std::string Nick::help_msg() const {
-    return ("/nick newname (allows you to change your username in the server)");
+    return ("/nick <nickname> (allows you to change your nickname in the server)");
 }
 
 void Nick::execute(std::string line, Client &user) {

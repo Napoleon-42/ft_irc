@@ -9,7 +9,7 @@ PrivMsg::PrivMsg(Server *serv) : Command(serv) {
 }
 
 std::string PrivMsg::help_msg() const {
-    return ("/Privmsg <target> : <message> (allows you to send a private msg to someone.)");
+    return ("/Privmsg <target> :<message> (allows you to send a private msg to someone.)");
 }
 
 void PrivMsg::execute(std::string line, Client &user) {

@@ -23,9 +23,10 @@ class Channel;
 
 class Client
 {
-	private:
+	public:
 		typedef std::map<std::string, Command *> commandmap;
-
+	
+	private:
 		Server*			_serv;
 		std::string		_username;
 		std::string		_nickname;
@@ -83,6 +84,9 @@ class Client
 		}
 		const std::string &getNname() const {
 			return (_nickname);
+		}
+		const commandmap &getCommands() const {
+			return (_commands);
 		}
 		Channel *getChannel() {
 			return (_currentChannel);
