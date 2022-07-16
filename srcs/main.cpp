@@ -55,7 +55,7 @@ int main(int ac, char **av)
 	/***************************************************************************/
 	
 	Server irc;
-	Channel chan(&irc, "chan1");
+	/*Channel chan(&irc, "chan1");
 	Channel *ret;
 	Client client(&irc, "Client1");
 
@@ -69,7 +69,7 @@ int main(int ac, char **av)
 	std::cout << chan.searchClient("Client1") << std::endl;
 	*logStream << ret << std::endl;
 	chan.addClient(&client);
-
+	*/
 	irc.routine();
 
 

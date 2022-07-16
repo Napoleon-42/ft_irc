@@ -27,7 +27,8 @@ class Client
 		typedef std::map<std::string, Command *> commandmap;
 
 		Server*			_serv;
-		std::string		_userName;
+		std::string		_username;
+		std::string		_nickname;
 		std::string		_hostname;
 		std::string		_servername;
 		std::string		_realname;
@@ -52,10 +53,10 @@ class Client
 
 		void	becomeOperator();
 		void	changeName(std::string &newname) {
-			_userName = newname;
+			_nickname = newname;
 		}
 		void	update_all_name(std::string uname, std::string hname, std::string sname, std::string rname) {
-			_userName = uname;
+			_username = uname;
 			_hostname = hname;
 			_servername = sname;
 			_realname = rname;
@@ -72,7 +73,16 @@ class Client
 		}
 
 		const std::string &getUname() const {
-			return (_userName);
+			return (_username);
+		}
+		const std::string &getSname() const {
+			return (_servername);
+		}
+		const std::string &getRname() const {
+			return (_realname);
+		}
+		const std::string &getNname() const {
+			return (_nickname);
 		}
 		Channel *getChannel() {
 			return (_currentChannel);

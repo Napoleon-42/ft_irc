@@ -28,6 +28,7 @@ Server::Server()
 	_servercommands.insert(std::make_pair("LIST", new List(this)));
 	_servercommands.insert(std::make_pair("USER", new Usercmd(this)));
 	_servercommands.insert(std::make_pair("QUIT", new Quit(this)));
+	_servercommands.insert(std::make_pair("PING", new Ping(this)));
 	_servercommands.insert(std::make_pair("PRIVMSG", new PrivMsg(this)));
     /* TO DO
     INFO [<target>]
@@ -37,6 +38,7 @@ Server::Server()
     PASS <password>
     */
     _opcommands.insert(std::make_pair("BAN", new ChannelBan(this)));
+	_opcommands.insert(std::make_pair("KICK", new Kick(this)));
     /* TO DO
     KICK <channel> <client> :[<message>] (does not ban just kick)
     KILL <client> <comment>

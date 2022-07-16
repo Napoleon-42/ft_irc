@@ -22,6 +22,8 @@
 #include "commands/Oper.hpp"
 #include "commands/Join.hpp"
 #include "commands/List.hpp"
+#include "commands/Ping.hpp"
+#include "commands/Kick.hpp"
 #include "commands/Quit.hpp"
 #include "commands/Usercmd.hpp"
 #include "commands/PrivMsg.hpp"
