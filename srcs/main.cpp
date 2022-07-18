@@ -62,7 +62,6 @@ int main(int ac, char **av)
 		serverLogMssg(*it);
 		++it;
 	}
-	
 	Channel chan(&irc, "chan1");
 	Channel *ret;
 	Client client(&irc, "Client1");
