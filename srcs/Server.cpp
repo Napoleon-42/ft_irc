@@ -15,9 +15,37 @@
 ** ------------------------------- CONSTRUCTOR --------------------------------
 */
 
-Server::Server()
+ Server::Server()
 {
-	init_socket();
+	// init_socket(8080);
+	// Client &tmp = *(new Client(this, "Server_Machine_Admin"));
+	// tmp.becomeOperator();
+	// addClient(tmp, 0);
+	// _servercommands.insert(std::make_pair("NICK", new Nick(this)));
+	// _servercommands.insert(std::make_pair("OPER", new Oper(this)));
+	// _servercommands.insert(std::make_pair("HELP", new Help(this)));
+	// _servercommands.insert(std::make_pair("JOIN", new Join(this)));
+	// _servercommands.insert(std::make_pair("LIST", new List(this)));
+	// _servercommands.insert(std::make_pair("USER", new Usercmd(this)));
+	// _servercommands.insert(std::make_pair("QUIT", new Quit(this)));
+	// _servercommands.insert(std::make_pair("PING", new Ping(this)));
+	// _servercommands.insert(std::make_pair("PRIVMSG", new PrivMsg(this)));
+    // /* TO DO
+    // */
+    // _opcommands.insert(std::make_pair("BAN", new ChannelBan(this)));
+	// _opcommands.insert(std::make_pair("KICK", new Kick(this)));
+    // /* TO DO
+    // KICK <channel> <client> :[<message>] (does not ban just kick)
+    // KILL <client> <comment>
+    // DIE (command to shutdown server)
+    // */
+}
+
+Server::Server(int port, std::string pwd)
+:
+_server_pwd(pwd)
+{
+	init_socket(port);
 	_servercommands.insert(std::make_pair("NICK", new Nick(this)));
 	_servercommands.insert(std::make_pair("OPER", new Oper(this)));
 	_servercommands.insert(std::make_pair("HELP", new Help(this)));
@@ -28,6 +56,7 @@ Server::Server()
 	_servercommands.insert(std::make_pair("PING", new Ping(this)));
 	_servercommands.insert(std::make_pair("PRIVMSG", new PrivMsg(this)));
     /* TO DO
+	None for now
     */
     _opcommands.insert(std::make_pair("BAN", new ChannelBan(this)));
 	_opcommands.insert(std::make_pair("KICK", new Kick(this)));
@@ -126,7 +155,7 @@ Channel *Server::searchChannel(std::string channame)
 ** --------------------------------- PRIVATE METHODS ---------------------------
 */
 
-void Server::init_socket()
+void Server::init_socket(int port)
 {
     _entrySocket = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
     serverLogMssg("socket created");
@@ -134,7 +163,7 @@ void Server::init_socket()
     memset(&_address, 0, sizeof(_address));
     _address.sin_family = AF_INET;
     _address.sin_addr.s_addr = htonl(INADDR_ANY);
-    _address.sin_port = htons(8080);
+    _address.sin_port = htons(port);
 
     if ((bind(_entrySocket, (struct sockaddr *)&_address, sizeof(_address))) != 0)
     {
@@ -253,6 +282,12 @@ std::string		&Server::serverhash(std::string &toHash) const {
 
 bool			Server::checkOpPass(std::string pass) const {
 	if (serverhash(pass) == _passop)
+		return (true);
+	return (false);
+}
+
+bool	Server::checkServerPass(std::string pass) const {
+	if (serverhash(pass) == _server_pwd)
 		return (true);
 	return (false);
 }
