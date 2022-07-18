@@ -35,25 +35,24 @@ std::vector<std::string> ftirc_split(std::string s, std::string delimiter) {
 	}
 	pos_end = min;
     while (pos_end != std::string::npos && s.size() > pos_start) {
-		std::cout << pos_start << ":" << pos_end << std::endl;
-		if (pos_end - pos_start)
+		//std::cout << pos_start << ":" << pos_end << std::endl;
+		if (pos_end - pos_start) {
         	token = s.substr(pos_start, pos_end - pos_start);
+        	res.push_back(token);
+		}
         pos_start = pos_end + 1;
 		while (s.size() > pos_start && delimiter.find(s[pos_start]) != std::string::npos)
 			++pos_start;
-        res.push_back(token);
 		min = std::string::npos;
 		for(std::string::iterator it = delimiter.begin(); it != delimiter.end(); ++it) {
 			tmp = s.find(*it, pos_start);
-			std::cout << tmp << std::endl;
+			//std::cout << tmp << std::endl;
 			if (tmp < min) {
 				min = tmp;
 			}
 		}
 		pos_end = min;
     }
-
-    res.push_back (s.substr (pos_start));
     return res;
 }
 

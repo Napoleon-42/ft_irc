@@ -31,11 +31,6 @@ Server::Server()
 	_servercommands.insert(std::make_pair("PING", new Ping(this)));
 	_servercommands.insert(std::make_pair("PRIVMSG", new PrivMsg(this)));
     /* TO DO
-    INFO [<target>]
-	PONG -----
-    INVITE <nickname> <channel>
-    ISON <nicknames>
-    PASS <password>
     */
     _opcommands.insert(std::make_pair("BAN", new ChannelBan(this)));
 	_opcommands.insert(std::make_pair("KICK", new Kick(this)));
@@ -162,9 +157,10 @@ void	Server::executeMachCmds(char * buff)
 	buff[read(0, buff, 552)] = 0;
 	*logStream << "\treceived mssg = " << buff;
 	std::string tmp(buff);
-
 	if (tmp.compare("exit\n") == 0)
 		exit(0);
+	Client &admin = _usersMap.find(0)->second;
+	parseClientSent(buff, admin);
 }
 
 void	Server::parseClientSent(char * buff, Client &user) {
@@ -173,7 +169,7 @@ void	Server::parseClientSent(char * buff, Client &user) {
 	size_t pos;
 	while (msgit != msgs.end()) {
 		pos = msgit->find(' ');
-		if (!user.execute(msgit->substr(0, pos), msgit->substr(pos)))
+		if (pos == std::string::npos || !user.execute(msgit->substr(0, pos), msgit->substr(pos)))
 			clientLogMssg(*msgit);
 		++msgit;
 	}
