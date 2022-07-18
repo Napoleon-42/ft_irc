@@ -43,6 +43,8 @@ class Server
 		std::map<int, Client> _usersMap;
 		
 		struct sockaddr_in _address;
+
+		std::string		_server_pwd;
 		std::string		_passop;
 		commandmap		_servercommands;
 		commandmap		_opcommands;
@@ -53,12 +55,13 @@ class Server
 		void	acceptClient();
 		void	executeMachCmds(char * buff);
 		void	parseClientSent(char * buff, Client &user);
-		void	init_socket();
+		void	init_socket(int port);
 		std::string		&serverhash(std::string &toHash) const;
 
 	public:
 
 		Server();
+		Server(int port, std::string pwd);
 		~Server();
 		const commandmap &getServCommands() const;
 		const commandmap &getOpCommands() const;
@@ -70,7 +73,8 @@ class Server
 		void	sendToClient(Client const &sendTo, std::string mssg);
 		void	addClient(Client const & user, int fd);
 		void	deleteClient(std::string uname);
-		bool			checkOpPass(std::string pass) const;
+		bool	checkOpPass(std::string pass) const;
+		bool	checkServerPass(std::string pass) const;
 };
 
 #endif
