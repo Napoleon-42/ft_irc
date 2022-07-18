@@ -1,12 +1,12 @@
-#ifndef Join_HPP
-# define Join_HPP
+#ifndef PrivMsg_HPP
+# define PrivMsg_HPP
 
 #include "../Command.hpp"
 
-class Join : public Command {
+class PrivMsg : public Command {
     public :
-        Join();
-        Join(Server *serv);
+        PrivMsg();
+        PrivMsg(Server *serv);
 
         std::string help_msg() const;
         void    execute(std::string line, Client &user);

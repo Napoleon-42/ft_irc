@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 15:48:04 by lnelson           #+#    #+#             */
-/*   Updated: 2022/07/12 19:11:55 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/07/15 16:17:19 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,36 +23,41 @@ class Channel;
 
 class Client
 {
-	private:
+	public:
 		typedef std::map<std::string, Command *> commandmap;
-
-		std::string		_userName;
+	
+	private:
+		Server*			_serv;
+		std::string		_username;
+		std::string		_nickname;
 		std::string		_hostname;
 		std::string		_servername;
 		std::string		_realname;
-		Server*			_serv;
+		int				_fd;
 		Channel*		_currentChannel;
-		commandmap		commands;
+		commandmap		_commands;
 
 		void addBasicCommands();
 		void addOpCommands();
+
 	public:
 
 		Client();
 		Client(Server *current, std::string uname);
+		Client(Server *current, std::string uname, int fd);
 		Client(Server *current, std::string uname, std::string hname, std::string sname);
 		~Client();
 
-		void	execute(std::string &command, std::string &restline);
+		bool	execute(std::string const &command, std::string const &restline);
 
 		Command *searchCommand(std::string cmd);
 
 		void	becomeOperator();
 		void	changeName(std::string &newname) {
-			_userName = newname;
+			_nickname = newname;
 		}
 		void	update_all_name(std::string uname, std::string hname, std::string sname, std::string rname) {
-			_userName = uname;
+			_username = uname;
 			_hostname = hname;
 			_servername = sname;
 			_realname = rname;
@@ -64,8 +69,24 @@ class Client
 		** getters
 		*/
 
+		int		getFd() const {
+			return (_fd);
+		}
+
 		const std::string &getUname() const {
-			return (_userName);
+			return (_username);
+		}
+		const std::string &getSname() const {
+			return (_servername);
+		}
+		const std::string &getRname() const {
+			return (_realname);
+		}
+		const std::string &getNname() const {
+			return (_nickname);
+		}
+		const commandmap &getCommands() const {
+			return (_commands);
 		}
 		Channel *getChannel() {
 			return (_currentChannel);

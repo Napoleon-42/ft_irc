@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/22 17:54:18 by lnelson           #+#    #+#             */
-/*   Updated: 2022/07/12 18:23:15 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/07/15 16:00:21 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include <iostream>
 #include <string>
 
+#include <stdlib.h>
 #include <cstring>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -33,15 +34,17 @@
 #define FILE_OUTPUT 0
 #define STD_OUTPUT 1
 
+#define SERVER_NAME ":ft_irc.42.fr"
+
 extern	std::ostream * logStream;
 
 /*****************************************************************************/
 /*									UTILS									 */
 /*****************************************************************************/
 
-void	serverLogMssg(std::string to_print);
-void	clientLogMssg(std::string to_print);
-
+void                    	serverLogMssg(std::string to_print);
+void	                    clientLogMssg(std::string to_print);
+std::vector<std::string>    ftirc_split(std::string s, std::string delimiter);
 
 
 

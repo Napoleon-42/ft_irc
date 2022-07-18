@@ -6,7 +6,7 @@
 #    By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/06/22 17:56:55 by lnelson           #+#    #+#              #
-#    Updated: 2022/07/12 18:06:28 by lnelson          ###   ########.fr        #
+#    Updated: 2022/07/14 15:01:27 by lnelson          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -33,6 +33,7 @@ std: ${NAME_STD}
 INCL		= ${INCL_DIR}ft_irc.hpp
 
 SRCS		=	srcs/main.cpp \
+				srcs/utils.cpp \
 				srcs/Client.cpp \
 				srcs/Channel.cpp \
 				srcs/commands/Help.cpp \
@@ -42,8 +43,11 @@ SRCS		=	srcs/main.cpp \
 				srcs/Server.cpp \
 				srcs/commands/List.cpp \
 				srcs/commands/Usercmd.cpp \
+				srcs/commands/Quit.cpp \
+				srcs/commands/Ping.cpp \
+				srcs/commands/Kick.cpp \
+				srcs/commands/PrivMsg.cpp \
 				srcs/commands/Oper.cpp
->>>>>>> Makefile
 
 OBJS		= ${SRCS:.cpp=.o}
 

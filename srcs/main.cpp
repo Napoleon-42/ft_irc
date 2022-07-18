@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/17 21:28:48 by lnelson           #+#    #+#             */
-/*   Updated: 2022/07/12 18:09:53 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/07/13 18:32:12 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ std::ostream *	set_log_file(short key)
 	return (outFile);
 }
 
+/*
 void	serverLogMssg(std::string to_print)
 {
 	*logStream << "(SERVER): " << to_print << std::endl;
@@ -41,6 +42,7 @@ void	clientLogMssg(std::string to_print)
 {
 	*logStream << "(CLIENT): " << to_print << std::endl;
 }
+*/
 
 int main(int ac, char **av)
 {
@@ -53,6 +55,14 @@ int main(int ac, char **av)
 	/***************************************************************************/
 	
 	Server irc;
+	/*
+	std::vector<std::string> truc = ftirc_split(":test :trc:lol  make::check ", " :");
+	std::vector<std::string>::iterator it = truc.begin();
+	while (it != truc.end()) {
+		serverLogMssg(*it);
+		++it;
+	}
+	
 	Channel chan(&irc, "chan1");
 	Channel *ret;
 	Client client(&irc, "Client1");
@@ -67,19 +77,10 @@ int main(int ac, char **av)
 	std::cout << chan.searchClient("Client1") << std::endl;
 	*logStream << ret << std::endl;
 	chan.addClient(&client);
-
-	irc.acceptClients();
+	*/
+	irc.routine();
 
 
 	/***************************************************************************/
-
-	std::string temp;
-	while(1)
-	{	
-		std::cin >> temp;
-		if (temp == "exit")
-			_exit(0);
-	}
-
 	/***************************************************************************/
 }
