@@ -55,7 +55,15 @@ int main(int ac, char **av)
 	/***************************************************************************/
 	
 	Server irc;
-	/*Channel chan(&irc, "chan1");
+	/*
+	std::vector<std::string> truc = ftirc_split(":test :trc:lol  make::check ", " :");
+	std::vector<std::string>::iterator it = truc.begin();
+	while (it != truc.end()) {
+		serverLogMssg(*it);
+		++it;
+	}
+	
+	Channel chan(&irc, "chan1");
 	Channel *ret;
 	Client client(&irc, "Client1");
 

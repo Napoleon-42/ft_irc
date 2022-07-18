@@ -48,7 +48,7 @@ class Client
 		Client(Server *current, std::string uname, std::string hname, std::string sname);
 		~Client();
 
-		void	execute(std::string &command, std::string &restline);
+		bool	execute(std::string const &command, std::string const &restline);
 
 		Command *searchCommand(std::string cmd);
 

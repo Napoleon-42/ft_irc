@@ -52,6 +52,7 @@ class Server
 		void	pollRoutine();
 		void	acceptClient();
 		void	executeMachCmds(char * buff);
+		void	parseClientSent(char * buff, Client &user);
 		void	init_socket();
 		std::string		&serverhash(std::string &toHash) const;
 

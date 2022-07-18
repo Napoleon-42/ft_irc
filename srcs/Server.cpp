@@ -167,6 +167,18 @@ void	Server::executeMachCmds(char * buff)
 		exit(0);
 }
 
+void	Server::parseClientSent(char * buff, Client &user) {
+	std::vector<std::string> msgs = ftirc_split(buff, "\r\n");
+	std::vector<std::string>::iterator msgit = msgs.begin();
+	size_t pos;
+	while (msgit != msgs.end()) {
+		pos = msgit->find(' ');
+		if (!user.execute(msgit->substr(0, pos), msgit->substr(pos)))
+			clientLogMssg(*msgit);
+		++msgit;
+	}
+}
+
 void	Server::proccessEventFd(int i)
 {
 	char buff[552];
@@ -176,11 +188,11 @@ void	Server::proccessEventFd(int i)
 		this->executeMachCmds(buff);
 	else
 	{
+		clientmap::iterator it =  _usersMap.find(_clientSockets[i].fd);
 		int recvRet = recv(_clientSockets[i].fd, (void*)buff, 551,0);
 		if (recvRet == 0)
 		{
 			*logStream << "this client disconected, closing the corresponding socket" << std::endl;
-			clientmap::iterator it =  _usersMap.find(_clientSockets[i].fd);
 			if (it != _usersMap.end())
 				this->deleteClient(it->second.getUname());
 		}
@@ -188,10 +200,7 @@ void	Server::proccessEventFd(int i)
 		{
 			buff[recvRet] = 0;
 			*logStream << "\treceived mssg = " << buff;
-			/*
-			parse -> list_commds
-			execute_commds_list
-			*/
+			parseClientSent(buff, it->second);
 		}
 	}
 	_clientSockets[i].revents = 0;
@@ -228,11 +237,9 @@ void	Server::acceptClient()
 		buff[recv(client_fd, (void*)buff, 551, 0)] = 0;
 		*logStream << "(SERVER): new client try to join, the client message:" << std::endl << buff;
 		Client &tmp = *(new Client(this, "test user", client_fd));
-		/*
-			client commands for setting
-		*/
 		this->addClient(tmp, client_fd);
 		this->sendToClient(tmp, "Welcome to our first IRC server for 42.paris!");
+		parseClientSent(buff, tmp);
     }
 	/*
     else

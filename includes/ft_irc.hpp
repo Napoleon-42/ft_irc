@@ -42,9 +42,9 @@ extern	std::ostream * logStream;
 /*									UTILS									 */
 /*****************************************************************************/
 
-void	serverLogMssg(std::string to_print);
-void	clientLogMssg(std::string to_print);
-
+void                    	serverLogMssg(std::string to_print);
+void	                    clientLogMssg(std::string to_print);
+std::vector<std::string>    ftirc_split(std::string s, std::string delimiter);
 
 
 
