@@ -1,12 +1,13 @@
-#ifndef Join_HPP
-# define Join_HPP
+#ifndef Quit_HPP
+# define Quit_HPP
 
 #include "../Command.hpp"
 
-class Join : public Command {
+
+class Quit : public Command {
     public :
-        Join();
-        Join(Server *serv);
+        Quit();
+        Quit(Server *serv);
 
         std::string help_msg() const;
         void    execute(std::string line, Client &user);

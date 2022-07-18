@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 15:47:37 by lnelson           #+#    #+#             */
-/*   Updated: 2022/07/14 15:03:00 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/07/15 16:01:47 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,11 @@
 #include "commands/Oper.hpp"
 #include "commands/Join.hpp"
 #include "commands/List.hpp"
+#include "commands/Ping.hpp"
+#include "commands/Kick.hpp"
+#include "commands/Quit.hpp"
 #include "commands/Usercmd.hpp"
+#include "commands/PrivMsg.hpp"
 #include "commands/ChannelBan.hpp"
 
 class Server
@@ -44,6 +48,14 @@ class Server
 		commandmap		_opcommands;
 		channelmap		_channels;
 
+		void	proccessEventFd(int i);
+		void	pollRoutine();
+		void	acceptClient();
+		void	executeMachCmds(char * buff);
+		void	parseClientSent(char * buff, Client &user);
+		void	init_socket();
+		std::string		&serverhash(std::string &toHash) const;
+
 	public:
 
 		Server();
@@ -51,34 +63,14 @@ class Server
 		const commandmap &getServCommands() const;
 		const commandmap &getOpCommands() const;
 		const channelmap &getChannels() const;
+		const clientmap &getClients() const;
 		channelmap::iterator addChannel(Channel &newchan);
 		Channel *searchChannel(std::string channame);
-		void	init_socket();
-		void	executeMachCmds(char * buff);
 		void	routine();
-		void	acceptClient();
+		void	sendToClient(Client const &sendTo, std::string mssg);
 		void	addClient(Client const & user, int fd);
 		void	deleteClient(std::string uname);
-		/*
-			_servercommands.insert(std::make_pair("LIST", new List(this)));
-			_servercommands.insert(std::make_pair("USER", new Usercmd(this)));
-    		_opcommands.insert(std::make_pair("BAN", new ChannelBan(this)));
-
-			*/
-
-		const clientmap &getClients() const {
-			return(_usersMap);
-		}
-
-		std::string		&serverhash(std::string &toHash) const {
-			return (toHash);
-		}
-
-		bool			checkOpPass(std::string pass) const {
-			if (serverhash(pass) == _passop)
-				return (true);
-			return (false);
-		}
+		bool			checkOpPass(std::string pass) const;
 };
 
 #endif

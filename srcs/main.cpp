@@ -55,6 +55,13 @@ int main(int ac, char **av)
 	/***************************************************************************/
 	
 	Server irc;
+	/*
+	std::vector<std::string> truc = ftirc_split(":test :trc:lol  make::check ", " :");
+	std::vector<std::string>::iterator it = truc.begin();
+	while (it != truc.end()) {
+		serverLogMssg(*it);
+		++it;
+	}
 	Channel chan(&irc, "chan1");
 	Channel *ret;
 	Client client(&irc, "Client1");
@@ -69,7 +76,7 @@ int main(int ac, char **av)
 	std::cout << chan.searchClient("Client1") << std::endl;
 	*logStream << ret << std::endl;
 	chan.addClient(&client);
-
+	*/
 	irc.routine();
 
 
