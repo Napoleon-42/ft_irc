@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 15:47:37 by lnelson           #+#    #+#             */
-/*   Updated: 2022/07/15 16:01:47 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/07/22 18:43:51 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ class Server
 		void	executeMachCmds(char * buff);
 		void	init_socket();
 		std::string		&serverhash(std::string &toHash) const;
+		bool			checkOpPass(std::string pass) const;
 
 	public:
 
@@ -66,7 +67,6 @@ class Server
 		void	sendToClient(Client sendTo, std::string mssg);
 		void	addClient(Client const & user, int fd);
 		void	deleteClient(std::string uname);
-		bool			checkOpPass(std::string pass) const;
 };
 
 #endif

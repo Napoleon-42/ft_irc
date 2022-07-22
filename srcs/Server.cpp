@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 18:06:57 by lnelson           #+#    #+#             */
-/*   Updated: 2022/07/22 18:16:37 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/07/22 18:43:34 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,14 +61,28 @@ Server::~Server()
 ** --------------------------------- PUBLIC METHODS ----------------------------
 */
 
+
+//	sending message (*mssg* std::string) to a specific (*sendTo* client), adding prefixed server name and \r\n
 void	Server::sendToClient(Client sendTo, std::string mssg)
 {
 	int size;
 
-	size = mssg.size() + std::string(std::string(SERVER_NAME) + std::string(" ")).size() + 3;
-	send(sendTo.getFd(), (void *)std::string(std::string(SERVER_NAME) + std::string(" ") + mssg + std::string("\r\n")).c_str(), size, 0);
+	size =	mssg.size() 
+			+ std::string(std::string(SERVER_NAME) 
+			+ std::string(" ")).size() 
+			+ 3;
+
+	send(sendTo.getFd(),
+		(void *)std::string(
+			std::string(SERVER_NAME) 
+			+ std::string(" ") 
+			+ mssg 
+			+ std::string("\r\n")).c_str(),
+		 size,
+		 0);
 }
 
+//	main server routine, accepting client  and preccesing requests
 void	Server::routine()
 {
 	while (1)
@@ -78,6 +92,7 @@ void	Server::routine()
 	}
 }
 
+//	adding client, using recv -> parsing user info -> adding new user | sending an error mssg
 void	Server::addClient(Client const & user, int fd)
 {
 	struct pollfd *tmp = (struct pollfd*)malloc(sizeof(struct pollfd));
@@ -90,6 +105,7 @@ void	Server::addClient(Client const & user, int fd)
 	serverLogMssg("new client added");
 }
 
+// deleting client
 void	Server::deleteClient(std::string uname)
 {
 	std::map<int, Client>::iterator it = _usersMap.begin();
@@ -114,11 +130,13 @@ void	Server::deleteClient(std::string uname)
 	}
 }
 
+// adding new channel to existing one's
 Server::channelmap::iterator Server::addChannel(Channel &newchan)
 {
 	return _channels.insert(std::make_pair(newchan.getName(), newchan)).first;
 }
 
+// searching channel by *channame*, returning a pointer to the found channel, NULL if not found
 Channel *Server::searchChannel(std::string channame)
  {
     channelmap::iterator it = _channels.find(channame);
@@ -131,6 +149,7 @@ Channel *Server::searchChannel(std::string channame)
 ** --------------------------------- PRIVATE METHODS ---------------------------
 */
 
+// initializing the entry socket
 void Server::init_socket()
 {
     _entrySocket = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
@@ -159,6 +178,7 @@ void Server::init_socket()
     return ;
 }
 
+// executin commands typed on the server terminal, serv.admin only
 void	Server::executeMachCmds(char * buff)
 {
 	buff[read(0, buff, 552)] = 0;
@@ -169,6 +189,7 @@ void	Server::executeMachCmds(char * buff)
 		exit(0);
 }
 
+// proccesing events if any event occured on a socket
 void	Server::proccessEventFd(int i)
 {
 	char buff[552];
@@ -199,6 +220,7 @@ void	Server::proccessEventFd(int i)
 	_clientSockets[i].revents = 0;
 }
 
+// main poll routine, checking and proccessing events if any occurs
 void	Server::pollRoutine()
 {
 	if (poll(&(*(_clientSockets.begin())), _clientSockets.size(), 500) > 0)
@@ -216,6 +238,7 @@ void	Server::pollRoutine()
 	*/
 }
 
+// accepting new client, by verifying if the NickName isn't in use already
 void	Server::acceptClient()
 {
     socklen_t len = sizeof(_client);
@@ -255,6 +278,7 @@ void	Server::acceptClient()
 	*/
 }
 
+// adding new client to the existing one's
 void	Server::addClient(Client const & user, int fd)
 {
 	struct pollfd *tmp = (struct pollfd*)malloc(sizeof(struct pollfd));
@@ -267,6 +291,7 @@ void	Server::addClient(Client const & user, int fd)
 	serverLogMssg("new client added");
 }
 
+// deleting client from the server
 void	Server::deleteClient(std::string uname)
 {
 	std::map<int, Client>::iterator it = _usersMap.begin();
@@ -291,24 +316,14 @@ void	Server::deleteClient(std::string uname)
 	}
 }
 
-Server::channelmap::iterator Server::addChannel(Channel &newchan)
-{
-	return _channels.insert(std::make_pair(newchan.getName(), newchan)).first;
-}
 
-Channel *Server::searchChannel(std::string channame)
- {
-    channelmap::iterator it = _channels.find(channame);
-    if (it == _channels.end())
-        return (NULL);
-    return (&(it->second));
-}
-
-
+//	returning serverhash
 std::string		&Server::serverhash(std::string &toHash) const {
 	return (toHash);
 }
 
+
+// checking if the password to entry is correct
 bool			Server::checkOpPass(std::string pass) const {
 	if (serverhash(pass) == _passop)
 		return (true);
