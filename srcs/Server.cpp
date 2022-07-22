@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 18:06:57 by lnelson           #+#    #+#             */
-/*   Updated: 2022/07/15 16:18:33 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/07/22 18:16:37 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,7 +145,7 @@ void Server::init_socket()
     else
         serverLogMssg("socket bind succeded");
 
-    if ((listen(_entrySocket, 5)) != 0)
+    if ((listen(_entrySocket, 1024)) != 0)
     {
         serverLogMssg("listen() failure");
         return ;
@@ -217,20 +217,33 @@ void	Server::acceptClient()
     socklen_t len = sizeof(_client);
     int	client_fd = 0;
     char buff[552];
-
     buff[551] = 0;
     std::string temp;
     client_fd = accept(_entrySocket, (struct sockaddr *)&_client, &len);
     if (client_fd >= 0)
     {
+
+	/**************************************************************************/
+
+	char buff[2];
+	static int x = 47;
+	x++;
+	buff[0] = x;
+	buff[1] = 0;
+
+
+	std::string str = std::string("test user number #") + std::string(buff);
+
+	/**************************************************************************/
+
 		buff[recv(client_fd, (void*)buff, 551, 0)] = 0;
 		*logStream << "(SERVER): new client try to join, the client message:" << std::endl << buff;
-		Client &tmp = *(new Client(this, "test user", client_fd));
+		Client &tmp = *(new Client(this, str, client_fd));
 		/*
 			client commands for setting
 		*/
 		this->addClient(tmp, client_fd);
-		this->sendToClient(tmp, "Welcome to our first IRC server for 42.paris!");
+		this->sendToClient(tmp, "001 Welcome to our first IRC server for 42.paris!");
     }
 	/*
     else

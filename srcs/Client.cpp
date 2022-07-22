@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 18:02:32 by lnelson           #+#    #+#             */
-/*   Updated: 2022/07/15 16:12:03 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/07/22 18:14:23 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ Client::Client(Server *current, std::string uname) :
 Client::Client(Server *current, std::string uname, int fd) :
 	_serv(current), _userName(uname), _fd(fd), _currentChannel(NULL)
 {
-	clientLogMssg(std::string("Client" + _userName + " created"));
+	clientLogMssg(std::string("Client " + _userName + " created"));
 	addBasicCommands();
 }
 

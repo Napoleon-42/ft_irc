@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/22 17:54:18 by lnelson           #+#    #+#             */
-/*   Updated: 2022/07/15 16:00:21 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/07/22 18:09:43 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #include <string>
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <cstring>
 #include <sys/types.h>
 #include <sys/socket.h>
