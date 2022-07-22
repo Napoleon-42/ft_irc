@@ -21,7 +21,7 @@ Join::Join(Server *serv) : Command(serv) {
 }
 
 std::string Join::help_msg() const {
-    return ("/join channel (allows you to join this channel, and creates it if it does not exist yet)");
+    return ("/join <channel> (allows you to join this channel, and creates it if it does not exist yet)");
 }
 
 void Join::execute(std::string line, Client &user) {
@@ -30,8 +30,9 @@ void Join::execute(std::string line, Client &user) {
     Server::channelmap::iterator it = _serv->addChannel(toadd);
     if (it->second.addClient(&user)) {
         user.changeChannel(&(it->second));
+        _serv->sendToClient(user, "You joined the channel.");
         serverLogMssg("A user has changed channel.");
     } else {
-        clientLogMssg("You can't join this channel.");
+        _serv->sendToClient(user, "You can't join this channel.");
     }
 }

@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 18:02:32 by lnelson           #+#    #+#             */
-/*   Updated: 2022/07/22 18:14:23 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/07/23 01:05:10 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,33 +30,33 @@ void        Client::addOpCommands() {
     }
 }
 
-Client::Client(): _userName("non-spec")
+Client::Client(): _username("non-spec")
 {
-    clientLogMssg(std::string("Client " + _userName + " created"));
+    clientLogMssg(std::string("Client " + _username + " created"));
     _currentChannel = NULL;
     addBasicCommands();
 }
 
 Client::Client(Server *current, std::string uname) :
-    _serv(current), _userName(uname), _currentChannel(NULL)
+    _serv(current), _username(uname), _currentChannel(NULL)
 {
-    clientLogMssg(std::string("Client " + _userName + " created"));
+    clientLogMssg(std::string("Client " + _username + " created"));
     addBasicCommands();
 
 }
 
 Client::Client(Server *current, std::string uname, int fd) :
-	_serv(current), _userName(uname), _fd(fd), _currentChannel(NULL)
+	_serv(current), _username(uname), _fd(fd), _currentChannel(NULL)
 {
 	clientLogMssg(std::string("Client " + _userName + " created"));
 	addBasicCommands();
 }
 
 Client::Client(Server *current, std::string uname, std::string hname, std::string sname) :
-    _userName(uname), _hostname(hname), _servername(sname)
+    _username(uname), _hostname(hname), _servername(sname)
 {
     _serv = current;
-    clientLogMssg(std::string("Client " + _userName + " created"));
+    clientLogMssg(std::string("Client " + _username + " created"));
     _currentChannel = NULL;
     addBasicCommands();
 
@@ -64,7 +64,7 @@ Client::Client(Server *current, std::string uname, std::string hname, std::strin
 
 Client::~Client()
 {
-    clientLogMssg(" Client " + _userName + " destroyed");
+    clientLogMssg(" Client " + _username + " destroyed");
     
 }
 
@@ -72,17 +72,23 @@ void	    Client::becomeOperator() {
     this->addOpCommands();
 }
 
-void	    Client::execute(std::string &command, std::string &restline) {
-    commandmap::iterator cit = _commands.find(command);
-    if (cit == _commands.end())
-        std::cout << "Command '" << command <<"' not found in available commands for the client : " << _userName << std::endl;
+bool	    Client::execute(std::string const &cmd, std::string const &restline) {
+    commandmap::iterator cit = _commands.find(cmd);
+    if (cit == _commands.end()) {
+        clientLogMssg("Command '" + cmd + "' not found in available commands for the client : " + _username);
+        _serv->sendToClient(*this, "Command not found.");
+        return (false);
+    }
+    clientLogMssg("Executing " + cmd + " command.");
     cit->second->execute(restline, *this);
+    clientLogMssg("Executed " + cmd + " command.");
+    return (true);
 }
 
 Command*    Client::searchCommand(std::string cmd) {
     commandmap::iterator cit = _commands.find(cmd);
     if (cit == _commands.end()) {
-        std::cout << "Command '" << cmd <<"' not found in available commands for the client : " << _userName << std::endl;
+        clientLogMssg("Command '" + cmd + "' not found for the client : " + _username);
         return (NULL);
     }
     return (cit->second);

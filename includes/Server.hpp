@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 15:47:37 by lnelson           #+#    #+#             */
-/*   Updated: 2022/07/22 18:43:51 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/07/23 01:05:21 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,11 @@
 #include "commands/Oper.hpp"
 #include "commands/Join.hpp"
 #include "commands/List.hpp"
+#include "commands/Ping.hpp"
+#include "commands/Kick.hpp"
 #include "commands/Quit.hpp"
 #include "commands/Usercmd.hpp"
+#include "commands/PrivMsg.hpp"
 #include "commands/ChannelBan.hpp"
 
 class Server
@@ -40,6 +43,8 @@ class Server
 		std::map<int, Client> _usersMap;
 		
 		struct sockaddr_in _address;
+
+		std::string		_server_pwd;
 		std::string		_passop;
 		commandmap		_servercommands;
 		commandmap		_opcommands;
@@ -49,13 +54,15 @@ class Server
 		void	pollRoutine();
 		void	acceptClient();
 		void	executeMachCmds(char * buff);
-		void	init_socket();
+		void	parseClientSent(char * buff, Client &user);
+		void	init_socket(int port);
 		std::string		&serverhash(std::string &toHash) const;
 		bool			checkOpPass(std::string pass) const;
 
 	public:
 
 		Server();
+		Server(int port, std::string pwd);
 		~Server();
 		const commandmap &getServCommands() const;
 		const commandmap &getOpCommands() const;
@@ -64,7 +71,7 @@ class Server
 		channelmap::iterator addChannel(Channel &newchan);
 		Channel *searchChannel(std::string channame);
 		void	routine();
-		void	sendToClient(Client sendTo, std::string mssg);
+		void	sendToClient(Client const &sendTo, std::string mssg);
 		void	addClient(Client const & user, int fd);
 		void	deleteClient(std::string uname);
 };

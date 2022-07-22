@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 18:06:57 by lnelson           #+#    #+#             */
-/*   Updated: 2022/07/22 18:43:34 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/07/23 01:04:49 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,37 @@
 ** ------------------------------- CONSTRUCTOR --------------------------------
 */
 
-Server::Server()
+ Server::Server()
 {
-	init_socket();
-	Client &tmp = *(new Client(this, "Server_Machine_Admin"));
-	tmp.becomeOperator();
-	addClient(tmp, 0);
+	// init_socket(8080);
+	// Client &tmp = *(new Client(this, "Server_Machine_Admin"));
+	// tmp.becomeOperator();
+	// addClient(tmp, 0);
+	// _servercommands.insert(std::make_pair("NICK", new Nick(this)));
+	// _servercommands.insert(std::make_pair("OPER", new Oper(this)));
+	// _servercommands.insert(std::make_pair("HELP", new Help(this)));
+	// _servercommands.insert(std::make_pair("JOIN", new Join(this)));
+	// _servercommands.insert(std::make_pair("LIST", new List(this)));
+	// _servercommands.insert(std::make_pair("USER", new Usercmd(this)));
+	// _servercommands.insert(std::make_pair("QUIT", new Quit(this)));
+	// _servercommands.insert(std::make_pair("PING", new Ping(this)));
+	// _servercommands.insert(std::make_pair("PRIVMSG", new PrivMsg(this)));
+    // /* TO DO
+    // */
+    // _opcommands.insert(std::make_pair("BAN", new ChannelBan(this)));
+	// _opcommands.insert(std::make_pair("KICK", new Kick(this)));
+    // /* TO DO
+    // KICK <channel> <client> :[<message>] (does not ban just kick)
+    // KILL <client> <comment>
+    // DIE (command to shutdown server)
+    // */
+}
+
+Server::Server(int port, std::string pwd)
+:
+_server_pwd(pwd)
+{
+	init_socket(port);
 	_servercommands.insert(std::make_pair("NICK", new Nick(this)));
 	_servercommands.insert(std::make_pair("OPER", new Oper(this)));
 	_servercommands.insert(std::make_pair("HELP", new Help(this)));
@@ -28,30 +53,26 @@ Server::Server()
 	_servercommands.insert(std::make_pair("LIST", new List(this)));
 	_servercommands.insert(std::make_pair("USER", new Usercmd(this)));
 	_servercommands.insert(std::make_pair("QUIT", new Quit(this)));
+	_servercommands.insert(std::make_pair("PING", new Ping(this)));
+	_servercommands.insert(std::make_pair("PRIVMSG", new PrivMsg(this)));
     /* TO DO
-    INFO [<target>]
-	PONG -----
-    INVITE <nickname> <channel>
-    ISON <nicknames>
-    JOIN <channels> [<keys>]
-    LIST [<channels> [<server>]]
-    PASS <password>
-    PRIVMSG <msgtarget> :<message>
-    QUIT [<message>]
-    USER <username> <hostname> <servername> <realname>
+	None for now
     */
     _opcommands.insert(std::make_pair("BAN", new ChannelBan(this)));
+	_opcommands.insert(std::make_pair("KICK", new Kick(this)));
     /* TO DO
-    KICK <channel> <client> :[<message>] (does not ban just kick)
     KILL <client> <comment>
     DIE (command to shutdown server)
     */
+	Client &tmp = *(new Client(this, "Server_Machine_Admin"));
+	tmp.becomeOperator();
+	addClient(tmp, 0);
 }
 
 /*
 ** -------------------------------- DESTRUCTOR --------------------------------
 */
-
+ 
 Server::~Server()
 {
     serverLogMssg("Server shut down");
@@ -149,8 +170,7 @@ Channel *Server::searchChannel(std::string channame)
 ** --------------------------------- PRIVATE METHODS ---------------------------
 */
 
-// initializing the entry socket
-void Server::init_socket()
+void Server::init_socket(int port)
 {
     _entrySocket = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
     serverLogMssg("socket created");
@@ -158,7 +178,7 @@ void Server::init_socket()
     memset(&_address, 0, sizeof(_address));
     _address.sin_family = AF_INET;
     _address.sin_addr.s_addr = htonl(INADDR_ANY);
-    _address.sin_port = htons(8080);
+    _address.sin_port = htons(port);
 
     if ((bind(_entrySocket, (struct sockaddr *)&_address, sizeof(_address))) != 0)
     {
@@ -184,9 +204,24 @@ void	Server::executeMachCmds(char * buff)
 	buff[read(0, buff, 552)] = 0;
 	*logStream << "\treceived mssg = " << buff;
 	std::string tmp(buff);
-
 	if (tmp.compare("exit\n") == 0)
 		exit(0);
+	Client &admin = _usersMap.find(0)->second;
+	parseClientSent(buff, admin);
+}
+
+void	Server::parseClientSent(char * buff, Client &user) {
+	std::vector<std::string> msgs = ftirc_split(buff, "\r\n");
+	std::vector<std::string>::iterator msgit = msgs.begin();
+	size_t pos;
+	while (msgit != msgs.end()) {
+		pos = msgit->find(' ');
+		if (pos == std::string::npos)
+			pos = msgit->size();
+		if (!user.execute(msgit->substr(0, pos), msgit->substr((pos == msgit->size() ? pos : pos + 1))))
+			clientLogMssg(*msgit);
+		++msgit;
+	}
 }
 
 // proccesing events if any event occured on a socket
@@ -199,11 +234,11 @@ void	Server::proccessEventFd(int i)
 		this->executeMachCmds(buff);
 	else
 	{
+		clientmap::iterator it =  _usersMap.find(_clientSockets[i].fd);
 		int recvRet = recv(_clientSockets[i].fd, (void*)buff, 551,0);
 		if (recvRet == 0)
 		{
 			*logStream << "this client disconected, closing the corresponding socket" << std::endl;
-			clientmap::iterator it =  _usersMap.find(_clientSockets[i].fd);
 			if (it != _usersMap.end())
 				this->deleteClient(it->second.getUname());
 		}
@@ -211,10 +246,7 @@ void	Server::proccessEventFd(int i)
 		{
 			buff[recvRet] = 0;
 			*logStream << "\treceived mssg = " << buff;
-			/*
-			parse -> list_commds
-			execute_commds_list
-			*/
+			parseClientSent(buff, it->second);
 		}
 	}
 	_clientSockets[i].revents = 0;
@@ -265,12 +297,10 @@ void	Server::acceptClient()
 
 		buff[recv(client_fd, (void*)buff, 551, 0)] = 0;
 		*logStream << "(SERVER): new client try to join, the client message:" << std::endl << buff;
-		Client &tmp = *(new Client(this, str, client_fd));
-		/*
-			client commands for setting
-		*/
+		Client &tmp = *(new Client(this, "test user", client_fd));
 		this->addClient(tmp, client_fd);
-		this->sendToClient(tmp, "001 Welcome to our first IRC server for 42.paris!");
+		this->sendToClient(tmp, "Welcome to our first IRC server for 42.paris!");
+		parseClientSent(buff, tmp);
     }
 	/*
     else
@@ -326,6 +356,12 @@ std::string		&Server::serverhash(std::string &toHash) const {
 // checking if the password to entry is correct
 bool			Server::checkOpPass(std::string pass) const {
 	if (serverhash(pass) == _passop)
+		return (true);
+	return (false);
+}
+
+bool	Server::checkServerPass(std::string pass) const {
+	if (serverhash(pass) == _server_pwd)
 		return (true);
 	return (false);
 }

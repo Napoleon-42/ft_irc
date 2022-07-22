@@ -47,14 +47,33 @@ void	clientLogMssg(std::string to_print)
 int main(int ac, char **av)
 {
 	/**************************************************************************/
+
+	int port;
+	std::string pwd;
 	
-	logStream = set_log_file(ac == 2 ? FILE_OUTPUT : STD_OUTPUT);
-	(void)ac;
-	(void)av;
+	if (ac != 3)
+	{
+		std::cout << "usage : ./server [PORT] [PWD]"  << std::endl;
+		exit(EXIT_SUCCESS);
+	}
+	else
+	{
+		port = atoi(av[1]);
+		pwd = av[2];
+	}
+	//logStream = set_log_file(ac == 2 ? FILE_OUTPUT : STD_OUTPUT);
+	logStream = set_log_file(STD_OUTPUT);
 
 	/***************************************************************************/
 	
-	Server irc;
+	Server irc(port, pwd);
+	/*
+	std::vector<std::string> truc = ftirc_split(":test :trc:lol  make::check ", " :");
+	std::vector<std::string>::iterator it = truc.begin();
+	while (it != truc.end()) {
+		serverLogMssg(*it);
+		++it;
+	}
 	Channel chan(&irc, "chan1");
 	Channel *ret;
 	Client client(&irc, "Client1");
@@ -69,7 +88,7 @@ int main(int ac, char **av)
 	std::cout << chan.searchClient("Client1") << std::endl;
 	*logStream << ret << std::endl;
 	chan.addClient(&client);
-
+	*/
 	irc.routine();
 
 
