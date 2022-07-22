@@ -21,9 +21,13 @@ Server::Server()
 	Client &tmp = *(new Client(this, "Server_Machine_Admin"));
 	tmp.becomeOperator();
 	addClient(tmp, 0);
-    _servercommands.insert(std::make_pair("nick", new Nick(this)));
-	_servercommands.insert(std::make_pair("oper", new Oper(this)));
-	_servercommands.insert(std::make_pair("help", new Help(this)));
+	_servercommands.insert(std::make_pair("NICK", new Nick(this)));
+	_servercommands.insert(std::make_pair("OPER", new Oper(this)));
+	_servercommands.insert(std::make_pair("HELP", new Help(this)));
+	_servercommands.insert(std::make_pair("JOIN", new Join(this)));
+	_servercommands.insert(std::make_pair("LIST", new List(this)));
+	_servercommands.insert(std::make_pair("USER", new Usercmd(this)));
+	_servercommands.insert(std::make_pair("QUIT", new Quit(this)));
     /* TO DO
     INFO [<target>]
 	PONG -----
@@ -36,7 +40,7 @@ Server::Server()
     QUIT [<message>]
     USER <username> <hostname> <servername> <realname>
     */
-    _opcommands.insert(std::make_pair("kban", new ChannelBan(this)));
+    _opcommands.insert(std::make_pair("BAN", new ChannelBan(this)));
     /* TO DO
     KICK <channel> <client> :[<message>] (does not ban just kick)
     KILL <client> <comment>
@@ -251,6 +255,66 @@ void	Server::acceptClient()
 	*/
 }
 
+void	Server::addClient(Client const & user, int fd)
+{
+	struct pollfd *tmp = (struct pollfd*)malloc(sizeof(struct pollfd));
+	struct pollfd &tmp2 = *tmp;
+	tmp->fd = fd;
+	tmp->events = POLLIN;
+	tmp->revents = 0;
+	_clientSockets.push_back(tmp2);
+	_usersMap.insert(std::make_pair(fd, user));
+	serverLogMssg("new client added");
+}
+
+void	Server::deleteClient(std::string uname)
+{
+	std::map<int, Client>::iterator it = _usersMap.begin();
+	std::map<int, Client>::iterator ite = _usersMap.end();
+	while (it != ite)
+	{
+		if (it->second.getUname() == uname)
+		{
+			std::vector<struct pollfd>::iterator itt = _clientSockets.begin();
+			std::vector<struct pollfd>::iterator itte = _clientSockets.end();
+			while (itt != itte)
+			{
+				if (itt->fd == it->first)
+					_clientSockets.erase(itt);
+				itt++;
+			}
+			close(it->first);
+			_usersMap.erase(it);
+			break;
+		}
+		it++;
+	}
+}
+
+Server::channelmap::iterator Server::addChannel(Channel &newchan)
+{
+	return _channels.insert(std::make_pair(newchan.getName(), newchan)).first;
+}
+
+Channel *Server::searchChannel(std::string channame)
+ {
+    channelmap::iterator it = _channels.find(channame);
+    if (it == _channels.end())
+        return (NULL);
+    return (&(it->second));
+}
+
+
+std::string		&Server::serverhash(std::string &toHash) const {
+	return (toHash);
+}
+
+bool			Server::checkOpPass(std::string pass) const {
+	if (serverhash(pass) == _passop)
+		return (true);
+	return (false);
+}
+
 /*
 ** --------------------------------- ACCESSOR ---------------------------------
 */
@@ -267,6 +331,8 @@ const Server::channelmap &Server::getChannels() const {
     return(_channels);
 }
 
-
+const Server::clientmap &Server::getClients() const {
+	return(_usersMap);
+}
 
 /* ************************************************************************** */
