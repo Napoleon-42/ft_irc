@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 18:06:57 by lnelson           #+#    #+#             */
-/*   Updated: 2022/07/24 03:32:20 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/07/24 17:44:10 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -226,18 +226,26 @@ void	Server::executeMachCmds(char * buff)
 		exit(0);
 	else if (tmp.compare("list users\n") == 0)
 	{
-		(void*);
-		//  PRINT LIST OF USERS
+		*logStream << "LIST OF USERS:" << std::endl;
+		for (clientmap::iterator it = _usersMap.begin(); it != _usersMap.end(); it++)
+			*logStream << "fd <" << it->first << "> user <" << it->second.getNname() << std::endl;
+		*logStream << std::endl;
 	}
 	else if (tmp.compare("channel list\n") == 0)
 	{
-		(void*);
-		// PRINT LIST OF CHANNELS
+		*logStream << "LIST OF CHANNELS:" << std::endl;
+		for (channelmap::iterator it = _channels.begin(); it != _channels.end(); it++)
+			*logStream << "channel <" << it->first << "> with " << it->second.getClients().size() << " users" << std::endl;
+		*logStream << std::endl;
+
 	}
 	else if (tmp.compare("create channel\n") == 0)
 	{
-		(void*);
-		// EXECUTE A FUNTION THAT WILL ASK A CHAN NAME, AND WILL CREATE THE CHANNEL
+		std::string newChannelName;
+		std::cout << "Type the new channel name, then press ENTER" << std::endl;
+		std::cin >> newChannelName;
+
+		addChannel(*(new Channel(this, newChannelName)));
 	}
 	// .....
 	Client &admin = _usersMap.find(0)->second;
