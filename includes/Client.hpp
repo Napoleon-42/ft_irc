@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 15:48:04 by lnelson           #+#    #+#             */
-/*   Updated: 2022/07/15 16:17:19 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/07/24 01:59:49 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ class Client
 		Command *searchCommand(std::string cmd);
 
 		void	becomeOperator();
-		void	changeName(std::string &newname) {
+		void	changeName(std::string newname) {
 			_nickname = newname;
 		}
 		void	update_all_name(std::string uname, std::string hname, std::string sname, std::string rname) {

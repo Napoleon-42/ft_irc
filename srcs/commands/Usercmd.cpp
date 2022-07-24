@@ -16,7 +16,7 @@ void Usercmd::execute(std::string line, Client &user) {
     std::vector<std::string> splits = ftirc_split(line, " \t");
     if (splits.size() == 4)
     {
-        user.update_all_name(splits[0], splits[1], splits[2], splits[3]);
+		user.update_all_name(splits[0], splits[1], splits[2], splits[3]);
         serverLogMssg("Right number of arguments. USER executed");
     }
     else {

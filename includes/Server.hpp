@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 15:47:37 by lnelson           #+#    #+#             */
-/*   Updated: 2022/07/23 01:05:21 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/07/23 22:25:43 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,10 +54,12 @@ class Server
 		void	pollRoutine();
 		void	acceptClient();
 		void	executeMachCmds(char * buff);
-		void	parseClientSent(char * buff, Client &user);
+		bool	parseClientSent(char * buff, Client &user);
 		void	init_socket(int port);
 		std::string		&serverhash(std::string &toHash) const;
 		bool			checkOpPass(std::string pass) const;
+		bool	checkServerPass(std::string pass) const;
+		struct pollfd&	createPollfd(int fd);
 
 	public:
 

@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 18:06:57 by lnelson           #+#    #+#             */
-/*   Updated: 2022/07/23 01:04:49 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/07/24 02:06:04 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,19 @@ Server::Server(int port, std::string pwd)
 _server_pwd(pwd)
 {
 	init_socket(port);
+
+
+	/**************************************************************************/
+
+	_clientSockets.push_back(this->createPollfd(_entrySocket));
+	Client &tmp = *(new Client(this, "Server_Machine_Admin", "SM_Admin", "SM_Admin"));
+	tmp.changeName(std::string("ServerAdmin"));
+	tmp.becomeOperator();
+	addClient(tmp, 0);
+
+
+	/**************************************************************************/
+
 	_servercommands.insert(std::make_pair("NICK", new Nick(this)));
 	_servercommands.insert(std::make_pair("OPER", new Oper(this)));
 	_servercommands.insert(std::make_pair("HELP", new Help(this)));
@@ -64,9 +77,6 @@ _server_pwd(pwd)
     KILL <client> <comment>
     DIE (command to shutdown server)
     */
-	Client &tmp = *(new Client(this, "Server_Machine_Admin"));
-	tmp.becomeOperator();
-	addClient(tmp, 0);
 }
 
 /*
@@ -84,7 +94,7 @@ Server::~Server()
 
 
 //	sending message (*mssg* std::string) to a specific (*sendTo* client), adding prefixed server name and \r\n
-void	Server::sendToClient(Client sendTo, std::string mssg)
+void	Server::sendToClient(Client const &sendTo, std::string mssg)
 {
 	int size;
 
@@ -94,13 +104,27 @@ void	Server::sendToClient(Client sendTo, std::string mssg)
 			+ 3;
 
 	send(sendTo.getFd(),
-		(void *)std::string(
-			std::string(SERVER_NAME) 
-			+ std::string(" ") 
-			+ mssg 
-			+ std::string("\r\n")).c_str(),
+		(void *)std::string
+			(
+				std::string(SERVER_NAME) 
+				+ std::string(" ") 
+				+ mssg 
+				+ std::string("\r\n")
+			).c_str(),
 		 size,
 		 0);
+
+	
+	serverLogMssg(std::string
+			(
+				std::string("message sent to <")
+				+ sendTo.getNname()
+				+ std::string("> :|")
+				+ std::string(SERVER_NAME) 
+				+ std::string(" ") 
+				+ mssg 
+				+ std::string("|\r\n")
+			));
 }
 
 //	main server routine, accepting client  and preccesing requests
@@ -108,7 +132,6 @@ void	Server::routine()
 {
 	while (1)
 	{
-		this->acceptClient();
 		this->pollRoutine();
 	}
 }
@@ -116,14 +139,9 @@ void	Server::routine()
 //	adding client, using recv -> parsing user info -> adding new user | sending an error mssg
 void	Server::addClient(Client const & user, int fd)
 {
-	struct pollfd *tmp = (struct pollfd*)malloc(sizeof(struct pollfd));
-	struct pollfd &tmp2 = *tmp;
-	tmp->fd = fd;
-	tmp->events = POLLIN;
-	tmp->revents = 0;
-	_clientSockets.push_back(tmp2);
+	_clientSockets.push_back(createPollfd(fd));
 	_usersMap.insert(std::make_pair(fd, user));
-	serverLogMssg("new client added");
+	serverLogMssg(std::string(std::string("new client <") + user.getNname() + std::string("> added to the client list")));
 }
 
 // deleting client
@@ -202,7 +220,7 @@ void Server::init_socket(int port)
 void	Server::executeMachCmds(char * buff)
 {
 	buff[read(0, buff, 552)] = 0;
-	*logStream << "\treceived mssg = " << buff;
+	*logStream << "\treceived mssg = " << buff << std::endl;
 	std::string tmp(buff);
 	if (tmp.compare("exit\n") == 0)
 		exit(0);
@@ -210,7 +228,8 @@ void	Server::executeMachCmds(char * buff)
 	parseClientSent(buff, admin);
 }
 
-void	Server::parseClientSent(char * buff, Client &user) {
+bool	Server::parseClientSent(char * buff, Client &user) 
+{
 	std::vector<std::string> msgs = ftirc_split(buff, "\r\n");
 	std::vector<std::string>::iterator msgit = msgs.begin();
 	size_t pos;
@@ -219,19 +238,25 @@ void	Server::parseClientSent(char * buff, Client &user) {
 		if (pos == std::string::npos)
 			pos = msgit->size();
 		if (!user.execute(msgit->substr(0, pos), msgit->substr((pos == msgit->size() ? pos : pos + 1))))
+		{
 			clientLogMssg(*msgit);
+		}
 		++msgit;
 	}
+	if (user.getUname().find("test user") != std::string::npos)
+		return (false);
+	return (true);
 }
 
 // proccesing events if any event occured on a socket
 void	Server::proccessEventFd(int i)
 {
 	char buff[552];
-	*logStream << "\t_clientSockets[" << i << "] had a revent, fd = " << _clientSockets[i].fd;
-	*logStream << " | REVENTS == " << _clientSockets[i].revents << std::endl;
+	*logStream << "\t_clientSockets[" << i << "] had a revent, fd = " << _clientSockets[i].fd << std::endl;
 	if (_clientSockets[i].fd == 0)
 		this->executeMachCmds(buff);
+	else if (_clientSockets[i].fd == _entrySocket)
+		this->acceptClient();
 	else
 	{
 		clientmap::iterator it =  _usersMap.find(_clientSockets[i].fd);
@@ -245,7 +270,7 @@ void	Server::proccessEventFd(int i)
 		else
 		{
 			buff[recvRet] = 0;
-			*logStream << "\treceived mssg = " << buff;
+			*logStream << "\treceived mssg = " << buff << std::endl;
 			parseClientSent(buff, it->second);
 		}
 	}
@@ -264,86 +289,59 @@ void	Server::pollRoutine()
 				this->proccessEventFd(i);
 		}
 	}
-	/*
-	else
-		servLogMssg("poll didn't found any events in given fd's");
-	*/
 }
 
 // accepting new client, by verifying if the NickName isn't in use already
 void	Server::acceptClient()
 {
     socklen_t len = sizeof(_client);
-    int	client_fd = 0;
+    int	client_fd = -1;
     char buff[552];
-    buff[551] = 0;
-    std::string temp;
-    client_fd = accept(_entrySocket, (struct sockaddr *)&_client, &len);
-    if (client_fd >= 0)
-    {
-
-	/**************************************************************************/
-
-	char buff[2];
-	static int x = 47;
-	x++;
-	buff[0] = x;
-	buff[1] = 0;
-
-
-	std::string str = std::string("test user number #") + std::string(buff);
-
-	/**************************************************************************/
-
-		buff[recv(client_fd, (void*)buff, 551, 0)] = 0;
-		*logStream << "(SERVER): new client try to join, the client message:" << std::endl << buff;
-		Client &tmp = *(new Client(this, "test user", client_fd));
-		this->addClient(tmp, client_fd);
-		this->sendToClient(tmp, "Welcome to our first IRC server for 42.paris!");
-		parseClientSent(buff, tmp);
-    }
-	/*
-    else
-    	serverLogMssg(" no new client tryed to join");
-	*/
-}
-
-// adding new client to the existing one's
-void	Server::addClient(Client const & user, int fd)
-{
-	struct pollfd *tmp = (struct pollfd*)malloc(sizeof(struct pollfd));
-	struct pollfd &tmp2 = *tmp;
-	tmp->fd = fd;
-	tmp->events = POLLIN;
-	tmp->revents = 0;
-	_clientSockets.push_back(tmp2);
-	_usersMap.insert(std::make_pair(fd, user));
-	serverLogMssg("new client added");
-}
-
-// deleting client from the server
-void	Server::deleteClient(std::string uname)
-{
-	std::map<int, Client>::iterator it = _usersMap.begin();
-	std::map<int, Client>::iterator ite = _usersMap.end();
-	while (it != ite)
+	int recvRet = 0;
+	
+	/**************************************************************************
+	if (recvRet > 551 || recvRet < 0)
+		buff[0] = 0;
+	if (recvRet == -1)
 	{
-		if (it->second.getUname() == uname)
-		{
-			std::vector<struct pollfd>::iterator itt = _clientSockets.begin();
-			std::vector<struct pollfd>::iterator itte = _clientSockets.end();
-			while (itt != itte)
-			{
-				if (itt->fd == it->first)
-					_clientSockets.erase(itt);
-				itt++;
-			}
-			close(it->first);
-			_usersMap.erase(it);
-			break;
-		}
-		it++;
+		int ernonb = errno;
+		*logStream << "\nERROR: erno is set to:" << ernonb << std::endl << std::endl;
 	}
+	else
+		buff[recvRet] = 0;
+
+	**************************************************************************/
+
+	client_fd = accept(_entrySocket, (struct sockaddr *)&_client, &len);
+ 	if (client_fd >= 0)
+  	{
+		recvRet = recv(client_fd, (void*)buff, 551, 0);
+		if (recvRet > 551 || recvRet < 0)
+			buff[551] = 0;
+		else
+			buff[recvRet] = 0;
+
+		/**************************************************************************/
+		*logStream << "(SERVER): new client try to join, the client message (size= ";
+		*logStream << std::string(buff).size() << ") (resvRet= " << recvRet << ")";
+		*logStream << std::endl << buff << std::endl;
+		/**************************************************************************/
+
+		if (recvRet  != 0 && std::string(buff).size() != 0)
+		{
+			Client &tmp = *(new Client(this, "test user", client_fd));
+			this->sendToClient(tmp, "001 new_user :Welcome to our first IRC server for 42.paris!");
+			if (parseClientSent(buff, tmp) == true)
+			{
+				this->sendToClient(tmp, "001 new_user :Welcome to our first IRC server for 42.paris!");
+				this->addClient(tmp, client_fd);
+			}
+			else
+				delete(&tmp);
+		}
+ 	}
+	else
+		serverLogMssg("accept failure");
 }
 
 
@@ -364,6 +362,16 @@ bool	Server::checkServerPass(std::string pass) const {
 	if (serverhash(pass) == _server_pwd)
 		return (true);
 	return (false);
+}
+
+struct pollfd&	Server::createPollfd(int fd)
+{
+	struct pollfd *tmp = (struct pollfd*)malloc(sizeof(struct pollfd));
+	struct pollfd &tmp1 = *tmp;
+	tmp->fd = fd;
+	tmp->events = POLLIN;
+	tmp->revents = 0;
+	return (tmp1);
 }
 
 /*
