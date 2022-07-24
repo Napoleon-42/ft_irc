@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 18:06:57 by lnelson           #+#    #+#             */
-/*   Updated: 2022/07/24 02:06:04 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/07/24 03:32:20 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -224,6 +224,22 @@ void	Server::executeMachCmds(char * buff)
 	std::string tmp(buff);
 	if (tmp.compare("exit\n") == 0)
 		exit(0);
+	else if (tmp.compare("list users\n") == 0)
+	{
+		(void*);
+		//  PRINT LIST OF USERS
+	}
+	else if (tmp.compare("channel list\n") == 0)
+	{
+		(void*);
+		// PRINT LIST OF CHANNELS
+	}
+	else if (tmp.compare("create channel\n") == 0)
+	{
+		(void*);
+		// EXECUTE A FUNTION THAT WILL ASK A CHAN NAME, AND WILL CREATE THE CHANNEL
+	}
+	// .....
 	Client &admin = _usersMap.find(0)->second;
 	parseClientSent(buff, admin);
 }
