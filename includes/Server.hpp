@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 15:47:37 by lnelson           #+#    #+#             */
-/*   Updated: 2022/07/23 22:25:43 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/07/24 22:57:58 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,10 +32,13 @@
 class Server
 {
 	public:
+
 		typedef std::map<std::string, Command *>	commandmap;
 		typedef std::map<std::string, Channel>		channelmap;
 		typedef std::map<int, Client>				clientmap;
 	
+	private:
+
 		int _entrySocket;
 		std::vector<struct pollfd> _clientSockets;
 		struct sockaddr_in _client;
@@ -57,7 +60,6 @@ class Server
 		bool	parseClientSent(char * buff, Client &user);
 		void	init_socket(int port);
 		std::string		&serverhash(std::string &toHash) const;
-		bool			checkOpPass(std::string pass) const;
 		bool	checkServerPass(std::string pass) const;
 		struct pollfd&	createPollfd(int fd);
 
@@ -71,11 +73,15 @@ class Server
 		const channelmap &getChannels() const;
 		const clientmap &getClients() const;
 		channelmap::iterator addChannel(Channel &newchan);
+		Client	*searchClient(std::string nickName);
 		Channel *searchChannel(std::string channame);
 		void	routine();
 		void	sendToClient(Client const &sendTo, std::string mssg);
 		void	addClient(Client const & user, int fd);
 		void	deleteClient(std::string uname);
+
+
+		bool			checkOpPass(std::string pass) const;
 };
 
 #endif

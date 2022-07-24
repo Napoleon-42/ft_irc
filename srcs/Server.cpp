@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 18:06:57 by lnelson           #+#    #+#             */
-/*   Updated: 2022/07/24 17:44:10 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/07/24 22:51:27 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,17 +48,6 @@ _server_pwd(pwd)
 	init_socket(port);
 
 
-	/**************************************************************************/
-
-	_clientSockets.push_back(this->createPollfd(_entrySocket));
-	Client &tmp = *(new Client(this, "Server_Machine_Admin", "SM_Admin", "SM_Admin"));
-	tmp.changeName(std::string("ServerAdmin"));
-	tmp.becomeOperator();
-	addClient(tmp, 0);
-
-
-	/**************************************************************************/
-
 	_servercommands.insert(std::make_pair("NICK", new Nick(this)));
 	_servercommands.insert(std::make_pair("OPER", new Oper(this)));
 	_servercommands.insert(std::make_pair("HELP", new Help(this)));
@@ -77,6 +66,19 @@ _server_pwd(pwd)
     KILL <client> <comment>
     DIE (command to shutdown server)
     */
+
+
+
+	/**************************************************************************/
+
+	_clientSockets.push_back(this->createPollfd(_entrySocket));
+	Client &tmp = *(new Client(this, "Server_Machine_Admin", "SM_Admin", "SM_Admin"));
+	tmp.changeName(std::string("ServerAdmin"));
+	//tmp.becomeOperator();
+	addClient(tmp, 0);
+
+
+	/**************************************************************************/
 }
 
 /*
@@ -142,6 +144,19 @@ void	Server::addClient(Client const & user, int fd)
 	_clientSockets.push_back(createPollfd(fd));
 	_usersMap.insert(std::make_pair(fd, user));
 	serverLogMssg(std::string(std::string("new client <") + user.getNname() + std::string("> added to the client list")));
+}
+
+Client	*	Server::searchClient(std::string nickName)
+{
+	std::map<int, Client>::iterator it = _usersMap.begin();
+	std::map<int, Client>::iterator ite = _usersMap.end();
+	while (it != ite)
+	{
+		if (it->second.getNname() == nickName)
+			return (&(it->second));
+		it++;
+	}
+	return (NULL);
 }
 
 // deleting client
@@ -216,6 +231,8 @@ void Server::init_socket(int port)
     return ;
 }
 
+
+
 // executin commands typed on the server terminal, serv.admin only
 void	Server::executeMachCmds(char * buff)
 {
@@ -252,6 +269,9 @@ void	Server::executeMachCmds(char * buff)
 	parseClientSent(buff, admin);
 }
 
+
+
+
 bool	Server::parseClientSent(char * buff, Client &user) 
 {
 	std::vector<std::string> msgs = ftirc_split(buff, "\r\n");
@@ -271,6 +291,9 @@ bool	Server::parseClientSent(char * buff, Client &user)
 		return (false);
 	return (true);
 }
+
+
+
 
 // proccesing events if any event occured on a socket
 void	Server::proccessEventFd(int i)
@@ -301,6 +324,9 @@ void	Server::proccessEventFd(int i)
 	_clientSockets[i].revents = 0;
 }
 
+
+
+
 // main poll routine, checking and proccessing events if any occurs
 void	Server::pollRoutine()
 {
@@ -314,6 +340,8 @@ void	Server::pollRoutine()
 		}
 	}
 }
+
+
 
 // accepting new client, by verifying if the NickName isn't in use already
 void	Server::acceptClient()
@@ -354,10 +382,18 @@ void	Server::acceptClient()
 		if (recvRet  != 0 && std::string(buff).size() != 0)
 		{
 			Client &tmp = *(new Client(this, "test user", client_fd));
+
+			
+			/**************************************************************************/
+/* TO REPLACE PROPERLY, issue with the fact that the client receive a "Command not found" in first place, instead of "WELCOME" */
+			/**************************************************************************/
 			this->sendToClient(tmp, "001 new_user :Welcome to our first IRC server for 42.paris!");
+			/**************************************************************************/
+
+
 			if (parseClientSent(buff, tmp) == true)
 			{
-				this->sendToClient(tmp, "001 new_user :Welcome to our first IRC server for 42.paris!");
+			//	this->sendToClient(tmp, "001 new_user :Welcome to our first IRC server for 42.paris!");
 				this->addClient(tmp, client_fd);
 			}
 			else
@@ -369,10 +405,12 @@ void	Server::acceptClient()
 }
 
 
+
 //	returning serverhash
 std::string		&Server::serverhash(std::string &toHash) const {
 	return (toHash);
 }
+
 
 
 // checking if the password to entry is correct
@@ -382,11 +420,15 @@ bool			Server::checkOpPass(std::string pass) const {
 	return (false);
 }
 
+
+
 bool	Server::checkServerPass(std::string pass) const {
 	if (serverhash(pass) == _server_pwd)
 		return (true);
 	return (false);
 }
+
+
 
 struct pollfd&	Server::createPollfd(int fd)
 {
@@ -397,6 +439,8 @@ struct pollfd&	Server::createPollfd(int fd)
 	tmp->revents = 0;
 	return (tmp1);
 }
+
+
 
 /*
 ** --------------------------------- ACCESSOR ---------------------------------
