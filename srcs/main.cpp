@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/17 21:28:48 by lnelson           #+#    #+#             */
-/*   Updated: 2022/07/13 18:32:12 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/07/24 01:24:41 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ std::ostream * logStream;
 
 std::ostream *	set_log_file(short key)
 {
-	if (key == STD_OUTPUT) 
+	if (key == STD_OUTPUT)
 	{
 		std::cout << "#####		LOGS OUTPUTED IN STANDART OUTPUT		#####" << std::endl << std::endl;
 		return (&(std::cout));
@@ -32,29 +32,29 @@ std::ostream *	set_log_file(short key)
 	return (outFile);
 }
 
-/*
-void	serverLogMssg(std::string to_print)
-{
-	*logStream << "(SERVER): " << to_print << std::endl;
-}
-
-void	clientLogMssg(std::string to_print)
-{
-	*logStream << "(CLIENT): " << to_print << std::endl;
-}
-*/
-
 int main(int ac, char **av)
 {
 	/**************************************************************************/
+
+	int port;
+	std::string pwd;
 	
-	logStream = set_log_file(ac == 2 ? FILE_OUTPUT : STD_OUTPUT);
-	(void)ac;
-	(void)av;
+	if (ac != 3)
+	{
+		std::cout << "usage : ./server [PORT] [PWD]"  << std::endl;
+		exit(EXIT_SUCCESS);
+	}
+	else
+	{
+		port = atoi(av[1]);
+		pwd = av[2];
+	}
+	//logStream = set_log_file(ac == 2 ? FILE_OUTPUT : STD_OUTPUT);
+	logStream = set_log_file(STD_OUTPUT);
 
 	/***************************************************************************/
 	
-	Server irc;
+	Server irc(port, pwd);
 	/*
 	std::vector<std::string> truc = ftirc_split(":test :trc:lol  make::check ", " :");
 	std::vector<std::string>::iterator it = truc.begin();
