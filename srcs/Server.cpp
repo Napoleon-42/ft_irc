@@ -57,6 +57,7 @@ _server_pwd(pwd)
 	_servercommands.insert(std::make_pair("QUIT", new Quit(this)));
 	_servercommands.insert(std::make_pair("PING", new Ping(this)));
 	_servercommands.insert(std::make_pair("PRIVMSG", new PrivMsg(this)));
+	_servercommands.insert(std::make_pair("PASS", new Pass(this)));
     /* TO DO
 	None for now
     */
@@ -408,6 +409,13 @@ void	Server::acceptClient()
 
 //	returning serverhash
 std::string		&Server::serverhash(std::string &toHash) const {
+	std::string ret = "";
+	for(std::string::size_type i = 0; i < toHash.size(); ++i) {
+    	ret += toHash[i] + 1;
+		// si plus compliqué nécessaire : (toHash[i] + i) % 126 + 1;
+	}
+	//Debugging serverLogMssg("Hashed : " + toHash + " into " + ret);
+	toHash = ret;
 	return (toHash);
 }
 

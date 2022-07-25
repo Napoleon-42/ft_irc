@@ -25,6 +25,7 @@
 #include "commands/Ping.hpp"
 #include "commands/Kick.hpp"
 #include "commands/Quit.hpp"
+#include "commands/Pass.hpp"
 #include "commands/Usercmd.hpp"
 #include "commands/PrivMsg.hpp"
 #include "commands/ChannelBan.hpp"
@@ -60,7 +61,6 @@ class Server
 		bool	parseClientSent(char * buff, Client &user);
 		void	init_socket(int port);
 		std::string		&serverhash(std::string &toHash) const;
-		bool	checkServerPass(std::string pass) const;
 		struct pollfd&	createPollfd(int fd);
 
 	public:
@@ -82,6 +82,7 @@ class Server
 
 
 		bool			checkOpPass(std::string pass) const;
+		bool	checkServerPass(std::string pass) const;
 };
 
 #endif

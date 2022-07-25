@@ -10,6 +10,12 @@ class Nick : public Command {
 
         std::string help_msg() const;
         void    execute(std::string line, Client &user);
+
+        class NameTakenException : public std::exception {
+            public :
+                virtual const char * what(void) const throw();
+        };
 };
+
 
 #endif

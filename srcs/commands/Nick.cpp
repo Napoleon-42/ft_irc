@@ -25,6 +25,12 @@ std::string Nick::help_msg() const {
 }
 
 void Nick::execute(std::string line, Client &user) {
+    if (_serv->searchClient(line))
+        throw NameTakenException();
     user.changeName(line);
     serverLogMssg("Nick command executed");
+}
+
+const char * Nick::NameTakenException::what() const throw() {
+    return "This name is already taken";
 }
