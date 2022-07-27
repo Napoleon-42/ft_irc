@@ -46,7 +46,7 @@ Server::Server(int port, std::string pwd)
 _server_pwd(pwd)
 {
 	init_socket(port);
-
+	_server_pwd = serverhash(pwd);
 
 	_servercommands.insert(std::make_pair("NICK", new Nick(this)));
 	_servercommands.insert(std::make_pair("OPER", new Oper(this)));
@@ -264,10 +264,10 @@ void	Server::executeMachCmds(char * buff)
 		std::cin >> newChannelName;
 
 		addChannel(*(new Channel(this, newChannelName)));
+	} else {
+		Client &admin = _usersMap.find(0)->second;
+		parseClientSent(buff, admin);
 	}
-	// .....
-	Client &admin = _usersMap.find(0)->second;
-	parseClientSent(buff, admin);
 }
 
 
@@ -278,18 +278,24 @@ bool	Server::parseClientSent(char * buff, Client &user)
 	std::vector<std::string> msgs = ftirc_split(buff, "\r\n");
 	std::vector<std::string>::iterator msgit = msgs.begin();
 	size_t pos;
-	while (msgit != msgs.end()) {
-		pos = msgit->find(' ');
-		if (pos == std::string::npos)
-			pos = msgit->size();
-		if (!user.execute(msgit->substr(0, pos), msgit->substr((pos == msgit->size() ? pos : pos + 1))))
-		{
-			clientLogMssg(*msgit);
+	try {
+		while (msgit != msgs.end()) {
+			pos = msgit->find(' ');
+			if (pos == std::string::npos)
+				pos = msgit->size();
+			if (!user.execute(msgit->substr(0, pos), msgit->substr((pos == msgit->size() ? pos : pos + 1))))
+			{
+				clientLogMssg(*msgit);
+			}
+			++msgit;
 		}
-		++msgit;
-	}
-	if (user.getUname().find("test user") != std::string::npos)
+	} catch (Nick::NameTakenException &nte) {
+		sendToClient(user, nte.what());
 		return (false);
+	} catch (Pass::WrongPassException &wpe) {
+		sendToClient(user, wpe.what());
+		return (false);
+	}
 	return (true);
 }
 
@@ -414,7 +420,8 @@ std::string		&Server::serverhash(std::string &toHash) const {
     	ret += toHash[i] + 1;
 		// si plus compliqué nécessaire : (toHash[i] + i) % 126 + 1;
 	}
-	//Debugging serverLogMssg("Hashed : " + toHash + " into " + ret);
+	//Debugging
+	serverLogMssg("Hashed : " + toHash + " into " + ret);
 	toHash = ret;
 	return (toHash);
 }

@@ -32,5 +32,5 @@ void Nick::execute(std::string line, Client &user) {
 }
 
 const char * Nick::NameTakenException::what() const throw() {
-    return "This name is already taken";
+    return "nickname in use";
 }

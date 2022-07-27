@@ -16,12 +16,16 @@ std::string Pass::help_msg() const {
 void Pass::execute(std::string line, Client &user) {
     if (!_serv->checkServerPass(line))
     { // Connection refusée
-        clientLogMssg("Mauvais mdp essayé.");
-
+        throw WrongPassException();
     }
     else
     { // Connection réussie
         clientLogMssg("Bon mdp rentré.");
         _serv->sendToClient(user, "Welcome !");
     }
+}
+
+
+const char * Pass::WrongPassException::what() const throw() {
+    return "wrong_pass";
 }
