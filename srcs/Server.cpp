@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 18:06:57 by lnelson           #+#    #+#             */
-/*   Updated: 2022/07/30 22:32:39 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/07/30 22:57:41 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -486,25 +486,33 @@ void	Server::proccessRegisteredClient(Client * client)
 		*logStream << "\treceived mssg = " << buff << std::endl;
 
 		std::vector<std::string> msgs = ftirc_split(buff, "\r\n");
+
 		std::vector<std::string>::iterator msgsit = msgs.begin();
-		try
+		std::vector<std::string>::iterator msgsite = msgs.end();
+		
+		while( msgsit != msgsite)
 		{
-			while( msgsit != msgs.end())
+			size_t first_space = msgsit->find(' ');
+			std::string cmdName = msgsit->substr(0, first_space);
+			std::string cmdArgs = msgsit->substr((first_space == msgsit->size() ? first_space : first_space + 1));
+
+			try
 			{
-				size_t first_space = msgsit->find(' ');
-				std::string cmdName = msgsit->substr(0, first_space);
-				std::string cmdArgs = msgsit->substr((first_space == msgsit->size() ? first_space : first_space + 1));
-
 				client->execute(cmdName, cmdArgs);
-
-				msgsit++;
 			}
+			catch (Nick::NameTakenException &nte)
+			{
+				sendToClient(*client,
+				std::string(
+					std::string("433 ") +
+					client->getNname() +
+					" " +
+					cmdArgs +
+					std::string(" :Nickname is already in use")));
+			}
+			msgsit++;
 		}
-		catch (Nick::NameTakenException &nte)
-		{
-			sendToClient(*client, nte.what());
-			return ;
-		}
+		
 	}
 	else if (rcvRet == 0)
 	{

@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 18:02:32 by lnelson           #+#    #+#             */
-/*   Updated: 2022/07/27 21:41:55 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/07/30 22:40:38 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ bool	    Client::execute(std::string const &cmd, std::string const &restline) {
     commandmap::iterator cit = _commands.find(cmd);
     if (cit == _commands.end()) {
         clientLogMssg("Command '" + cmd + "' not found in available commands for the client : " + _username);
-        _serv->sendToClient(*this, "Command not found.");
+        _serv->sendToClient(*this, "421 " + _nickname + " " + cmd + " :Unknown command");
         return (false);
     }
     clientLogMssg("Executing " + cmd + " command.");
