@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 15:48:04 by lnelson           #+#    #+#             */
-/*   Updated: 2022/07/24 01:59:49 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/07/27 21:32:12 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,10 @@ class Client
 		int				_fd;
 		Channel*		_currentChannel;
 		commandmap		_commands;
+
+		bool			_pwdPass;
+		bool			_nick;
+		bool			_user;
 
 		void addBasicCommands();
 		void addOpCommands();
@@ -69,8 +73,34 @@ class Client
 		** getters
 		*/
 
+		void	validatePass()
+		{
+			_pwdPass = true;
+		}
+
+		void	validateNick()
+		{
+			_nick = true;
+		}
+
+		void	validateUser()
+		{
+			_user = true;
+		}
+
+
 		int		getFd() const {
 			return (_fd);
+		}
+
+		bool	getPassStatus() const{
+			return (_pwdPass);
+		}
+		bool	getUserStatus() const{
+			return (_user);
+		}
+		bool	getNickstatus() const{
+			return (_nick);
 		}
 
 		const std::string &getUname() const {
