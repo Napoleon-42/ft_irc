@@ -13,15 +13,25 @@ std::string PrivMsg::help_msg() const {
 }
 
 void PrivMsg::execute(std::string line, Client &user) {
-    Channel *chan = user.getChannel();
-    if (!chan)
-        return ;
     size_t pos = line.find(":");
-    std::string target = line.substr(0, pos);
-    Client *tar = chan->searchClient(target);
+    std::string target;
+    if (*(line.begin()) == '#')
+    {
+        target = line.substr(1, pos);
+        Channel *chan = _serv->searchChannel(target);
+        if (chan)
+        {
+            for (Channel::clientlist::const_iterator it = chan->getClients().begin(); it != chan->getClients().end(); ++it)
+            {
+                _serv->sendToClient(*(it->second), "PRIVMSG " + line);
+            }
+        }
+    }
+    target = line.substr(0, pos);
+    Client *tar = _serv->searchClient(target);
     if (!tar) {
-        _serv->sendToClient(user, "There is no user with this name on this channel.");
+        _serv->sendToClient(user, "There is no user with this name on this server.");
         return ;
     }
-    _serv->sendToClient(*tar, user.getUname() + line.substr(pos));
+    _serv->sendToClient(*tar, "PRIVMSG " + user.getUname() + " :" + line.substr(pos));
 }
