@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 15:47:37 by lnelson           #+#    #+#             */
-/*   Updated: 2022/07/31 16:33:28 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/07/31 21:45:42 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,8 +63,8 @@ class Server
 		void			acceptClient();
 		void			proccessEventFd(int i);
 
-		void			proccessRegisteredClient(Client & client);
-		void			proccessPendingClient(Client & pendingClient);
+		void			proccessRegisteredClient(Client * client);
+		void			proccessPendingClient(Client * pendingClient);
 
 		void			addPendingClient(Client pendingUser, int fd);
 		bool			parseClientSent(char * buff, Client &user);
@@ -72,6 +72,7 @@ class Server
 		std::string		&serverhash(std::string &toHash) const;
 
 		struct pollfd&	createPollfd(int fd);
+		void			deleteFdfPoll(int fd);
 
 
 	class UserNotFound: public std::exception
@@ -102,7 +103,7 @@ class Server
 		bool					checkServerPass(std::string pass) const;
 
 		Client					*searchClient(std::string nickName);
-		Client	&				searchClient(int fd, clientmap map);
+		Client					*searchClient(int fd, clientmap * map);
 
 		Channel					 *searchChannel(std::string channame);
 
