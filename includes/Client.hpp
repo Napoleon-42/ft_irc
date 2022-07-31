@@ -85,6 +85,7 @@ class Client
 		const std::string &getNname() const {
 			return (_nickname);
 		}
+		std::string getPrefix() const;
 		const commandmap &getCommands() const {
 			return (_commands);
 		}

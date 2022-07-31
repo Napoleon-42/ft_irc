@@ -95,21 +95,20 @@ Server::~Server()
 ** --------------------------------- PUBLIC METHODS ----------------------------
 */
 
-
-//	sending message (*mssg* std::string) to a specific (*sendTo* client), adding prefixed server name and \r\n
-void	Server::sendToClient(Client const &sendTo, std::string mssg)
+//	sending message (*mssg* std::string) to a specific (*sendTo* client), adding prefix and \r\n
+void	Server::sendToClient(Client const &sendTo, std::string prefix, std::string mssg)
 {
 	int size;
 
 	size =	mssg.size() 
-			+ std::string(std::string(SERVER_NAME) 
-			+ std::string(" ")).size() 
+			+ prefix.size()
+			+ std::string(" ").size() 
 			+ 3;
 
 	send(sendTo.getFd(),
 		(void *)std::string
 			(
-				std::string(SERVER_NAME) 
+				prefix
 				+ std::string(" ") 
 				+ mssg 
 				+ std::string("\r\n")
@@ -123,11 +122,17 @@ void	Server::sendToClient(Client const &sendTo, std::string mssg)
 				std::string("message sent to <")
 				+ sendTo.getNname()
 				+ std::string("> :|")
-				+ std::string(SERVER_NAME) 
+				+ prefix 
 				+ std::string(" ") 
 				+ mssg 
 				+ std::string("|\r\n")
 			));
+}
+
+//	sending message (*mssg* std::string) to a specific (*sendTo* client), adding prefixed server name and \r\n
+void	Server::sendToClient(Client const &sendTo, std::string mssg)
+{
+	sendToClient(sendTo, std::string(SERVER_NAME), mssg);
 }
 
 //	main server routine, accepting client  and preccesing requests

@@ -76,6 +76,7 @@ class Server
 		Client	*searchClient(std::string nickName);
 		Channel *searchChannel(std::string channame);
 		void	routine();
+		void	sendToClient(Client const &sendTo, std::string prefix, std::string mssg);
 		void	sendToClient(Client const &sendTo, std::string mssg);
 		void	addClient(Client const & user, int fd);
 		void	deleteClient(std::string uname);
