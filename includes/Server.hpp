@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 15:47:37 by lnelson           #+#    #+#             */
-/*   Updated: 2022/07/30 21:37:49 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/07/31 16:33:28 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,16 +63,24 @@ class Server
 		void			acceptClient();
 		void			proccessEventFd(int i);
 
-		void			proccessRegisteredClient(Client * client);
-		void			proccessPendingClient(Client * pendingClient);
+		void			proccessRegisteredClient(Client & client);
+		void			proccessPendingClient(Client & pendingClient);
 
-		void			addPendingClient(Client const & pendingUser, int fd);
+		void			addPendingClient(Client pendingUser, int fd);
 		bool			parseClientSent(char * buff, Client &user);
 
 		std::string		&serverhash(std::string &toHash) const;
 
 		struct pollfd&	createPollfd(int fd);
 
+
+	class UserNotFound: public std::exception
+	{
+		public:
+		virtual const char * what() const throw() {
+			return "User not found";
+		}
+	};
 
 
 	public:
@@ -87,14 +95,14 @@ class Server
 
 		channelmap::iterator	addChannel(Channel &newchan);
 
-		void					addClient(Client const & user, int fd);
+		void					addClient(Client user, int fd);
 		void					deleteClient(std::string uname);
 
 		bool					checkOpPass(std::string pass) const;
 		bool					checkServerPass(std::string pass) const;
 
 		Client					*searchClient(std::string nickName);
-		Client					*searchClient(int fd, clientmap map);
+		Client	&				searchClient(int fd, clientmap map);
 
 		Channel					 *searchChannel(std::string channame);
 

@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 18:06:57 by lnelson           #+#    #+#             */
-/*   Updated: 2022/07/30 22:57:41 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/07/31 16:52:39 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,10 +46,11 @@ _server_pwd(pwd)
 
 	/**************************************************************************/
 	_clientSockets.push_back(this->createPollfd(_entrySocket));
-	Client &tmp = *(new Client(this, "Server_Machine_Admin", "SM_Admin", "SM_Admin"));
-	tmp.changeName(std::string("ServerAdmin"));
-	tmp.becomeOperator();
-	addClient(tmp, 0);
+	Client *tmp = new Client(this, "Server_Machine_Admin", "SM_Admin", "SM_Admin");
+	tmp->changeName(std::string("ServerAdmin"));
+	tmp->becomeOperator();
+	addClient(*tmp, 0);
+	delete(tmp);
 	/**************************************************************************/
 }
 
@@ -86,18 +87,18 @@ void							Server::sendToClient(Client &sendTo, std::string mssg)
 {
 	int size;
 
-	size =	mssg.size() 
-			+ std::string(std::string(SERVER_NAME) 
-			+ std::string(" ")).size() 
-			+ 3;
+	size =	mssg.size() + 
+			std::string(std::string(SERVER_NAME) + 
+			" ").size() + 
+			3;
 
 	send(sendTo.getFd(),
 		(void *)std::string
 			(
-				std::string(SERVER_NAME) 
-				+ std::string(" ") 
-				+ mssg 
-				+ std::string("\r\n")
+				std::string(SERVER_NAME) + 
+				" " + 
+				mssg + 
+				"\r\n"
 			).c_str(),
 		 size,
 		 0);
@@ -105,13 +106,13 @@ void							Server::sendToClient(Client &sendTo, std::string mssg)
 	
 	serverLogMssg(std::string
 			(
-				std::string("message sent to <")
+				"message sent to <"
 				+ sendTo.getNname()
-				+ std::string("> :|")
-				+ std::string(SERVER_NAME) 
-				+ std::string(" ") 
+				+ "> :|"
+				+ SERVER_NAME
+				+ " "
 				+ mssg 
-				+ std::string("|\r\n")
+				+ "|\r\n"
 			));
 }
 
@@ -130,11 +131,11 @@ Server::channelmap::iterator	Server::addChannel(Channel &newchan)
 
 
 //	adding client, using recv -> parsing user info -> adding new user | sending an error mssg
-void	Server::addClient(Client const & user, int fd)
+void	Server::addClient(Client user, int fd)
 {
 	_clientSockets.push_back(createPollfd(fd));
 	_usersMap.insert(std::make_pair(fd, user));
-	serverLogMssg(std::string(std::string("new client <") + user.getNname() + std::string("> added to the client list")));
+	serverLogMssg(std::string("new client <" + user.getNname() + " > added to the client list"));
 }
 
 
@@ -186,12 +187,12 @@ bool	Server::checkServerPass(std::string pass) const {
 
 
 // search a client int the corresponding map, by his fd
-Client*	Server::searchClient(int fd, clientmap map) 
+Client &	Server::searchClient(int fd, clientmap map) 
 {
 	clientmap::iterator it = map.find(fd);
 	if (it == map.end())
-		return (NULL);
-	return (&(it->second));
+		throw UserNotFound();
+	return (it->second);
 }
 
 
@@ -264,7 +265,7 @@ void Server::init_socket(int port)
 // main poll routine, checking and proccessing events if any occurs
 void	Server::pollRoutine()
 {
-	if (poll(&(*(_clientSockets.begin())), _clientSockets.size(), 1000) > 0)
+	if (poll(&(*(_clientSockets.begin())), _clientSockets.size(), 500) > 0)
 	{
 		serverLogMssg(" pool detected something:");
 		for (unsigned int i = 0; i < _clientSockets.size(); i++)
@@ -288,19 +289,19 @@ void	Server::proccessEventFd(int i)
 		this->acceptClient();
 	else
 	{
-		Client *ptr = NULL;
-		ptr = searchClient(_clientSockets[i].fd, _pendingClients);
-		if (ptr != NULL)
+		try
 		{
+			Client & tmp = searchClient(_clientSockets[i].fd, _pendingClients);
 			serverLogMssg("enteting ProccessPendingClient");
-			this->proccessPendingClient(ptr);
+			this->proccessPendingClient(tmp);
 		}
-		else
+		catch(Server::UserNotFound &nte)
 		{
-			ptr = searchClient(_clientSockets[i].fd, _usersMap);
+			Client & tmp = searchClient(_clientSockets[i].fd, _usersMap);
 			serverLogMssg("entering ProccessRegisteredClient");
-			this->proccessRegisteredClient(ptr);
+			proccessRegisteredClient(tmp);			
 		}
+		
 	}
 	_clientSockets[i].revents = 0;
 }
@@ -357,21 +358,18 @@ void	Server::acceptClient()
 	
 	client_fd = accept(_entrySocket, (struct sockaddr *)&_client, &len);
  	if (client_fd >= 0)
-  	{
-		Client &tmp = *(new Client(this, "pending_user", client_fd));
-		addPendingClient(tmp, client_fd);
-	}
+		addPendingClient(Client(this, "pending_user", client_fd), client_fd);
 	else
 		serverLogMssg("accept failure");
 }
 
 
-void	Server::proccessPendingClient(Client * pendingClient)
+void	Server::proccessPendingClient(Client & pendingClient)
 {
 	char buff[553];
 	int rcvRet;
 
-	rcvRet = recv(pendingClient->getFd(), (void*) buff, 552, 0);
+	rcvRet = recv(pendingClient.getFd(), (void*) buff, 552, 0);
 	if (rcvRet > 0)
 	{
 		if (rcvRet > 552)
@@ -395,14 +393,14 @@ void	Server::proccessPendingClient(Client * pendingClient)
 
 								*logStream << "str = |" << cmdName << "' '" << cmdArgs << "|" << std::endl;
 
-			if (pendingClient->getPassStatus() == false)
+			if (pendingClient.getPassStatus() == false)
 			{
 				if (cmdName == "PASS")
 				{
 					if (!this->checkServerPass(cmdArgs))
-						sendToClient(*pendingClient, "464 * :Password incorrect");
+						sendToClient(pendingClient, "464 * :Password incorrect");
 					else
-						pendingClient->validatePass();
+						pendingClient.validatePass();
 				}
 			}
 
@@ -414,12 +412,12 @@ void	Server::proccessPendingClient(Client * pendingClient)
 					{
 						try
 						{
-							pendingClient->execute(cmdName, cmdArgs);
-							pendingClient->validateNick();
+							pendingClient.execute(cmdName, cmdArgs);
+							pendingClient.validateNick();
 						}
 						catch(const std::exception& e)
 						{
-							sendToClient(*pendingClient,
+							sendToClient(pendingClient,
 							std::string(
 								std::string("433 * ") +
 								cmdArgs +
@@ -428,8 +426,8 @@ void	Server::proccessPendingClient(Client * pendingClient)
 					}
 					else
 					{
-						pendingClient->execute(cmdName, cmdArgs);
-						pendingClient->validateUser();
+						pendingClient.execute(cmdName, cmdArgs);
+						pendingClient.validateUser();
 					}
 				}
 			}
@@ -440,15 +438,15 @@ void	Server::proccessPendingClient(Client * pendingClient)
 	else if (rcvRet == 0)
 	{
 		*logStream << "One of Pending client's disconected, closing the corresponding socket" << std::endl;
-		close(pendingClient->getFd());
-		_pendingClients.erase(pendingClient->getFd());
+		close(pendingClient.getFd());
+		_pendingClients.erase(pendingClient.getFd());
 
 		std::vector<struct pollfd>::iterator it = _clientSockets.begin();
 		std::vector<struct pollfd>::iterator ite = _clientSockets.end();
 	
 		while (it != ite)
 		{
-			if (it->fd == pendingClient->getFd())
+			if (it->fd == pendingClient.getFd())
 			{
 				_clientSockets.erase(it);
 				it = ite;
@@ -458,24 +456,24 @@ void	Server::proccessPendingClient(Client * pendingClient)
 		}
 	}	
 
-	if (pendingClient->getNickstatus() && pendingClient->getUserStatus() && pendingClient->getPassStatus())
+	if (pendingClient.getNickstatus() && pendingClient.getUserStatus() && pendingClient.getPassStatus())
 	{
-		addClient(*pendingClient, pendingClient->getFd());
-		_pendingClients.erase(pendingClient->getFd());
-		this->sendToClient(*pendingClient,
-			std::string("001 " +
-			pendingClient->getNname() +
+		addClient(pendingClient, pendingClient.getFd());
+		this->sendToClient(pendingClient,
+		std::string("001 " +
+			pendingClient.getNname() +
 			std::string(" :Welcome to our first IRC server for 42.paris!")));
+		_pendingClients.erase(pendingClient.getFd());
 	}
 }
 
 
-void	Server::proccessRegisteredClient(Client * client)
+void	Server::proccessRegisteredClient(Client & client)
 {
 	char buff[553];
 	int rcvRet;
 
-	rcvRet = recv(client->getFd(), (void*) buff, 552, 0);
+	rcvRet = recv(client.getFd(), (void*) buff, 552, 0);
 	if (rcvRet > 0)
 	{
 		if (rcvRet > 552)
@@ -498,14 +496,14 @@ void	Server::proccessRegisteredClient(Client * client)
 
 			try
 			{
-				client->execute(cmdName, cmdArgs);
+				client.execute(cmdName, cmdArgs);
 			}
 			catch (Nick::NameTakenException &nte)
 			{
-				sendToClient(*client,
+				sendToClient(client,
 				std::string(
 					std::string("433 ") +
-					client->getNname() +
+					client.getNname() +
 					" " +
 					cmdArgs +
 					std::string(" :Nickname is already in use")));
@@ -517,7 +515,7 @@ void	Server::proccessRegisteredClient(Client * client)
 	else if (rcvRet == 0)
 	{
 		*logStream << "One of Registered client's disconected, closing the corresponding socket" << std::endl;
-		this->deleteClient(client->getUname());
+		deleteClient(client.getUname());
 	}
 
 }
@@ -528,7 +526,7 @@ void	Server::proccessRegisteredClient(Client * client)
 
 
 //	add a client in the "pending list", for clients who doesn't send right PASS NICK and USER
-void	Server::addPendingClient(Client const & pendingUser, int fd)
+void	Server::addPendingClient(Client pendingUser, int fd)
 {
 	_clientSockets.push_back(createPollfd(fd));
 	_pendingClients.insert(std::make_pair(fd, pendingUser));

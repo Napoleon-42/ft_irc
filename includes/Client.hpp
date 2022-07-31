@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 15:48:04 by lnelson           #+#    #+#             */
-/*   Updated: 2022/07/27 21:32:12 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/07/31 13:07:48 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ class Client
 		Client(Server *current, std::string uname);
 		Client(Server *current, std::string uname, int fd);
 		Client(Server *current, std::string uname, std::string hname, std::string sname);
+		Client(Client const & var);
 		~Client();
 
 		bool	execute(std::string const &command, std::string const &restline);
@@ -106,6 +107,9 @@ class Client
 		const std::string &getUname() const {
 			return (_username);
 		}
+		const std::string &getHname() const {
+			return (_hostname);
+		}
 		const std::string &getSname() const {
 			return (_servername);
 		}
@@ -118,10 +122,10 @@ class Client
 		const commandmap &getCommands() const {
 			return (_commands);
 		}
-		Channel *getChannel() {
+		Channel *getChannel() const {
 			return (_currentChannel);
 		}
-		Server *getServer() {
+		Server *getServer() const {
 			return (_serv);
 		}
 };

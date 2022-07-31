@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 18:02:32 by lnelson           #+#    #+#             */
-/*   Updated: 2022/07/30 22:40:38 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/07/31 13:06:25 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ void        Client::addOpCommands() {
         ++it;
     }
 }
+
 
 Client::Client(): _username("non-spec")
 {
@@ -60,6 +61,22 @@ Client::Client(Server *current, std::string uname, std::string hname, std::strin
     _currentChannel = NULL;
     addBasicCommands();
 
+}
+
+Client::Client(Client const & var)
+{
+	_serv = var.getServer();
+	_username = var.getUname();
+	_nickname = var.getNname();
+	_hostname = var.getHname();
+	_servername = var.getSname();
+	_realname = var.getRname();
+	_fd = var.getFd();
+	_currentChannel = var.getChannel();
+	_pwdPass = var.getPassStatus();
+	_nick = var.getNickstatus();
+	_user = var.getUserStatus();
+	addBasicCommands();
 }
 
 Client::~Client()
