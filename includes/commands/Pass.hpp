@@ -1,21 +1,20 @@
-#ifndef Nick_HPP
-# define Nick_HPP
+#ifndef Pass_HPP
+# define Pass_HPP
 
 #include "../Command.hpp"
 
-class Nick : public Command {
+class Pass : public Command {
     public :
-        Nick();
-        Nick(Server *serv);
+        Pass();
+        Pass(Server *serv);
 
         std::string help_msg() const;
         void    execute(std::string line, Client &user);
 
-        class NameTakenException : public std::exception {
+        class WrongPassException : public std::exception {
             public :
                 virtual const char * what(void) const throw();
         };
 };
-
 
 #endif
