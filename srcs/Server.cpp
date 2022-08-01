@@ -70,7 +70,6 @@ Server::~Server()
 ** --------------------------------- PUBLIC METHODS ----------------------------
 */
 
-
 //	main server routine, accepting client  and preccesing requests
 void							Server::routine()
 {
@@ -80,24 +79,22 @@ void							Server::routine()
 	}
 }
 
-
-//	sending message (*mssg* std::string) to a specific (*sendTo* client), adding prefixed server name and \r\n
-void							Server::sendToClient(Client &sendTo, std::string mssg)
+//	sending message (*mssg* std::string) to a specific (*sendTo* client), adding prefix and \r\n
+void	Server::sendToClient(Client const &sendTo, std::string prefix, std::string mssg)
 {
 	int size;
 
-	size =	mssg.size() + 
-			std::string(std::string(SERVER_NAME) + 
-			" ").size() + 
-			3;
-
+	size =	mssg.size() 
+			+ prefix.size()
+			+ std::string(" ").size() 
+			+ 3;
 	send(sendTo.getFd(),
 		(void *)std::string
 			(
-				std::string(SERVER_NAME) + 
-				" " + 
-				mssg + 
-				"\r\n"
+				prefix
+				+ std::string(" ") 
+				+ mssg 
+				+ std::string("\r\n")
 			).c_str(),
 		 size,
 		 0);
@@ -107,26 +104,25 @@ void							Server::sendToClient(Client &sendTo, std::string mssg)
 			(
 				"message sent to <"
 				+ sendTo.getNname()
-				+ "> :|"
-				+ SERVER_NAME
-				+ " "
+				+ std::string("> :|")
+				+ prefix 
+				+ std::string(" ")
 				+ mssg 
 				+ "|\r\n"
 			));
 }
 
-
-
-
+//	sending message (*mssg* std::string) to a specific (*sendTo* client), adding prefixed server name and \r\n
+void	Server::sendToClient(Client const &sendTo, std::string mssg)
+{
+	sendToClient(sendTo, std::string(SERVER_NAME), mssg);
+}
 
 // adding new channel to existing one's
 Server::channelmap::iterator	Server::addChannel(Channel &newchan)
 {
 	return _channels.insert(std::make_pair(newchan.getName(), newchan)).first;
 }
-
-
-
 
 
 //	adding client, using recv -> parsing user info -> adding new user | sending an error mssg
