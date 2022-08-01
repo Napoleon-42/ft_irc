@@ -6,7 +6,7 @@
 #    By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/06/22 17:56:55 by lnelson           #+#    #+#              #
-#    Updated: 2022/07/14 15:01:27 by lnelson          ###   ########.fr        #
+#    Updated: 2022/07/31 13:35:25 by lnelson          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -57,6 +57,9 @@ OBJS		= ${SRCS:.cpp=.o}
 
 $(NAME): ${OBJS}
 		${CXX} ${CXXFLAGS} -o ${NAME} ${OBJS}
+
+sanitize: ${OBJS}
+		${CXX} ${CXXFLAGS} -fsanitize=address -o sserver ${OBJS}
 
 clean :
 		rm -rf ${OBJS}
