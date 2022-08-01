@@ -112,11 +112,11 @@ Command*    Client::searchCommand(std::string cmd) {
 }
 
 std::string Client::getPrefix() const {
-	std::string prefix = nickname;
+	std::string prefix = _nickname;
 	if (_hostname.length())
 	{
 		if (_username.length())
-			prefix += "!" + username;
+			prefix += "!" + _username;
 		prefix += "@" + _hostname;
 	}
 	return prefix;

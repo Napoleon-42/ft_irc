@@ -92,7 +92,7 @@ class Server
 
 		void					routine();
 		void					sendToClient(Client const &sendTo, std::string prefix, std::string mssg);
-		void					sendToClient(Client &sendTo, std::string mssg);
+		void					sendToClient(Client const &sendTo, std::string mssg);
 
 		channelmap::iterator	addChannel(Channel &newchan);
 
