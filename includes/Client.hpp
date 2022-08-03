@@ -103,7 +103,11 @@ class Client
 		bool	getNickstatus() const{
 			return (_nick);
 		}
-
+		bool isPending() const {
+			if (_pwdPass && _user && _nick)
+				return false;
+			return true;
+		}
 		const std::string &getUname() const {
 			return (_username);
 		}

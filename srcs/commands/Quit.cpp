@@ -14,5 +14,5 @@ std::string Quit::help_msg() const {
 
 void Quit::execute(std::string line, Client &user) {
     clientLogMssg(line);
-    _serv->deleteClient(user.getUname());
+    _serv->deleteClient(user.getNname());
 }

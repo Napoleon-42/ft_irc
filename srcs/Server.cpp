@@ -128,20 +128,21 @@ Server::channelmap::iterator	Server::addChannel(Channel &newchan)
 //	adding client, using recv -> parsing user info -> adding new user | sending an error mssg
 void	Server::addClient(Client user, int fd)
 {
-	_clientSockets.push_back(createPollfd(fd));
+	if (fd != 1)
+		_clientSockets.push_back(createPollfd(fd));
 	_usersMap.insert(std::make_pair(fd, user));
 	serverLogMssg(std::string("new client <" + user.getNname() + " > added to the client list"));
 }
 
 
 // deleting client
-void	Server::deleteClient(std::string uname)
+void	Server::deleteClient(std::string nname)
 {
 	std::map<int, Client>::iterator it = _usersMap.begin();
 	std::map<int, Client>::iterator ite = _usersMap.end();
 	while (it != ite)
 	{
-		if (it->second.getUname() == uname)
+		if (it->second.getNname() == nname)
 		{
 			deleteFdfPoll(it->first);
 			_usersMap.erase(it);
@@ -393,7 +394,7 @@ void	Server::proccessPendingClient(Client * pendingClient)
 				if (cmdName == "PASS")
 				{
 					if (!this->checkServerPass(cmdArgs))
-						sendToClient(*pendingClient, "464 * :Password incorrect");
+						sendToClient(*pendingClient, ": 464", "* :Password incorrect");
 					else
 						pendingClient->validatePass();
 				}
@@ -412,9 +413,8 @@ void	Server::proccessPendingClient(Client * pendingClient)
 						}
 						catch(const std::exception& e)
 						{
-							sendToClient(*pendingClient,
+							sendToClient(*pendingClient, std::string(": 433 *"),
 							std::string(
-								std::string("433 * ") +
 								cmdArgs +
 								std::string(" :Nickname is already in use")));
 						}
@@ -435,11 +435,11 @@ void	Server::proccessPendingClient(Client * pendingClient)
 		*logStream << "One of Pending client's disconected, closing the corresponding socket" << std::endl;
 		deleteFdfPoll(pendingClient->getFd());
 		_pendingClients.erase(pendingClient->getFd());
+		return ;
 	}	
-
-	if (pendingClient->getNickstatus() && pendingClient->getUserStatus() && pendingClient->getPassStatus())
+	if (!pendingClient->isPending())
 	{
-		addClient(Client(*pendingClient), pendingClient->getFd());
+		addClient(Client(*pendingClient), 1);
 		this->sendToClient(*pendingClient,
 		std::string("001 " +
 			pendingClient->getNname() +
@@ -481,9 +481,8 @@ void	Server::proccessRegisteredClient(Client * client)
 			}
 			catch (Nick::NameTakenException &nte)
 			{
-				sendToClient(*client,
+				sendToClient(*client, std::string(": 433"),
 				std::string(
-					std::string("433 ") +
 					client->getNname() +
 					" " +
 					cmdArgs +
@@ -496,7 +495,7 @@ void	Server::proccessRegisteredClient(Client * client)
 	else if (rcvRet == 0)
 	{
 		*logStream << "One of Registered client's disconected, closing the corresponding socket" << std::endl;
-		deleteClient(client->getUname());
+		deleteClient(client->getNname());
 	}
 
 }
