@@ -6,12 +6,11 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/17 21:28:48 by lnelson           #+#    #+#             */
-/*   Updated: 2022/08/03 18:58:29 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/08/03 22:01:29 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_irc.hpp"
-#include <fstream>
 #include "Server.hpp"
 #include "Client.hpp"
 
@@ -36,7 +35,7 @@ int main(int ac, char **av)
 {
 	/**************************************************************************/
 
-
+	bool file_output;
 	int port;
 	std::string pwd;
 	
@@ -48,16 +47,24 @@ int main(int ac, char **av)
 	else
 	{
 		if (ac == 4)
+		{
 			logStream = set_log_file(FILE_OUTPUT);
+			file_output = true;
+		}
 		else
+		{
 			logStream = set_log_file(STD_OUTPUT);
+			file_output = false;
+		}
 		port = atoi(av[1]);
 		pwd = av[2];
 	}
 
 	/***************************************************************************/
 	
-	Server irc(port, pwd);
+	Server irc(port, pwd, file_output);
+	irc.routine();
+	
 	/*
 	std::vector<std::string> truc = ftirc_split(":test :trc:lol  make::check ", " :");
 	std::vector<std::string>::iterator it = truc.begin();
@@ -80,7 +87,6 @@ int main(int ac, char **av)
 	*logStream << ret << std::endl;
 	chan.addClient(&client);
 	*/
-	irc.routine();
 
 
 	/***************************************************************************/

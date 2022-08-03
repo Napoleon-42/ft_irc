@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 15:47:37 by lnelson           #+#    #+#             */
-/*   Updated: 2022/08/04 00:37:57 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/08/04 01:09:30 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,8 @@ class Server
 	private:
 
 		int _entrySocket;
+
+		bool								_file_output;
 
 		std::vector<struct pollfd> 			_clientSockets;
 		
@@ -88,7 +90,7 @@ class Server
 	public:
 
 		Server();
-		Server(int port, std::string pwd);
+		Server(int port, std::string pwd, bool file_output);
 		~Server();
 
 		void					routine();
