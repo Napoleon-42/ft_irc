@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 18:06:57 by lnelson           #+#    #+#             */
-/*   Updated: 2022/08/03 21:24:10 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/08/03 21:57:12 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,9 @@
 {
 }
 
-Server::Server(int port, std::string pwd)
+Server::Server(int port, std::string pwd, bool file_output)
 :
+_file_output(file_output),
 _server_pwd(pwd)
 {
 	_server_pwd = serverhash(pwd);
@@ -48,6 +49,7 @@ _server_pwd(pwd)
 
 	/**************************************************************************/
 	Client tmp(this, "Server_Machine_Admin", "SM_Admin", "SM_Admin");
+	_clientSockets.push_back(createPollfd(0));
 	tmp.changeName(std::string("ServerAdmin"));
 	tmp.becomeOperator();
 	addClient(tmp, 0);
@@ -119,8 +121,6 @@ Server::channelmap::iterator	Server::addChannel(Channel &newchan)
 //	adding client, using recv -> parsing user info -> adding new user | sending an error mssg
 void	Server::addClient(Client &user, int fd)
 {
-	if (fd == 0)
-		_clientSockets.push_back(createPollfd(fd));
 	_usersMap.insert(std::make_pair(fd, user));
 	serverLogMssg(std::string("new client <" + user.getNname() + " > added to the client list"));
 }
@@ -163,6 +163,9 @@ void	Server::closeServer()
 		clientSocketsIterator++;
 	}
 	_clientSockets.clear();
+	_clientSockets.reserve(0);
+	*logStream << "client socket size = " << _clientSockets.size() << std::endl;
+	*logStream << "client socket capasity = " << _clientSockets.size() << std::endl;
 
 	// Clearing all Channels
 	_channels.clear();
@@ -192,6 +195,13 @@ void	Server::closeServer()
 		}
 		_opcommands.clear();
 	}
+
+	if (_file_output == true)
+	{
+		((std::ofstream*)(logStream))->close();
+		delete (logStream);
+	}
+
 	exit(0);
 }
 
