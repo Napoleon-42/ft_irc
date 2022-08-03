@@ -7,13 +7,13 @@
 
 	/*001*/
 	std::string RPL_WELCOME(std::string nick, std::string user, std::string host)
-	{return "Welcome to LazyRC " + nick + "!" + user + "@" + host;}
+	{return ":Welcome to the Internet Relay Network " + nick + "!" + user + "@" + host;}
 	/*002*/
 	std::string RPL_YOURHOST(std::string servername, std::string version)
-	{return "Your host is " + servername  + ", running version " + version;}
+	{return ":Your host is " + servername  + ", running version " + version;}
 	/*003*/
 	std::string RPL_CREATED(std::string date)
-	{return "This server was created " + date;}
+	{return ":This server was created " + date;}
 	/*004*/
 	std::string RPL_MYINFO(std::string servername, std::string version, std::string umodes, std::string cmodes)
 	{return servername + version + umodes + cmodes;}
@@ -47,6 +47,10 @@
 	/*474*/    
 	std::string ERR_BANNEDFROMCHAN(std::string channel)
 	{return channel + " :Cannot join channel (+b)";}
+    /*442*/
+    std::string ERR_NOTONCHANNEL(std::string channel)
+    {return channel + ":You're not on that channel";}
+
 
     std::string get_reply(int code, std::string arg1 = std::string(""), std::string arg2 = std::string(""), std::string arg3 = std::string("") , std::string arg4 = std::string(""))
 	{
@@ -81,6 +85,8 @@
 			return ERR_PASSWDMISMATCH();
 		case 474:
 			return ERR_BANNEDFROMCHAN(arg1);
+        case 442:
+            return ERR_NOTONCHANNEL(arg1);
 		default:
 			return "";
 		}

@@ -156,3 +156,14 @@ void Client::receive_reply(int code, std::string arg1, std::string arg2, std::st
     std::string tosend = code_str + " " + nick + " " + reply;
     _serv->sendToClient(*this , ":" + getPrefix(), tosend);
 }
+
+void Client::getLoggedOn() {
+    std::string buffer;
+    buffer += ": NICK :" + this->getNname() + "\r\n";
+	buffer += ":" + getPrefix() + " 001 " + this->getNname() + " " + get_reply(001, this->getNname(), this->getUname(), this->getHname(), "") + "\r\n";
+	buffer += ":" + getPrefix() + " 002 " + this->getNname() + " "  + get_reply(002, this->getHname(), "0.9", "", "") + "\r\n";
+	buffer += ":" + getPrefix() + " 003 " + this->getNname() + " "  + get_reply(003, "03/08/2022", "", "", "") + "\r\n";
+	buffer += ":" + getPrefix() + " 004 " + this->getNname() + " "  + get_reply(004, "ft_irc", " 0.9", "", "") + "\r\n";
+    serverLogMssg(buffer);
+    send(getFd(), buffer.c_str(), buffer.length(), 0);
+}

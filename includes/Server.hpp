@@ -66,7 +66,7 @@ class Server
 		void			proccessRegisteredClient(Client * client);
 		void			proccessPendingClient(Client * pendingClient);
 
-		void			addPendingClient(Client pendingUser, int fd);
+		void			addPendingClient(Client &pendingUser, int fd);
 		bool			parseClientSent(char * buff, Client &user);
 
 		std::string		&serverhash(std::string &toHash) const;
@@ -96,7 +96,7 @@ class Server
 
 		channelmap::iterator	addChannel(Channel &newchan);
 
-		void					addClient(Client user, int fd);
+		void					addClient(Client &user, int fd);
 		void					deleteClient(std::string uname);
 
 		void					closeServer();

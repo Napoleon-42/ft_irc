@@ -20,10 +20,17 @@ ChannelBan::ChannelBan(Server *serv) : Command(serv) {
 }
 
 std::string ChannelBan::help_msg() const {
-    return ("/kban username (allows you to ban this user from the channel)");
+    return ("/ban username (allows you to ban this user from the channel)");
 }
 
 void ChannelBan::execute(std::string line, Client &user) {
+    std::string channame = line;
+    std::vector<std::string> params = ftirc_split(line, " ");
+    if (params.size() == 0)
+    {
+        user.receive_reply(461, "BAN");
+        return;
+    }
     Channel *chan = user.getChannel();
     if (!chan)
         return ;
