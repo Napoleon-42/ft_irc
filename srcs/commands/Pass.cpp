@@ -15,14 +15,13 @@ std::string Pass::help_msg() const {
 
 void Pass::execute(std::string line, Client &user) {
     if (!_serv->checkServerPass(line))
-    { // Connection refusée
-        throw WrongPassException();
+    {
+        user.receive_reply(464);
     }
     else
-    { // Connection réussie
-        clientLogMssg("Bon mdp rentré.");
-        _serv->sendToClient(user, "Welcome !");
+    {
         user.addBasicCommands();
+		user.validatePass();
     }
 }
 

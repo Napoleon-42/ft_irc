@@ -18,10 +18,12 @@ void Usercmd::execute(std::string line, Client &user) {
     if (pos != std::string::npos && splits.size() >= 4)
     {
         user.update_all_name(splits[0], splits[1], splits[2], line.substr(pos + 1));
+		user.validateUser();
         serverLogMssg("Right number of arguments. USER executed");
     } else if (splits.size() == 4)
     {
 		user.update_all_name(splits[0], splits[1], splits[2], splits[3]);
+		user.validateUser();
         serverLogMssg("Right number of arguments. USER executed");
     }
     else {

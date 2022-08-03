@@ -98,13 +98,17 @@ void	Server::sendToClient(Client const &sendTo, std::string prefix, std::string 
 			).c_str(),
 		 size,
 		 0);
-
-	
+	std::string str;
+	std::stringstream ss;  
+  	ss << sendTo.getFd();  
+  	ss >> str;
 	serverLogMssg(std::string
 			(
 				"message sent to <"
 				+ sendTo.getNname()
-				+ std::string("> :|")
+				+ std::string("> fd ")
+				+ str
+				+ std::string("|")
 				+ prefix 
 				+ std::string(" ")
 				+ mssg 
@@ -126,13 +130,21 @@ Server::channelmap::iterator	Server::addChannel(Channel &newchan)
 
 
 //	adding client, using recv -> parsing user info -> adding new user | sending an error mssg
-void	Server::addClient(Client user, int fd)
+void	Server::addClient(Client &user, int fd)
 {
-	_clientSockets.push_back(createPollfd(fd));
+	if (fd == 0)
+		_clientSockets.push_back(createPollfd(fd));
 	_usersMap.insert(std::make_pair(fd, user));
 	serverLogMssg(std::string("new client <" + user.getNname() + " > added to the client list"));
 }
 
+//	add a client in the "pending list", for clients who doesn't send right PASS NICK and USER
+void	Server::addPendingClient(Client &pendingUser, int fd)
+{
+	_clientSockets.push_back(createPollfd(fd));
+	_pendingClients.insert(std::make_pair(fd, pendingUser));
+	serverLogMssg("Added new pending user");
+}
 
 // deleting client
 void	Server::deleteClient(std::string nname)
@@ -178,7 +190,7 @@ Client *	Server::searchClient(int fd, clientmap * map)
 {
 	clientmap::iterator it = map->find(fd);
 	if (it == map->end())
-		throw UserNotFound();
+		return NULL;
 	return (&(it->second));
 }
 
@@ -276,21 +288,18 @@ void	Server::proccessEventFd(int i)
 		this->acceptClient();
 	else
 	{
-		try
-		{
-			Client * tmp = searchClient(_clientSockets[i].fd, &_pendingClients);
+		Client * tmp = searchClient(_clientSockets[i].fd, &_pendingClients);
+		if (tmp) {
 			serverLogMssg("entering ProccessPendingClient");
 			proccessPendingClient(tmp);
 		}
-		catch(Server::UserNotFound &nte)
-		{
-			try
-			{
-				Client * tmp = searchClient(_clientSockets[i].fd, &_usersMap);
+		else {
+			tmp = searchClient(_clientSockets[i].fd, &_usersMap);
+			if (tmp) {
 				serverLogMssg("entering ProccessRegisteredClient");
 				proccessRegisteredClient(tmp);
 			}
-			catch(Server::UserNotFound &nte)
+			else
 			{
 				serverLogMssg("deleting a Fd from poll");
 				deleteFdfPoll(_clientSockets[i].fd);
@@ -352,8 +361,10 @@ void	Server::acceptClient()
     int	client_fd = -1;
 	
 	client_fd = accept(_entrySocket, (struct sockaddr *)&_client, &len);
- 	if (client_fd >= 0)
-		addPendingClient(Client(this, "pending_user", client_fd), client_fd);
+ 	if (client_fd >= 0) {
+		Client tmp = Client(this, "pending_user", client_fd);
+		addPendingClient(tmp, client_fd);
+	}
 	else
 		serverLogMssg("accept failure");
 }
@@ -384,48 +395,29 @@ void	Server::proccessPendingClient(Client * pendingClient)
 		{
 			size_t first_space = msgsit->find(' ');
 			std::string cmdName = msgsit->substr(0, first_space);
+<<<<<<< HEAD
 			std::string cmdArgs = msgsit->substr((first_space == msgsit->size() || first_space == std::string::npos ? first_space : first_space + 1));
 
 								*logStream << "str = |" << cmdName << "' '" << cmdArgs << "|" << std::endl;
 
+=======
+			std::string cmdArgs = msgsit->substr((first_space == msgsit->size() ? first_space : first_space + 1));
+			*logStream << "str = |" << cmdName << "' '" << cmdArgs << "|" << std::endl;
+>>>>>>> f4338b58d8ef207a9cb458a18a5e888b4f606002
 			if (pendingClient->getPassStatus() == false)
 			{
 				if (cmdName == "PASS")
 				{
-					if (!this->checkServerPass(cmdArgs))
-						sendToClient(*pendingClient, ": 464", "* :Password incorrect");
-					else
-						pendingClient->validatePass();
+					pendingClient->execute(cmdName, cmdArgs);
 				}
 			}
-
 			else
 			{
 				if (cmdName == "NICK" || cmdName == "USER")
 				{
-					if (cmdName == "NICK")
-					{
-						try
-						{
-							pendingClient->execute(cmdName, cmdArgs);
-							pendingClient->validateNick();
-						}
-						catch(const std::exception& e)
-						{
-							sendToClient(*pendingClient, std::string(": 433 *"),
-							std::string(
-								cmdArgs +
-								std::string(" :Nickname is already in use")));
-						}
-					}
-					else
-					{
-						pendingClient->execute(cmdName, cmdArgs);
-						pendingClient->validateUser();
-					}
+					pendingClient->execute(cmdName, cmdArgs);
 				}
 			}
-
 			msgsit++;
 		}
 	}
@@ -438,10 +430,7 @@ void	Server::proccessPendingClient(Client * pendingClient)
 	}	
 	if (!pendingClient->isPending())
 	{
-		this->sendToClient(*pendingClient,
-		std::string("001 " +
-			pendingClient->getNname() +
-			std::string(" :Welcome to our first IRC server for 42.paris!")));
+		pendingClient->getLoggedOn();
 		addClient(*pendingClient, pendingClient->getFd());
 		_pendingClients.erase(pendingClient->getFd());
 	}
@@ -475,20 +464,7 @@ void	Server::proccessRegisteredClient(Client * client)
 			if (first_space == std::string::npos)
 				first_space = msgsit->size();
 			std::string cmdArgs = msgsit->substr((first_space == msgsit->size() ? first_space : first_space + 1));
-
-			try
-			{
-				client->execute(cmdName, cmdArgs);
-			}
-			catch (Nick::NameTakenException &nte)
-			{
-				sendToClient(*client, std::string(": 433"),
-				std::string(
-					client->getNname() +
-					" " +
-					cmdArgs +
-					std::string(" :Nickname is already in use")));
-			}
+			client->execute(cmdName, cmdArgs);
 			msgsit++;
 		}
 		
@@ -499,19 +475,6 @@ void	Server::proccessRegisteredClient(Client * client)
 		deleteClient(client->getNname());
 	}
 
-}
-
-
-
-
-
-
-//	add a client in the "pending list", for clients who doesn't send right PASS NICK and USER
-void	Server::addPendingClient(Client pendingUser, int fd)
-{
-	_clientSockets.push_back(createPollfd(fd));
-	_pendingClients.insert(std::make_pair(fd, pendingUser));
-	serverLogMssg("Added new pending user");
 }
 
  

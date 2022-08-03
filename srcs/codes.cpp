@@ -7,13 +7,13 @@
 
 	/*001*/
 	std::string RPL_WELCOME(std::string nick, std::string user, std::string host)
-	{return "Welcome to LazyRC " + nick + "!" + user + "@" + host;}
+	{return ":Welcome to the Internet Relay Network " + nick + "!" + user + "@" + host;}
 	/*002*/
 	std::string RPL_YOURHOST(std::string servername, std::string version)
-	{return "Your host is " + servername  + ", running version " + version;}
+	{return ":Your host is " + servername  + ", running version " + version;}
 	/*003*/
 	std::string RPL_CREATED(std::string date)
-	{return "This server was created " + date;}
+	{return ":This server was created " + date;}
 	/*004*/
 	std::string RPL_MYINFO(std::string servername, std::string version, std::string umodes, std::string cmodes)
 	{return servername + version + umodes + cmodes;}
