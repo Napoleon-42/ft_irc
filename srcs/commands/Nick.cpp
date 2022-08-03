@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 18:02:52 by lnelson           #+#    #+#             */
-/*   Updated: 2022/07/13 18:02:53 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/07/27 18:12:50 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,8 @@ std::string Nick::help_msg() const {
 void Nick::execute(std::string line, Client &user) {
     if (_serv->searchClient(line))
         throw NameTakenException();
+    for (Server::clientmap::const_iterator it = _serv->getClients().begin(); it != _serv->getClients().end(); ++it)
+        _serv->sendToClient(it->second, ":" + user.getPrefix(), "NICK :" + line);
     user.changeName(line);
     serverLogMssg("Nick command executed");
 }

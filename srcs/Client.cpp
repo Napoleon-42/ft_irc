@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 18:02:32 by lnelson           #+#    #+#             */
-/*   Updated: 2022/07/23 21:02:28 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/07/31 13:06:25 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ void        Client::addOpCommands() {
     }
 }
 
+
 Client::Client(): _username("non-spec")
 {
     clientLogMssg(std::string("Client " + _username + " created"));
@@ -50,7 +51,7 @@ Client::Client(): _username("non-spec")
 }
 
 Client::Client(Server *current, std::string uname) :
-    _serv(current), _username(uname), _currentChannel(NULL)
+    _serv(current), _username(uname), _currentChannel(NULL), _pwdPass(false), _nick(false), _user(false)
 {
     clientLogMssg(std::string("Client " + _username + " created"));
     addLoginCommands();
@@ -58,20 +59,36 @@ Client::Client(Server *current, std::string uname) :
 }
 
 Client::Client(Server *current, std::string uname, int fd) :
-	_serv(current), _username(uname), _fd(fd), _currentChannel(NULL)
+	_serv(current), _username(uname), _fd(fd), _currentChannel(NULL), _pwdPass(false), _nick(false), _user(false)
 {
 	clientLogMssg(std::string("Client " + _username + " created"));
     addLoginCommands();
 }
 
 Client::Client(Server *current, std::string uname, std::string hname, std::string sname) :
-    _username(uname), _hostname(hname), _servername(sname)
+    _username(uname), _hostname(hname), _servername(sname), _pwdPass(false), _nick(false), _user(false)
 {
     _serv = current;
     clientLogMssg(std::string("Client " + _username + " created"));
     _currentChannel = NULL;
     addBasicCommands();
 
+}
+
+Client::Client(Client const & var)
+{
+	_serv = var.getServer();
+	_username = var.getUname();
+	_nickname = var.getNname();
+	_hostname = var.getHname();
+	_servername = var.getSname();
+	_realname = var.getRname();
+	_fd = var.getFd();
+	_currentChannel = var.getChannel();
+	_pwdPass = var.getPassStatus();
+	_nick = var.getNickstatus();
+	_user = var.getUserStatus();
+	addBasicCommands();
 }
 
 Client::~Client()
@@ -88,7 +105,7 @@ bool	    Client::execute(std::string const &cmd, std::string const &restline) {
     commandmap::iterator cit = _commands.find(cmd);
     if (cit == _commands.end()) {
         clientLogMssg("Command '" + cmd + "' not found in available commands for the client : " + _username);
-        _serv->sendToClient(*this, "Command not found.");
+        _serv->sendToClient(*this, "421 " + _nickname + " " + cmd + " :Unknown command");
         return (false);
     }
     clientLogMssg("Executing " + cmd + " command.");
@@ -104,4 +121,15 @@ Command*    Client::searchCommand(std::string cmd) {
         return (NULL);
     }
     return (cit->second);
+}
+
+std::string Client::getPrefix() const {
+	std::string prefix = _nickname;
+	if (_hostname.length())
+	{
+		if (_username.length())
+			prefix += "!" + _username;
+		prefix += "@" + _hostname;
+	}
+	return prefix;
 }
