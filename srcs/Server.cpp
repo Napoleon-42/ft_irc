@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 18:06:57 by lnelson           #+#    #+#             */
-/*   Updated: 2022/08/03 19:06:45 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/08/03 19:18:18 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -521,15 +521,7 @@ void	Server::proccessRegisteredClient(Client * client)
 }
 
 
-//	add a client in the "pending list", for clients who doesn't send right PASS NICK and USER
-void	Server::addPendingClient(Client pendingUser, int fd)
-{
-	_clientSockets.push_back(createPollfd(fd));
-	_pendingClients.insert(std::make_pair(fd, pendingUser));
-	serverLogMssg("Added new pending user");
-}
 
- 
 bool	Server::parseClientSent(char * buff, Client &user) 
 {
 	std::vector<std::string> msgs = ftirc_split(buff, "\r\n");
