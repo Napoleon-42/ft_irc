@@ -79,6 +79,22 @@ Client      *Channel::searchClient(std::string nickname){
     return (it->second);
 }
 
+void    Channel::changenickClient(std::string nick, std::string oldnick) {
+    clientlist::iterator it = _clients.find(oldnick);
+    if (it == _clients.end())
+        return ;
+    _clients.insert(std::make_pair(nick, it->second));
+    _clients.erase(it);
+    return ;
+}
+
+bool      Channel::searchClient(std::string nickname) const{
+    clientlist::const_iterator it = _clients.find(nickname);
+    if (it == _clients.end())
+        return (false);
+    return (true);
+}
+
 Client      *Channel::searchBanned(std::string nickname){
     clientlist::iterator it = _clientsban.find(nickname);
     if (it == _clientsban.end())
@@ -86,7 +102,7 @@ Client      *Channel::searchBanned(std::string nickname){
     return (it->second);
 }
 
-std::string Channel::getName(){
+std::string Channel::getName() const{
     return (_name);
 }
 
