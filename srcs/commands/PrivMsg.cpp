@@ -53,12 +53,13 @@ void PrivMsg::execute(std::string line, Client &user) {
     }
     else
     {
-        target = line.substr(0, pos);
+        target = line.substr(0, pos - 1);
+		target = trim(target);
         Client *tar = _serv->searchClient(target);
         if (!tar) {
-            serverLogMssg("User not found error to transmit");
+            serverLogMssg("User not found error to transmit, user nickname =|" + target + "|");
             return ;
         }
-        _serv->sendToClient(*tar, ":" + user.getPrefix(), "PRIVMSG " + user.getUname() + " :" + line.substr(pos));
+        _serv->sendToClient(*tar, ":" + user.getPrefix(), "PRIVMSG " + target + " :" + line.substr(pos + 1));
     }
 }
