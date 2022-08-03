@@ -148,8 +148,12 @@ void Client::receive_reply(int code, std::string arg1, std::string arg2, std::st
     {
         code_str = "0" + code_str;
     }
-    std::string nick = this->getNname();
+    std::string nick;
+    if (isPending())
+        nick = "*";
+    else
+        nick = this->getNname();
     std::string reply = get_reply(code , arg1, arg2, arg3, arg4);
     std::string tosend = code_str + " " + nick + " " + reply;
-    _serv->sendToClient(*this , tosend);
+    _serv->sendToClient(*this , ":" + getPrefix(), tosend);
 }

@@ -373,8 +373,8 @@ void	Server::proccessPendingClient(Client * pendingClient)
 		else
 			buff[rcvRet] = 0;
 		
-								*logStream << "\treceived mssg = " << buff << std::endl;
-								*logStream << "PROCESSING PENDING CLIENT:" << std::endl;
+		*logStream << "\treceived mssg = " << buff << std::endl;
+		*logStream << "PROCESSING PENDING CLIENT:" << std::endl;
 
 		std::vector<std::string> msgs = ftirc_split(buff, "\r\n");
 
@@ -439,11 +439,11 @@ void	Server::proccessPendingClient(Client * pendingClient)
 	}	
 	if (!pendingClient->isPending())
 	{
-		addClient(Client(*pendingClient), 1);
 		this->sendToClient(*pendingClient,
 		std::string("001 " +
 			pendingClient->getNname() +
 			std::string(" :Welcome to our first IRC server for 42.paris!")));
+		addClient(*pendingClient, 1);
 		_pendingClients.erase(pendingClient->getFd());
 	}
 }
