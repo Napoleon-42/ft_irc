@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 18:02:32 by lnelson           #+#    #+#             */
-/*   Updated: 2022/07/31 13:06:25 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/08/03 18:51:26 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,6 @@ Client::Client(Client const & var)
 Client::~Client()
 {
     clientLogMssg(" Client " + _username + " destroyed");
-    
 }
 
 void	    Client::becomeOperator() {
