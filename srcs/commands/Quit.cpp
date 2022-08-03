@@ -14,5 +14,17 @@ std::string Quit::help_msg() const {
 
 void Quit::execute(std::string line, Client &user) {
     clientLogMssg(line);
+    std::vector<std::string> channames;
+    for (Server::channelmap::const_iterator it = _serv->getChannels().begin(); it != _serv->getChannels().end(); ++it) {
+        if (it->second.searchClient(user.getNname()))
+        {
+            channames.push_back(it->second.getName());
+        }
+    }
+    for (std::vector<std::string>::const_iterator it = channames.begin(); it != channames.end(); ++it) {
+            Channel *chan = _serv->searchChannel(*it);
+            if (chan)
+                chan->kickFromChannel(&user);
+        }
     _serv->deleteClient(user.getNname());
 }

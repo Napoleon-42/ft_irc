@@ -47,11 +47,12 @@ class Channel
         bool    addToBanList(Client *toBan);
         bool    kickFromChannel(Client *toKick);
 		Client *searchClient(std::string nickname);
+        bool    searchClient(std::string nickname) const;
+        void    changenickClient(std::string nick, std::string oldnick);
         Client *searchBanned(std::string nickname);
         const clientlist getBannedClients() const;
         const clientlist    &getClients() const;
-        std::string getName();
-        bool    searchClient(std::string nickname) const;
+        std::string getName() const;
 
 };
 
