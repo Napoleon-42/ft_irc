@@ -14,7 +14,7 @@
 #							FT_IRC MAKEFILE									   #
 # **************************************************************************** #
 
-NAME = server
+NAME = ircserv
 
 SRCS = srcs/main.cpp
 
@@ -48,7 +48,8 @@ SRCS		=	srcs/main.cpp \
 				srcs/commands/Kick.cpp \
 				srcs/commands/Pass.cpp \
 				srcs/commands/PrivMsg.cpp \
-				srcs/commands/Oper.cpp
+				srcs/commands/Oper.cpp \
+				srcs/codes.cpp
 
 OBJS		= ${SRCS:.cpp=.o}
 

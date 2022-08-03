@@ -12,6 +12,18 @@
 
 #include "Client.hpp"
 
+void        Client::addLoginCommands() {
+    Server::commandmap smap = _serv->getServCommands();
+    Server::commandmap::const_iterator it;
+    std::string tab[5] = {"PASS", "USER", "NICK", "QUIT","HELP"};
+    for (int i = 0; i < 5; ++i)
+    {
+        it = smap.find(tab[i]);
+        if (it != smap.end())
+            _commands.insert(std::make_pair(tab[i], it->second));        
+    }
+}
+
 void        Client::addBasicCommands() {
     Server::commandmap::const_iterator it = _serv->getServCommands().begin();
     Server::commandmap::const_iterator ite = _serv->getServCommands().end();
@@ -35,14 +47,14 @@ Client::Client(): _username("non-spec")
 {
     clientLogMssg(std::string("Client " + _username + " created"));
     _currentChannel = NULL;
-    addBasicCommands();
+    addLoginCommands();
 }
 
 Client::Client(Server *current, std::string uname) :
     _serv(current), _username(uname), _currentChannel(NULL), _pwdPass(false), _nick(false), _user(false)
 {
     clientLogMssg(std::string("Client " + _username + " created"));
-    addBasicCommands();
+    addLoginCommands();
 
 }
 
@@ -50,7 +62,7 @@ Client::Client(Server *current, std::string uname, int fd) :
 	_serv(current), _username(uname), _fd(fd), _currentChannel(NULL), _pwdPass(false), _nick(false), _user(false)
 {
 	clientLogMssg(std::string("Client " + _username + " created"));
-	addBasicCommands();
+    addLoginCommands();
 }
 
 Client::Client(Server *current, std::string uname, std::string hname, std::string sname) :
@@ -112,7 +124,11 @@ Command*    Client::searchCommand(std::string cmd) {
 }
 
 std::string Client::getPrefix() const {
-	std::string prefix = _nickname;
+    if (isPending())
+    {
+        return std::string("");
+    }
+    std::string prefix = _nickname;
 	if (_hostname.length())
 	{
 		if (_username.length())
@@ -120,4 +136,20 @@ std::string Client::getPrefix() const {
 		prefix += "@" + _hostname;
 	}
 	return prefix;
+}
+
+void Client::receive_reply(int code, std::string arg1, std::string arg2, std::string arg3, std::string arg4)
+{
+    std::stringstream str_stream;
+    str_stream << code;
+    std::string code_str;
+    str_stream >> code_str;
+    while (code_str.length() <  3)
+    {
+        code_str = "0" + code_str;
+    }
+    std::string nick = this->getNname();
+    std::string reply = get_reply(code , arg1, arg2, arg3, arg4);
+    std::string tosend = code_str + " " + nick + " " + reply;
+    _serv->sendToClient(*this , tosend);
 }

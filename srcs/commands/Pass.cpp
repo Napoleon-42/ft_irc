@@ -21,7 +21,8 @@ void Pass::execute(std::string line, Client &user) {
     else
     { // Connection réussie
         clientLogMssg("Bon mdp rentré.");
-		(void)user;
+        _serv->sendToClient(user, "Welcome !");
+        user.addBasicCommands();
     }
 }
 
