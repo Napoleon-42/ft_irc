@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 15:47:37 by lnelson           #+#    #+#             */
-/*   Updated: 2022/07/31 21:45:42 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/08/03 18:53:20 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ class Server
 
 		std::string		&serverhash(std::string &toHash) const;
 
-		struct pollfd&	createPollfd(int fd);
+		struct pollfd	createPollfd(int fd);
 		void			deleteFdfPoll(int fd);
 
 
@@ -98,6 +98,8 @@ class Server
 
 		void					addClient(Client &user, int fd);
 		void					deleteClient(std::string uname);
+
+		void					closeServer();
 
 		bool					checkOpPass(std::string pass) const;
 		bool					checkServerPass(std::string pass) const;
