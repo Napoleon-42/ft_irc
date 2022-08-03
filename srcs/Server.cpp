@@ -470,10 +470,7 @@ void	Server::proccessPendingClient(Client * pendingClient)
 	}	
 	if (!pendingClient->isPending())
 	{
-		this->sendToClient(*pendingClient,
-		std::string("001 " +
-			pendingClient->getNname() +
-			std::string(" :Welcome to our first IRC server for 42.paris!")));
+		pendingClient->getLoggedOn();
 		_usersMap.insert(std::make_pair(pendingClient->getFd(), *pendingClient));
 		serverLogMssg(std::string("new client <" + pendingClient->getNname() + " > added to the client list"));
 		_pendingClients.erase(pendingClient->getFd());
@@ -520,16 +517,6 @@ void	Server::proccessRegisteredClient(Client * client)
 
 }
 
-
-//	add a client in the "pending list", for clients who doesn't send right PASS NICK and USER
-void	Server::addPendingClient(Client pendingUser, int fd)
-{
-	_clientSockets.push_back(createPollfd(fd));
-	_pendingClients.insert(std::make_pair(fd, pendingUser));
-	serverLogMssg("Added new pending user");
-}
-
- 
 bool	Server::parseClientSent(char * buff, Client &user) 
 {
 	std::vector<std::string> msgs = ftirc_split(buff, "\r\n");
