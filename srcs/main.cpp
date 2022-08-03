@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/17 21:28:48 by lnelson           #+#    #+#             */
-/*   Updated: 2022/07/31 15:48:17 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/08/03 18:58:29 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,18 +40,20 @@ int main(int ac, char **av)
 	int port;
 	std::string pwd;
 	
-	if (ac != 3)
+	if (ac != 3 && ac != 4)
 	{
 		std::cout << "usage : ./server [PORT] [PWD]"  << std::endl;
 		exit(EXIT_SUCCESS);
 	}
 	else
 	{
+		if (ac == 4)
+			logStream = set_log_file(FILE_OUTPUT);
+		else
+			logStream = set_log_file(STD_OUTPUT);
 		port = atoi(av[1]);
 		pwd = av[2];
 	}
-	//logStream = set_log_file(ac == 2 ? FILE_OUTPUT : STD_OUTPUT);
-	logStream = set_log_file(STD_OUTPUT);
 
 	/***************************************************************************/
 	
