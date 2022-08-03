@@ -83,23 +83,9 @@ void							Server::routine()
 //	sending message (*mssg* std::string) to a specific (*sendTo* client), adding prefix and \r\n
 void	Server::sendToClient(Client const &sendTo, std::string prefix, std::string mssg)
 {
-	int size;
-
-	size =	mssg.size() 
-			+ prefix.size()
-			+ std::string(" ").size() 
-			+ 3;
-	send(sendTo.getFd(),
-		(void *)std::string
-			(
-				prefix
-				+ std::string(" ") 
-				+ mssg 
-				+ std::string("\r\n")
-			).c_str(),
-		 size,
-		 0);
-	std::string str;
+	std::string str = prefix + std::string(" ") + mssg + std::string("\r\n");
+	send(sendTo.getFd(), (str).c_str(), str.length(), 0);
+	str = "";
 	std::stringstream ss;  
   	ss << sendTo.getFd();  
   	ss >> str;

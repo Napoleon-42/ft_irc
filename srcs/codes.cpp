@@ -26,6 +26,9 @@
 	/*403*/
 	std::string ERR_NOSUCHCHANNEL(std::string channel_name)
 	{return channel_name + " :No such channel";}
+	/*421*/
+	std::string ERR_UNKNOWNCOMMAND(std::string command)
+	{ return command + " :Unknown command"; }
 	/*431*/
 	std::string ERR_NONICKNAMEGIVEN()
 	{return ":No nickname given";}
@@ -71,6 +74,8 @@
 			return RPL_REHASHING(arg1);
 		case 403:
 			return ERR_NOSUCHCHANNEL(arg1);
+		case 421:
+			return ERR_UNKNOWNCOMMAND(arg1);
 		case 431:
 			return ERR_NONICKNAMEGIVEN();
 		case 433:
