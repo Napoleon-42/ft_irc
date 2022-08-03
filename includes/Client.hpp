@@ -38,12 +38,11 @@ class Client
 		int				_fd;
 		Channel*		_currentChannel;
 		commandmap		_commands;
-
 		bool			_pwdPass;
 		bool			_nick;
 		bool			_user;
 
-		void addBasicCommands();
+		void addLoginCommands();
 		void addOpCommands();
 
 	public:
@@ -59,8 +58,8 @@ class Client
 
 		Command *searchCommand(std::string cmd);
 
+		void addBasicCommands();
 		void receive_reply(int code, std::string arg1 = std::string (""), std::string arg2 = std::string (""), std::string arg3 = std::string (""), std::string arg4 = std::string (""));
-
 		void	becomeOperator();
 		void	changeName(std::string newname) {
 			_nickname = newname;
@@ -107,7 +106,11 @@ class Client
 		bool	getNickstatus() const{
 			return (_nick);
 		}
-
+		bool isPending() const {
+			if (_pwdPass && _user && _nick)
+				return false;
+			return true;
+		}
 		const std::string &getUname() const {
 			return (_username);
 		}

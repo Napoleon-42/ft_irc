@@ -42,7 +42,7 @@ void PrivMsg::execute(std::string line, Client &user) {
         {
             for (Channel::clientlist::const_iterator it = chan->getClients().begin(); it != chan->getClients().end(); ++it)
             {
-                _serv->sendToClient(*(it->second), "PRIVMSG " + line);
+                _serv->sendToClient(*(it->second), ":" + user.getPrefix(), "PRIVMSG " + line);
             }
         }
         else
@@ -58,6 +58,6 @@ void PrivMsg::execute(std::string line, Client &user) {
             serverLogMssg("User not found error to transmit");
             return ;
         }
-        _serv->sendToClient(*tar, "PRIVMSG " + user.getUname() + " :" + line.substr(pos));
+        _serv->sendToClient(*tar, ":" + user.getPrefix(), "PRIVMSG " + user.getUname() + " :" + line.substr(pos));
     }
 }
