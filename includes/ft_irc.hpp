@@ -19,6 +19,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <sstream>
 #include <cstring>
 #include <sys/types.h>
 #include <sys/socket.h>
