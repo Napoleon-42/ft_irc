@@ -25,6 +25,13 @@ std::string Nick::help_msg() const {
 }
 
 void Nick::execute(std::string line, Client &user) {
+    std::string channame = line;
+    std::vector<std::string> params = ftirc_split(line, " ");
+    if (params.size() == 0)
+    {
+        user.receive_reply(461, "NICK");
+        return;
+    }
     if (_serv->searchClient(line))
     {
         user.receive_reply(433, line);

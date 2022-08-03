@@ -41,7 +41,7 @@ std::vector<std::string> ftirc_split(std::string s, std::string delimiter) {
         	res.push_back(token);
 		}
         pos_start = pos_end + 1;
-		while (s.size() > pos_start && delimiter.find(s[pos_start]) != std::string::npos)
+		while (s.size() > pos_start && delimiter.find(s[pos_start]) != std::string::npos) //tant que delimiter se suit
 			++pos_start;
 		min = std::string::npos;
 		for(std::string::iterator it = delimiter.begin(); it != delimiter.end(); ++it) {
@@ -53,10 +53,15 @@ std::vector<std::string> ftirc_split(std::string s, std::string delimiter) {
 		}
 		pos_end = min;
     }
+	if (s.size() > pos_start) {
+        token = s.substr(pos_start, s.size() - pos_start);
+        res.push_back(token);
+	}
     return res;
 }
 
 /*
+
 void	inserNewClient(std::map<int, Client> usesMap, char buff[552])
 {
 	std::string uname;
