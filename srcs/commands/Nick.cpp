@@ -27,10 +27,8 @@ std::string Nick::help_msg() const {
 void Nick::execute(std::string line, Client &user) {
     if (_serv->searchClient(line))
         throw NameTakenException();
-    if (user.isPending()){
-        _serv->sendToClient(user, ":" + user.getPrefix(), "NICK :" + line);
-    }
-    else {
+    if (!user.isPending())
+    {
         for (Server::clientmap::const_iterator it = _serv->getClients().begin(); it != _serv->getClients().end(); ++it)
             _serv->sendToClient(it->second, ":" + user.getPrefix(), "NICK :" + line);
     }

@@ -128,8 +128,7 @@ Server::channelmap::iterator	Server::addChannel(Channel &newchan)
 //	adding client, using recv -> parsing user info -> adding new user | sending an error mssg
 void	Server::addClient(Client user, int fd)
 {
-	if (fd != 1)
-		_clientSockets.push_back(createPollfd(fd));
+	_clientSockets.push_back(createPollfd(fd));
 	_usersMap.insert(std::make_pair(fd, user));
 	serverLogMssg(std::string("new client <" + user.getNname() + " > added to the client list"));
 }
@@ -443,7 +442,7 @@ void	Server::proccessPendingClient(Client * pendingClient)
 		std::string("001 " +
 			pendingClient->getNname() +
 			std::string(" :Welcome to our first IRC server for 42.paris!")));
-		addClient(*pendingClient, 1);
+		addClient(*pendingClient, pendingClient->getFd());
 		_pendingClients.erase(pendingClient->getFd());
 	}
 }
