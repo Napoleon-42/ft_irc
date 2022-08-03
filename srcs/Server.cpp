@@ -440,10 +440,12 @@ void	Server::proccessPendingClient(Client * pendingClient)
 	if (pendingClient->getNickstatus() && pendingClient->getUserStatus() && pendingClient->getPassStatus())
 	{
 		addClient(Client(*pendingClient), pendingClient->getFd());
-		this->sendToClient(*pendingClient,
-		std::string("001 " +
-			pendingClient->getNname() +
-			std::string(" :Welcome to our first IRC server for 42.paris!")));
+		// this->sendToClient(*pendingClient,
+		// std::string("001 " +
+		// 	pendingClient->getNname() +
+		// 	std::string(" :Welcome to our first IRC server for 42.paris!")));
+		//this->sendToClient(*pendingClient, pendingClient->receive_reply(1, pendingClient->getNname(), pendingClient->getUname() ,pendingClient->getHname()));
+		pendingClient->receive_reply(1, pendingClient->getNname(), pendingClient->getUname() ,pendingClient->getHname());
 		_pendingClients.erase(pendingClient->getFd());
 	}
 }
@@ -585,6 +587,23 @@ void			Server::deleteFdfPoll(int fd)
 		it++;
 	}
 }
+
+// std::string Server::send_reply(int code, std::string arg1 = std::string(""), std::string arg2 = std::string(""), std::string arg3 = std::string("") , std::string arg4 = std::string(""))
+// {
+//     std::stringstream str_stream;
+//     str_stream << code;
+//     std::string code_str;
+//     str_stream >> code_str;
+//     while (code_str.length() <  3)
+//     {
+//         code_str = "0" + code_str;
+//     }
+//     //std::cout << code_str << std::endl;
+//     std::string nick = this->getNname();
+//     std::string reply = get_reply(code , arg1, arg2, arg3, arg4);
+
+//     return code_str + nick + reply;
+// }
 
 
 

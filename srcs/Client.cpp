@@ -121,3 +121,19 @@ std::string Client::getPrefix() const {
 	}
 	return prefix;
 }
+
+void Client::receive_reply(int code, std::string arg1, std::string arg2, std::string arg3, std::string arg4)
+{
+    std::stringstream str_stream;
+    str_stream << code;
+    std::string code_str;
+    str_stream >> code_str;
+    while (code_str.length() <  3)
+    {
+        code_str = "0" + code_str;
+    }
+    std::string nick = this->getNname();
+    std::string reply = get_reply(code , arg1, arg2, arg3, arg4);
+    std::string tosend = code_str + " " + nick + " " + reply;
+    _serv->sendToClient(*this , tosend);
+}

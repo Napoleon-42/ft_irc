@@ -14,6 +14,8 @@
 #define CLIENT_HPP
 #include <map>
 #include <string>
+#include <sstream>
+#include "commands/codes.hpp"
 /*
 ** Pre-declared class needed to initialize Clients
 */
@@ -56,6 +58,8 @@ class Client
 		bool	execute(std::string const &command, std::string const &restline);
 
 		Command *searchCommand(std::string cmd);
+
+		void receive_reply(int code, std::string arg1 = std::string (""), std::string arg2 = std::string (""), std::string arg3 = std::string (""), std::string arg4 = std::string (""));
 
 		void	becomeOperator();
 		void	changeName(std::string newname) {
