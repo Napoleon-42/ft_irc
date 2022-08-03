@@ -52,7 +52,8 @@ bool        Channel::addClient(Client *toAdd){
         clientLogMssg("client can't be added (banned)");
         return (false);
     }
-    return _clients.insert(std::make_pair(toAdd->getNname(), toAdd)).second;
+    _clients.insert(std::make_pair(toAdd->getNname(), toAdd));
+    return true;
 }
 
 bool    Channel::addToBanList(Client *toBan)
@@ -60,13 +61,14 @@ bool    Channel::addToBanList(Client *toBan)
     return _clientsban.insert(std::make_pair(toBan->getNname(), toBan)).second;
 }
 
-bool    Channel::kickFromChannel(Client *toKick)
+bool    Channel::kickFromChannel(Client *toKick, Client &kicker)
 {
     clientlist::iterator it = _clients.find(toKick->getNname());
     if (it == _clients.end())
         return (0);
     else
     {
+        _serv->sendToClient(*toKick, ":" + kicker.getPrefix(), "KICK " + getName() + " " + toKick->getNname());
         _clients.erase(it);
         return (true);
     }
@@ -79,6 +81,22 @@ Client      *Channel::searchClient(std::string nickname){
     return (it->second);
 }
 
+void    Channel::changenickClient(std::string nick, std::string oldnick) {
+    clientlist::iterator it = _clients.find(oldnick);
+    if (it == _clients.end())
+        return ;
+    _clients.insert(std::make_pair(nick, it->second));
+    _clients.erase(it);
+    return ;
+}
+
+bool      Channel::searchClient(std::string nickname) const{
+    clientlist::const_iterator it = _clients.find(nickname);
+    if (it == _clients.end())
+        return (false);
+    return (true);
+}
+
 Client      *Channel::searchBanned(std::string nickname){
     clientlist::iterator it = _clientsban.find(nickname);
     if (it == _clientsban.end())
@@ -86,7 +104,7 @@ Client      *Channel::searchBanned(std::string nickname){
     return (it->second);
 }
 
-std::string Channel::getName(){
+std::string Channel::getName() const{
     return (_name);
 }
 

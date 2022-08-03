@@ -6,7 +6,7 @@
 #    By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/06/22 17:56:55 by lnelson           #+#    #+#              #
-#    Updated: 2022/07/31 13:35:25 by lnelson          ###   ########.fr        #
+#    Updated: 2022/08/04 00:38:11 by lnelson          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -37,6 +37,7 @@ SRCS		=	srcs/main.cpp \
 				srcs/Client.cpp \
 				srcs/Channel.cpp \
 				srcs/commands/Help.cpp \
+				srcs/commands/Notice.cpp \
 				srcs/commands/Join.cpp \
 				srcs/commands/ChannelBan.cpp \
 				srcs/commands/Nick.cpp \

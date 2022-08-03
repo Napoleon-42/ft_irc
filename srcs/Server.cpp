@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 18:06:57 by lnelson           #+#    #+#             */
-/*   Updated: 2022/08/03 19:06:45 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/08/04 00:37:06 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ _server_pwd(pwd)
 	init_socket(port);
 	_clientSockets.push_back(this->createPollfd(_entrySocket));
 
+	_servercommands.insert(std::make_pair("NOTICE", new Notice(this)));
 	_servercommands.insert(std::make_pair("NICK", new Nick(this)));
 	_servercommands.insert(std::make_pair("OPER", new Oper(this)));
 	_servercommands.insert(std::make_pair("HELP", new Help(this)));
@@ -47,8 +48,10 @@ _server_pwd(pwd)
 
 
 	/**************************************************************************/
+	_passop = "mpm";
 	Client tmp(this, "Server_Machine_Admin", "SM_Admin", "SM_Admin");
 	tmp.changeName(std::string("ServerAdmin"));
+	tmp.addBasicCommands();
 	tmp.becomeOperator();
 	addClient(tmp, 0);
 	/**************************************************************************/
@@ -83,23 +86,9 @@ void							Server::routine()
 //	sending message (*mssg* std::string) to a specific (*sendTo* client), adding prefix and \r\n
 void	Server::sendToClient(Client const &sendTo, std::string prefix, std::string mssg)
 {
-	int size;
-
-	size =	mssg.size() 
-			+ prefix.size()
-			+ std::string(" ").size() 
-			+ 3;
-	send(sendTo.getFd(),
-		(void *)std::string
-			(
-				prefix
-				+ std::string(" ") 
-				+ mssg 
-				+ std::string("\r\n")
-			).c_str(),
-		 size,
-		 0);
-	std::string str;
+	std::string str = prefix + std::string(" ") + mssg + std::string("\r\n");
+	send(sendTo.getFd(), (str).c_str(), str.length(), 0);
+	str = "";
 	std::stringstream ss;  
   	ss << sendTo.getFd();  
   	ss >> str;

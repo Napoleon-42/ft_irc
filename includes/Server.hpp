@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 15:47:37 by lnelson           #+#    #+#             */
-/*   Updated: 2022/08/03 18:53:20 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/08/04 00:37:57 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #include "Client.hpp"
 #include "Channel.hpp"
 #include "Command.hpp"
+#include "commands/Notice.hpp"
 #include "commands/Nick.hpp"
 #include "commands/Help.hpp"
 #include "commands/Oper.hpp"

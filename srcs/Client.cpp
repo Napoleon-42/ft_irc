@@ -42,7 +42,6 @@ void        Client::addOpCommands() {
     }
 }
 
-
 Client::Client(): _username("non-spec")
 {
     clientLogMssg(std::string("Client " + _username + " created"));
@@ -71,7 +70,7 @@ Client::Client(Server *current, std::string uname, std::string hname, std::strin
     _serv = current;
     clientLogMssg(std::string("Client " + _username + " created"));
     _currentChannel = NULL;
-    addBasicCommands();
+    addLoginCommands();
 
 }
 
@@ -88,7 +87,7 @@ Client::Client(Client const & var)
 	_pwdPass = var.getPassStatus();
 	_nick = var.getNickstatus();
 	_user = var.getUserStatus();
-	addBasicCommands();
+    _commands = var.getCommands();
 }
 
 Client::~Client()
@@ -104,7 +103,7 @@ bool	    Client::execute(std::string const &cmd, std::string const &restline) {
     commandmap::iterator cit = _commands.find(cmd);
     if (cit == _commands.end()) {
         clientLogMssg("Command '" + cmd + "' not found in available commands for the client : " + _username);
-        _serv->sendToClient(*this, "421 " + _nickname + " " + cmd + " :Unknown command");
+        receive_reply(421, cmd);
         return (false);
     }
     clientLogMssg("Executing " + cmd + " command.");

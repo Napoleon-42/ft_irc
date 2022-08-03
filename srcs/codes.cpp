@@ -26,6 +26,9 @@
 	/*403*/
 	std::string ERR_NOSUCHCHANNEL(std::string channel_name)
 	{return channel_name + " :No such channel";}
+	/*421*/
+	std::string ERR_UNKNOWNCOMMAND(std::string command)
+	{ return command + " :Unknown command"; }
 	/*431*/
 	std::string ERR_NONICKNAMEGIVEN()
 	{return ":No nickname given";}
@@ -50,6 +53,12 @@
     /*442*/
     std::string ERR_NOTONCHANNEL(std::string channel)
     {return channel + ":You're not on that channel";}
+    /*441*/
+    std::string ERR_USERNOTINCHANNEL(std::string nickname, std::string channel)
+    {return nickname + " "+ channel + " :They aren't on that channel";}
+    /*381*/
+    std::string RPL_YOUREOPER()
+    {return ":You are now an IRC operator";}
 
 
     std::string get_reply(int code, std::string arg1 = std::string(""), std::string arg2 = std::string(""), std::string arg3 = std::string("") , std::string arg4 = std::string(""))
@@ -71,6 +80,8 @@
 			return RPL_REHASHING(arg1);
 		case 403:
 			return ERR_NOSUCHCHANNEL(arg1);
+		case 421:
+			return ERR_UNKNOWNCOMMAND(arg1);
 		case 431:
 			return ERR_NONICKNAMEGIVEN();
 		case 433:
@@ -87,6 +98,10 @@
 			return ERR_BANNEDFROMCHAN(arg1);
         case 442:
             return ERR_NOTONCHANNEL(arg1);
+        case 441:
+            return ERR_USERNOTINCHANNEL(arg1, arg2);
+        case 381:
+            return RPL_YOUREOPER();
 		default:
 			return "";
 		}
