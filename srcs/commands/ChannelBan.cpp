@@ -46,6 +46,7 @@ void ChannelBan::execute(std::string line, Client &user) {
         user.receive_reply(441, usertoban, channame);
         return ;
     }
-    chan->addToBanList(toban);
+    
     chan->kickFromChannel(toban, user);
+    chan->addToBanList(toban);
 }
