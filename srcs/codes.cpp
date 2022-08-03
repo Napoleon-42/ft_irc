@@ -53,6 +53,9 @@
     /*442*/
     std::string ERR_NOTONCHANNEL(std::string channel)
     {return channel + ":You're not on that channel";}
+    /*441*/
+    std::string ERR_USERNOTINCHANNEL(std::string nickname, std::string channel)
+    {return nickname + channel + " :They aren't on that channel";}
 
 
     std::string get_reply(int code, std::string arg1 = std::string(""), std::string arg2 = std::string(""), std::string arg3 = std::string("") , std::string arg4 = std::string(""))
@@ -92,6 +95,8 @@
 			return ERR_BANNEDFROMCHAN(arg1);
         case 442:
             return ERR_NOTONCHANNEL(arg1);
+        case 441:
+            return ERR_USERNOTINCHANNEL(arg1, arg2);
 		default:
 			return "";
 		}
