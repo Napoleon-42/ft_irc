@@ -70,7 +70,7 @@ Client::Client(Server *current, std::string uname, std::string hname, std::strin
     _serv = current;
     clientLogMssg(std::string("Client " + _username + " created"));
     _currentChannel = NULL;
-    addBasicCommands();
+    addLoginCommands();
 
 }
 

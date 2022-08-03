@@ -25,9 +25,16 @@ std::string Oper::help_msg() const {
 }
 
 void Oper::execute(std::string line, Client &user) {
-    if (_serv->checkOpPass(line)) {
+    std::vector<std::string> params = ftirc_split(line, " ");
+    if (params.size() < 2)
+    {
+        user.receive_reply(461, "OPER");
+        return;
+    }
+    if (_serv->checkOpPass(params[1])) {
         user.becomeOperator();
-        _serv->sendToClient(user, "You have become an operator.");
+        user.receive_reply(381);
+        //_serv->sendToClient(user, "You have become an operator.");
         serverLogMssg("There is a new operator on the server.");
     }
     else

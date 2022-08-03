@@ -51,6 +51,7 @@ _server_pwd(pwd)
 	_passop = "mpm";
 	Client tmp(this, "Server_Machine_Admin", "SM_Admin", "SM_Admin");
 	tmp.changeName(std::string("ServerAdmin"));
+	tmp.addBasicCommands();
 	tmp.becomeOperator();
 	addClient(tmp, 0);
 	/**************************************************************************/
