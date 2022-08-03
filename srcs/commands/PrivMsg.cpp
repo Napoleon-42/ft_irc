@@ -42,7 +42,8 @@ void PrivMsg::execute(std::string line, Client &user) {
         {
             for (Channel::clientlist::const_iterator it = chan->getClients().begin(); it != chan->getClients().end(); ++it)
             {
-                _serv->sendToClient(*(it->second), ":" + user.getPrefix(), "PRIVMSG " + line);
+                if ((it->second)->getNname() != user.getNname())
+                    _serv->sendToClient(*(it->second), ":" + user.getPrefix(), "PRIVMSG " + line);
             }
         }
         else

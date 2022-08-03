@@ -42,7 +42,6 @@ void        Client::addOpCommands() {
     }
 }
 
-
 Client::Client(): _username("non-spec")
 {
     clientLogMssg(std::string("Client " + _username + " created"));
@@ -88,7 +87,7 @@ Client::Client(Client const & var)
 	_pwdPass = var.getPassStatus();
 	_nick = var.getNickstatus();
 	_user = var.getUserStatus();
-	addBasicCommands();
+    _commands = var.getCommands();
 }
 
 Client::~Client()

@@ -47,6 +47,7 @@ _server_pwd(pwd)
 
 
 	/**************************************************************************/
+	_passop = "mpm";
 	Client tmp(this, "Server_Machine_Admin", "SM_Admin", "SM_Admin");
 	tmp.changeName(std::string("ServerAdmin"));
 	tmp.becomeOperator();
@@ -426,11 +427,8 @@ void	Server::proccessPendingClient(Client * pendingClient)
 		{
 			size_t first_space = msgsit->find(' ');
 			std::string cmdName = msgsit->substr(0, first_space);
-<<<<<<< HEAD
-=======
 			if (first_space == std::string::npos)
 				first_space = msgsit->size();
->>>>>>> 36d78992b61f98452525f9212ff6cbb97cab675c
 			std::string cmdArgs = msgsit->substr((first_space == msgsit->size() ? first_space : first_space + 1));
 			*logStream << "str = |" << cmdName << "' '" << cmdArgs << "|" << std::endl;
 			if (pendingClient->getPassStatus() == false)

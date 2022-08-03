@@ -94,3 +94,10 @@ const Channel::clientlist Channel::getBannedClients() const
 {
     return _clientsban;
 }
+
+bool      Channel::searchClient(std::string nickname) const{
+    clientlist::const_iterator it = _clients.find(nickname);
+    if (it == _clients.end())
+        return (false);
+    return (true);
+}
