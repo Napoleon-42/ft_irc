@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 18:06:57 by lnelson           #+#    #+#             */
-/*   Updated: 2022/08/03 19:18:18 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/08/03 19:21:41 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -470,10 +470,7 @@ void	Server::proccessPendingClient(Client * pendingClient)
 	}	
 	if (!pendingClient->isPending())
 	{
-		this->sendToClient(*pendingClient,
-		std::string("001 " +
-			pendingClient->getNname() +
-			std::string(" :Welcome to our first IRC server for 42.paris!")));
+		pendingClient->getLoggedOn();
 		_usersMap.insert(std::make_pair(pendingClient->getFd(), *pendingClient));
 		serverLogMssg(std::string("new client <" + pendingClient->getNname() + " > added to the client list"));
 		_pendingClients.erase(pendingClient->getFd());
