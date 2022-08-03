@@ -64,7 +64,7 @@ class Client
 		void	changeName(std::string newname) {
 			_nickname = newname;
 		}
-		void	update_all_name(std::string uname, std::string hname, std::string sname, std::string rname) {
+		void	update_all_name(std::string uname, std::string sname, std::string hname, std::string rname) {
 			_username = uname;
 			_hostname = hname;
 			_servername = sname;

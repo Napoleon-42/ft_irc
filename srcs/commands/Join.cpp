@@ -12,6 +12,9 @@
 
 #include "commands/Join.hpp"
 #include "Server.hpp"
+#include <string>
+#include <iostream>
+#include <sstream>
 
 Join::Join() {
 }
@@ -25,7 +28,13 @@ std::string Join::help_msg() const {
 }
 
 void Join::execute(std::string line, Client &user) {
-    std::string channame = line; //To parse
+    std::string channame = line;
+    std::vector<std::string> params = ftirc_split(line, " ");
+    if (params.size() == 0)
+    {
+        user.receive_reply(461, "JOIN");
+        return;
+    }
     Channel toadd = Channel(_serv, channame);
     Server::channelmap::iterator it = _serv->addChannel(toadd);
     if (it->second.addClient(&user)) {
@@ -33,6 +42,6 @@ void Join::execute(std::string line, Client &user) {
         _serv->sendToClient(user, "You joined the channel.");
         serverLogMssg("A user has changed channel.");
     } else {
-        _serv->sendToClient(user, "You can't join this channel.");
+        user.receive_reply(474, toadd.getName());
     }
 }

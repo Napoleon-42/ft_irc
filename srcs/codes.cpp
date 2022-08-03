@@ -47,6 +47,10 @@
 	/*474*/    
 	std::string ERR_BANNEDFROMCHAN(std::string channel)
 	{return channel + " :Cannot join channel (+b)";}
+    /*442*/
+    std::string ERR_NOTONCHANNEL(std::string channel)
+    {return channel + ":You're not on that channel";}
+
 
     std::string get_reply(int code, std::string arg1 = std::string(""), std::string arg2 = std::string(""), std::string arg3 = std::string("") , std::string arg4 = std::string(""))
 	{
@@ -81,6 +85,8 @@
 			return ERR_PASSWDMISMATCH();
 		case 474:
 			return ERR_BANNEDFROMCHAN(arg1);
+        case 442:
+            return ERR_NOTONCHANNEL(arg1);
 		default:
 			return "";
 		}
