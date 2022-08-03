@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 18:06:57 by lnelson           #+#    #+#             */
-/*   Updated: 2022/08/03 19:06:45 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/08/04 00:37:06 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ _server_pwd(pwd)
 	init_socket(port);
 	_clientSockets.push_back(this->createPollfd(_entrySocket));
 
+	_servercommands.insert(std::make_pair("NOTICE", new Notice(this)));
 	_servercommands.insert(std::make_pair("NICK", new Nick(this)));
 	_servercommands.insert(std::make_pair("OPER", new Oper(this)));
 	_servercommands.insert(std::make_pair("HELP", new Help(this)));
