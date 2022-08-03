@@ -79,6 +79,7 @@ bool	    Client::execute(std::string const &cmd, std::string const &restline) {
         _serv->sendToClient(*this, "Command not found.");
         return (false);
     }
+    clientLogMssg("Executing " + cmd + " command.");
     cit->second->execute(restline, *this);
     clientLogMssg("Executed " + cmd + " command.");
     return (true);

@@ -46,9 +46,6 @@ Server::Server(int port, std::string pwd)
 _server_pwd(pwd)
 {
 	init_socket(port);
-	Client &tmp = *(new Client(this, "Server_Machine_Admin"));
-	tmp.becomeOperator();
-	addClient(tmp, 0);
 	_servercommands.insert(std::make_pair("NICK", new Nick(this)));
 	_servercommands.insert(std::make_pair("OPER", new Oper(this)));
 	_servercommands.insert(std::make_pair("HELP", new Help(this)));
@@ -59,20 +56,23 @@ _server_pwd(pwd)
 	_servercommands.insert(std::make_pair("PING", new Ping(this)));
 	_servercommands.insert(std::make_pair("PRIVMSG", new PrivMsg(this)));
     /* TO DO
+	None for now
     */
     _opcommands.insert(std::make_pair("BAN", new ChannelBan(this)));
 	_opcommands.insert(std::make_pair("KICK", new Kick(this)));
     /* TO DO
-    KICK <channel> <client> :[<message>] (does not ban just kick)
     KILL <client> <comment>
     DIE (command to shutdown server)
     */
+	Client &tmp = *(new Client(this, "Server_Machine_Admin"));
+	tmp.becomeOperator();
+	addClient(tmp, 0);
 }
 
 /*
 ** -------------------------------- DESTRUCTOR --------------------------------
 */
-
+ 
 Server::~Server()
 {
     serverLogMssg("Server shut down");
@@ -85,9 +85,12 @@ Server::~Server()
 void	Server::sendToClient(Client const &sendTo, std::string mssg)
 {
 	int size;
-
+	int fd;
 	size = mssg.size() + std::string(std::string(SERVER_NAME) + std::string(" ")).size() + 3;
-	send(sendTo.getFd(), (void *)std::string(std::string(SERVER_NAME) + std::string(" ") + mssg + std::string("\r\n")).c_str(), size, 0);
+	fd = sendTo.getFd();
+	if (fd == 0)
+		fd = 1;
+	send(fd, (void *)std::string(std::string(SERVER_NAME) + std::string(" ") + mssg + std::string("\r\n")).c_str(), size, 0);
 }
 
 void	Server::routine()
@@ -197,7 +200,9 @@ void	Server::parseClientSent(char * buff, Client &user) {
 	size_t pos;
 	while (msgit != msgs.end()) {
 		pos = msgit->find(' ');
-		if (pos == std::string::npos || !user.execute(msgit->substr(0, pos), msgit->substr(pos)))
+		if (pos == std::string::npos)
+			pos = msgit->size();
+		if (!user.execute(msgit->substr(0, pos), msgit->substr((pos == msgit->size() ? pos : pos + 1))))
 			clientLogMssg(*msgit);
 		++msgit;
 	}
