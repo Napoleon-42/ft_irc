@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 15:47:37 by lnelson           #+#    #+#             */
-/*   Updated: 2022/07/15 16:01:47 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/07/31 21:45:42 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@
 #include "commands/Ping.hpp"
 #include "commands/Kick.hpp"
 #include "commands/Quit.hpp"
+#include "commands/Pass.hpp"
 #include "commands/Usercmd.hpp"
 #include "commands/PrivMsg.hpp"
 #include "commands/ChannelBan.hpp"
@@ -32,49 +33,84 @@
 class Server
 {
 	public:
+
 		typedef std::map<std::string, Command *>	commandmap;
 		typedef std::map<std::string, Channel>		channelmap;
 		typedef std::map<int, Client>				clientmap;
 	
+	private:
+
 		int _entrySocket;
-		std::vector<struct pollfd> _clientSockets;
-		struct sockaddr_in _client;
 
-		std::map<int, Client> _usersMap;
+		std::vector<struct pollfd> 			_clientSockets;
 		
-		struct sockaddr_in _address;
+		std::map<int, Client> 				_usersMap;
+		std::map<int, Client> 				_pendingClients;
+		
+		std::map<std::string, Command *>	_servercommands;
+		std::map<std::string, Command *>	_opcommands;
+		std::map<std::string, Channel>		_channels;
+		
+		std::string							_server_pwd;
+		std::string							_passop;
 
-		std::string		_server_pwd;
-		std::string		_passop;
-		commandmap		_servercommands;
-		commandmap		_opcommands;
-		channelmap		_channels;
 
-		void	proccessEventFd(int i);
-		void	pollRoutine();
-		void	acceptClient();
-		void	executeMachCmds(char * buff);
-		void	parseClientSent(char * buff, Client &user);
-		void	init_socket(int port);
+		void			init_socket(int port);
+
+		void			pollRoutine();
+
+		void			executeMachCmds(char * buff);
+		void			acceptClient();
+		void			proccessEventFd(int i);
+
+		void			proccessRegisteredClient(Client * client);
+		void			proccessPendingClient(Client * pendingClient);
+
+		void			addPendingClient(Client pendingUser, int fd);
+		bool			parseClientSent(char * buff, Client &user);
+
 		std::string		&serverhash(std::string &toHash) const;
+
+		struct pollfd&	createPollfd(int fd);
+		void			deleteFdfPoll(int fd);
+
+
+	class UserNotFound: public std::exception
+	{
+		public:
+		virtual const char * what() const throw() {
+			return "User not found";
+		}
+	};
+
 
 	public:
 
 		Server();
 		Server(int port, std::string pwd);
 		~Server();
-		const commandmap &getServCommands() const;
-		const commandmap &getOpCommands() const;
-		const channelmap &getChannels() const;
-		const clientmap &getClients() const;
-		channelmap::iterator addChannel(Channel &newchan);
-		Channel *searchChannel(std::string channame);
-		void	routine();
-		void	sendToClient(Client const &sendTo, std::string mssg);
-		void	addClient(Client const & user, int fd);
-		void	deleteClient(std::string uname);
-		bool	checkOpPass(std::string pass) const;
-		bool	checkServerPass(std::string pass) const;
+
+		void					routine();
+		void					sendToClient(Client const &sendTo, std::string prefix, std::string mssg);
+		void					sendToClient(Client const &sendTo, std::string mssg);
+
+		channelmap::iterator	addChannel(Channel &newchan);
+
+		void					addClient(Client user, int fd);
+		void					deleteClient(std::string uname);
+
+		bool					checkOpPass(std::string pass) const;
+		bool					checkServerPass(std::string pass) const;
+
+		Client					*searchClient(std::string nickName);
+		Client					*searchClient(int fd, clientmap * map);
+
+		Channel					 *searchChannel(std::string channame);
+
+		const commandmap	 	&getServCommands() const;
+		const commandmap		&getOpCommands() const;
+		const channelmap	 	&getChannels() const;
+		const clientmap			&getClients() const;
 };
 
 #endif

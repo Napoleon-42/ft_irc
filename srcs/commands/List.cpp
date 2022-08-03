@@ -23,7 +23,7 @@ void List::execute(std::string line, Client &user) {
         Server::clientmap::const_iterator it = _serv->getClients().begin();
         Server::clientmap::const_iterator ite = _serv->getClients().end();
         while (it != ite) {
-            s += it->second.getUname() + "\n";
+            s += it->second.getNname() + "\n";
             ++it;
         }
         _serv->sendToClient(user, s);
@@ -36,7 +36,7 @@ void List::execute(std::string line, Client &user) {
         Channel::clientlist::const_iterator it = chan->getClients().begin();
         Channel::clientlist::const_iterator ite = chan->getClients().end();
         while (it != ite) {
-            s += it->second->getUname() + "\n";
+            s += it->second->getNname() + "\n";
             ++it;
         }
         _serv->sendToClient(user, s);

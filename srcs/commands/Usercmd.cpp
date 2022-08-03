@@ -13,10 +13,15 @@ std::string Usercmd::help_msg() const {
 }
 
 void Usercmd::execute(std::string line, Client &user) {
+    size_t pos = line.find(':');
     std::vector<std::string> splits = ftirc_split(line, " \t");
-    if (splits.size() == 4)
+    if (pos != std::string::npos && splits.size() >= 4)
     {
-        user.update_all_name(splits[0], splits[1], splits[2], splits[3]);
+        user.update_all_name(splits[0], splits[1], splits[2], line.substr(pos + 1));
+        serverLogMssg("Right number of arguments. USER executed");
+    } else if (splits.size() == 4)
+    {
+		user.update_all_name(splits[0], splits[1], splits[2], splits[3]);
         serverLogMssg("Right number of arguments. USER executed");
     }
     else {
