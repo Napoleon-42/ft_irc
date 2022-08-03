@@ -431,7 +431,6 @@ void	Server::proccessPendingClient(Client * pendingClient)
 	}
 }
 
-
 void	Server::proccessRegisteredClient(Client * client)
 {
 	char buff[553];
