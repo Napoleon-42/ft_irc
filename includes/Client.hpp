@@ -36,12 +36,11 @@ class Client
 		int				_fd;
 		Channel*		_currentChannel;
 		commandmap		_commands;
-
 		bool			_pwdPass;
 		bool			_nick;
 		bool			_user;
 
-		void addBasicCommands();
+		void addLoginCommands();
 		void addOpCommands();
 
 	public:
@@ -57,6 +56,7 @@ class Client
 
 		Command *searchCommand(std::string cmd);
 
+		void addBasicCommands();
 		void	becomeOperator();
 		void	changeName(std::string newname) {
 			_nickname = newname;
