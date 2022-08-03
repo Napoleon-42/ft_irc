@@ -395,15 +395,8 @@ void	Server::proccessPendingClient(Client * pendingClient)
 		{
 			size_t first_space = msgsit->find(' ');
 			std::string cmdName = msgsit->substr(0, first_space);
-<<<<<<< HEAD
-			std::string cmdArgs = msgsit->substr((first_space == msgsit->size() || first_space == std::string::npos ? first_space : first_space + 1));
-
-								*logStream << "str = |" << cmdName << "' '" << cmdArgs << "|" << std::endl;
-
-=======
 			std::string cmdArgs = msgsit->substr((first_space == msgsit->size() ? first_space : first_space + 1));
 			*logStream << "str = |" << cmdName << "' '" << cmdArgs << "|" << std::endl;
->>>>>>> f4338b58d8ef207a9cb458a18a5e888b4f606002
 			if (pendingClient->getPassStatus() == false)
 			{
 				if (cmdName == "PASS")

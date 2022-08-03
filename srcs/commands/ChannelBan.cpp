@@ -24,19 +24,26 @@ std::string ChannelBan::help_msg() const {
 }
 
 void ChannelBan::execute(std::string line, Client &user) {
-    std::string channame = line;
     std::vector<std::string> params = ftirc_split(line, " ");
-    if (params.size() == 0)
+    Channel *chan = user.getChannel();
+    if (params.size() < 2)
     {
         user.receive_reply(461, "BAN");
         return;
     }
-    Channel *chan = user.getChannel();
+    std::string channame = params[0];
+    std::string usertoban = params[1];
     if (!chan)
-        return ;
-    Client *toban = chan->searchClient(line);
+    {
+        user.receive_reply(442, channame);
+        return;
+    } 
+    if (_serv->searchChannel(channame) == NULL)
+        user.receive_reply(403, channame);
+
+    Client *toban = chan->searchClient(usertoban);
     if (!toban) {
-        _serv->sendToClient(user, "There is no user with this name on this channel.");
+        user.receive_reply(441, usertoban, channame);
         return ;
     }
     chan->addToBanList(toban);
