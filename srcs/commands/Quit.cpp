@@ -24,7 +24,7 @@ void Quit::execute(std::string line, Client &user) {
     for (std::vector<std::string>::const_iterator it = channames.begin(); it != channames.end(); ++it) {
             Channel *chan = _serv->searchChannel(*it);
             if (chan)
-                chan->kickFromChannel(&user);
+                chan->kickFromChannel(&user, user);
         }
     _serv->deleteClient(user.getNname());
 }

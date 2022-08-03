@@ -33,6 +33,6 @@ void Kick::execute(std::string line, Client &user) {
         _serv->sendToClient(user, "There is no user with this name on this channel.");
         return ;
     }
-    chan->kickFromChannel(tokick);
+    chan->kickFromChannel(tokick, user);
     _serv->sendToClient(*tokick, "You have been kicked " + line.substr(pos));
 }
