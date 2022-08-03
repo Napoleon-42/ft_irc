@@ -26,12 +26,19 @@ std::string Nick::help_msg() const {
 
 void Nick::execute(std::string line, Client &user) {
     if (_serv->searchClient(line))
-        throw NameTakenException();
+    {
+        user.receive_reply(433, line);
+        return ;
+    }
     if (!user.isPending())
     {
         for (Server::clientmap::const_iterator it = _serv->getClients().begin(); it != _serv->getClients().end(); ++it)
             _serv->sendToClient(it->second, ":" + user.getPrefix(), "NICK :" + line);
     }
+//    else{
+//        _serv->sendToClient(user, ":" + user.getPrefix(), "NICK :" + line);
+//    }
+    user.validateNick();
     user.changeName(line);
     serverLogMssg("Nick command executed");
 }
