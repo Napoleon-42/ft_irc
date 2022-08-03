@@ -12,5 +12,5 @@ std::string Ping::help_msg() const {
 }
 
 void Ping::execute(std::string line, Client &user) {
-    _serv->sendToClient(user, "PONG " + user.getSname() + " " + line);
+    _serv->sendToClient(user, ":" + user.getPrefix(), "PONG :" + line);
 }

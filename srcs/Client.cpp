@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 18:02:32 by lnelson           #+#    #+#             */
-/*   Updated: 2022/07/31 13:06:25 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/08/03 18:51:26 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,6 @@ Client::Client(Client const & var)
 Client::~Client()
 {
     clientLogMssg(" Client " + _username + " destroyed");
-    
 }
 
 void	    Client::becomeOperator() {
@@ -105,7 +104,7 @@ bool	    Client::execute(std::string const &cmd, std::string const &restline) {
     commandmap::iterator cit = _commands.find(cmd);
     if (cit == _commands.end()) {
         clientLogMssg("Command '" + cmd + "' not found in available commands for the client : " + _username);
-        _serv->sendToClient(*this, "421 " + _nickname + " " + cmd + " :Unknown command");
+        receive_reply(421, cmd);
         return (false);
     }
     clientLogMssg("Executing " + cmd + " command.");

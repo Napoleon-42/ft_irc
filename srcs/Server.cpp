@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 18:06:57 by lnelson           #+#    #+#             */
-/*   Updated: 2022/07/31 21:51:17 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/08/03 19:06:45 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,9 @@ Server::Server(int port, std::string pwd)
 :
 _server_pwd(pwd)
 {
-	init_socket(port);
 	_server_pwd = serverhash(pwd);
+	init_socket(port);
+	_clientSockets.push_back(this->createPollfd(_entrySocket));
 
 	_servercommands.insert(std::make_pair("NICK", new Nick(this)));
 	_servercommands.insert(std::make_pair("OPER", new Oper(this)));
@@ -44,8 +45,8 @@ _server_pwd(pwd)
     DIE (command to shutdown server)
     */
 
+
 	/**************************************************************************/
-	_clientSockets.push_back(this->createPollfd(_entrySocket));
 	Client tmp(this, "Server_Machine_Admin", "SM_Admin", "SM_Admin");
 	tmp.changeName(std::string("ServerAdmin"));
 	tmp.becomeOperator();
@@ -82,23 +83,9 @@ void							Server::routine()
 //	sending message (*mssg* std::string) to a specific (*sendTo* client), adding prefix and \r\n
 void	Server::sendToClient(Client const &sendTo, std::string prefix, std::string mssg)
 {
-	int size;
-
-	size =	mssg.size() 
-			+ prefix.size()
-			+ std::string(" ").size() 
-			+ 3;
-	send(sendTo.getFd(),
-		(void *)std::string
-			(
-				prefix
-				+ std::string(" ") 
-				+ mssg 
-				+ std::string("\r\n")
-			).c_str(),
-		 size,
-		 0);
-	std::string str;
+	std::string str = prefix + std::string(" ") + mssg + std::string("\r\n");
+	send(sendTo.getFd(), (str).c_str(), str.length(), 0);
+	str = "";
 	std::stringstream ss;  
   	ss << sendTo.getFd();  
   	ss >> str;
@@ -164,6 +151,49 @@ void	Server::deleteClient(std::string nname)
 }
 
 
+
+//	free everything, close sockets and exit the server
+void	Server::closeServer()
+{
+	// Clearing all pollFd
+	std::vector<struct pollfd>::iterator clientSocketsIterator = _clientSockets.begin();
+	while (clientSocketsIterator != _clientSockets.end())
+	{
+		close (clientSocketsIterator->fd);
+		clientSocketsIterator++;
+	}
+	_clientSockets.clear();
+
+	// Clearing all Channels
+	_channels.clear();
+
+	// Clearing all Users
+	_usersMap.clear();
+	_pendingClients.clear();
+
+	{
+		// Clearing all Serv.Commmands
+		std::map<std::string, Command *>::iterator commandMapIterator = _servercommands.begin();
+		while (commandMapIterator != _servercommands.end())
+		{
+			delete(commandMapIterator->second);
+			commandMapIterator++;
+		}
+		_servercommands.clear();
+	}
+
+	{
+		// Clearing all Operator Commands
+		std::map<std::string, Command *>::iterator commandMapIterator = _opcommands.begin();
+		while (commandMapIterator != _opcommands.end())
+		{
+			delete(commandMapIterator->second);
+			commandMapIterator++;
+		}
+		_opcommands.clear();
+	}
+	exit(0);
+}
 
 
 
@@ -322,7 +352,7 @@ void	Server::executeMachCmds(char * buff)
 	*logStream << "\treceived mssg = " << buff << std::endl;
 	std::string tmp(buff);
 	if (tmp.compare("exit\n") == 0)
-		exit(0);
+		this->closeServer();
 	else if (tmp.compare("list users\n") == 0)
 	{
 		*logStream << "LIST OF USERS:" << std::endl;
@@ -344,7 +374,8 @@ void	Server::executeMachCmds(char * buff)
 		std::cout << "Type the new channel name, then press ENTER" << std::endl;
 		std::cin >> newChannelName;
 
-		addChannel(*(new Channel(this, newChannelName)));
+		Channel toadd = Channel(this, newChannelName);
+		addChannel(toadd);
 	} else {
 		Client &admin = _usersMap.find(0)->second;
 		parseClientSent(buff, admin);
@@ -395,6 +426,11 @@ void	Server::proccessPendingClient(Client * pendingClient)
 		{
 			size_t first_space = msgsit->find(' ');
 			std::string cmdName = msgsit->substr(0, first_space);
+<<<<<<< HEAD
+=======
+			if (first_space == std::string::npos)
+				first_space = msgsit->size();
+>>>>>>> 36d78992b61f98452525f9212ff6cbb97cab675c
 			std::string cmdArgs = msgsit->substr((first_space == msgsit->size() ? first_space : first_space + 1));
 			*logStream << "str = |" << cmdName << "' '" << cmdArgs << "|" << std::endl;
 			if (pendingClient->getPassStatus() == false)
@@ -424,11 +460,11 @@ void	Server::proccessPendingClient(Client * pendingClient)
 	if (!pendingClient->isPending())
 	{
 		pendingClient->getLoggedOn();
-		addClient(*pendingClient, pendingClient->getFd());
+		_usersMap.insert(std::make_pair(pendingClient->getFd(), *pendingClient));
+		serverLogMssg(std::string("new client <" + pendingClient->getNname() + " > added to the client list"));
 		_pendingClients.erase(pendingClient->getFd());
 	}
 }
-
 
 void	Server::proccessRegisteredClient(Client * client)
 {
@@ -470,7 +506,6 @@ void	Server::proccessRegisteredClient(Client * client)
 
 }
 
- 
 bool	Server::parseClientSent(char * buff, Client &user) 
 {
 	std::vector<std::string> msgs = ftirc_split(buff, "\r\n");
@@ -515,14 +550,13 @@ std::string		&Server::serverhash(std::string &toHash) const {
 
 
 
-struct pollfd&	Server::createPollfd(int fd)
+struct pollfd	Server::createPollfd(int fd)
 {
-	struct pollfd *tmp = (struct pollfd*)malloc(sizeof(struct pollfd));
-	struct pollfd &tmp1 = *tmp;
-	tmp->fd = fd;
-	tmp->events = POLLIN;
-	tmp->revents = 0;
-	return (tmp1);
+	struct pollfd tmp;
+	tmp.fd = fd;
+	tmp.events = POLLIN;
+	tmp.revents = 0;
+	return (tmp);
 }
 
 void			Server::deleteFdfPoll(int fd)
