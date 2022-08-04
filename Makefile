@@ -51,7 +51,9 @@ SRCS		=	srcs/main.cpp \
 				srcs/commands/Pass.cpp \
 				srcs/commands/PrivMsg.cpp \
 				srcs/commands/Oper.cpp \
-				srcs/codes.cpp
+				srcs/codes.cpp\
+				srcs/commands/Part.cpp\
+
 
 OBJS		= ${SRCS:.cpp=.o}
 
