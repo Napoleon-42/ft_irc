@@ -23,9 +23,12 @@
     /*322*/
 	std::string RPL_LISTEND()
     {return ":End of LIST";}
+	/*331*/
+	std::string RPL_NOTOPIC(std::string channel)
+	{return channel + " :No topic set";}
 	/*332*/
 	std::string RPL_TOPIC(std::string channel, std::string topic)
-	{return channel + topic;}
+	{return channel + " :" + topic;}
 	/*382*/
 	std::string RPL_REHASHING(std::string config_file)
 	{return config_file + " :Rehashing";}
@@ -61,7 +64,7 @@
     //{return "You're not on a channel";}
     /*442*/
     std::string ERR_NOTONCHANNEL(std::string channel)
-    {return channel + ":You're not on that channel";}
+    {return channel + " :You're not on that channel";}
     /*441*/
     std::string ERR_USERNOTINCHANNEL(std::string nickname, std::string channel)
     {return nickname + " " + channel + " :They aren't on that channel";}
@@ -88,6 +91,8 @@
 			return RPL_CREATED(arg1);
 		case 004:
 			return RPL_MYINFO(arg1,arg2,arg3,arg4);
+		case 331:
+			return RPL_NOTOPIC(arg1);
 		case 322:
 			return RPL_LIST(arg1, arg2, arg3);
 		case 323:

@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/27 15:47:37 by lnelson           #+#    #+#             */
-/*   Updated: 2022/08/04 01:09:30 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/08/04 01:12:05 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 #include "Command.hpp"
 #include "commands/Notice.hpp"
 #include "commands/Nick.hpp"
+#include "commands/Topic.hpp"
 #include "commands/Help.hpp"
 #include "commands/Oper.hpp"
 #include "commands/Join.hpp"

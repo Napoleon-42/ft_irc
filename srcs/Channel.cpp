@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 18:02:40 by lnelson           #+#    #+#             */
-/*   Updated: 2022/07/13 18:02:41 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/08/04 01:29:15 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,13 +17,13 @@ Channel::Channel(){
 }
 
 Channel::Channel(Server *current, std::string cname)
-    : _name(cname)
+    : _name(cname), _topic("")
 {
     _serv = current;
 }
 
 Channel::Channel(const Channel &other)
-    : _name(other._name), _params(other._params), _clients(other._clients), _clientsban(other._clientsban)
+    : _name(other._name), _params(other._params), _clients(other._clients), _clientsban(other._clientsban), _topic("")
 {
     _serv = other._serv;
 }
@@ -72,6 +72,12 @@ bool    Channel::kickFromChannel(Client *toKick, Client &kicker)
         _clients.erase(it);
         return (true);
     }
+}
+
+
+void	Channel::changeTopic(std::string newTopic)
+{
+	_topic = newTopic;
 }
 
 Client      *Channel::searchClient(std::string nickname){
