@@ -27,20 +27,20 @@ void List::execute(std::string line, Client &user) {
             std::stringstream ss;  
             ss << it->second.getClients().size();  
             ss >> str;
-            user.receive_reply(322, it->second.getName(), str, it->second.getName());
+            user.receive_reply(322, it->second.getName(), str, it->second.getTopic());
             ++it;
         }
         user.receive_reply(323);
-    } else { //list the chanel and his topic
+    } else { //list the channel and his topic
         std::vector<std::string> channames = ftirc_split(line, ", ");
         for (std::vector<std::string>::const_iterator it = channames.begin(); it != channames.end(); ++it) {
-            Channel *chan = _serv->searchChannel(line);
+            Channel *chan = _serv->searchChannel(*it);
             if (chan) {
                 std::string str;
                 std::stringstream ss;  
                 ss << chan->getClients().size();  
                 ss >> str;
-                user.receive_reply(322, chan->getName(), str, chan->getName());
+                user.receive_reply(322, chan->getName(), str, chan->getTopic());
             }
         }
         user.receive_reply(323);
