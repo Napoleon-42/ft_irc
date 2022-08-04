@@ -27,9 +27,12 @@
 #include "commands/Kick.hpp"
 #include "commands/Quit.hpp"
 #include "commands/Pass.hpp"
+#include "commands/Names.hpp"
 #include "commands/Usercmd.hpp"
 #include "commands/PrivMsg.hpp"
 #include "commands/ChannelBan.hpp"
+#include "commands/Part.hpp"
+
 
 class Server
 {

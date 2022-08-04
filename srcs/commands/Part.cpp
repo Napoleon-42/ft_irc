@@ -1,51 +1,42 @@
-
-
-#include "Part.hpp"
-/*
-** ------------------------------- CONSTRUCTOR --------------------------------
-*/
+#include "commands/Part.hpp"
+#include "Server.hpp"
 
 Part::Part()
-{
-}
+{}
 
-Part::Part(const Part&src)
-{
-	*this = src;
-}
-
-
-/*
-** -------------------------------- DESTRUCTOR --------------------------------
-*/
+Part::Part(Server *serv)
+:Command(serv)
+{}
 
 Part::~Part()
-{
+{}
+
+std::string Part::help_msg() const {
+    return ("Parameters: <canal>{,< canal >} ");
 }
 
-
-/*
-** --------------------------------- OVERLOAD ---------------------------------
-*/
-
-Part	&Part::operator=(Part const &rhs)
+void Part::execute(std::string line, Client &user)
 {
-	return *this;
+	std::vector<std::string> params = ftirc_split(line, ",");
+    if (params.size() < 1)
+    {
+        user.receive_reply(461, "PART");
+        return;
+    }
+    for (std::vector<std::string>::const_iterator it = params.begin(); it != params.end(); ++it) {
+            Channel *chan = _serv->searchChannel(*it);
+            if (chan)
+			{
+				if (chan->searchClient(user.getNname()))
+				{
+					chan->kickFromChannel(&user, user);
+				}
+				else
+				{
+					user.receive_reply(442, chan->getName());
+				}
+			}
+			else
+				user.receive_reply(403, *it);
+        }
 }
-
-std::ostream &operator<<(std::ostream &o, Part const &instance)
-{
-	//o << instance.value;
-	//return (o);
-}
-/*
-** --------------------------------- METHODS ----------------------------------
-*/
-
-
-/*
-** --------------------------------- ACCESSOR ---------------------------------
-*/
-
-
-/* ************************************************************************** */

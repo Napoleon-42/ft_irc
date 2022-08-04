@@ -3,13 +3,17 @@
 
 # include <iostream>
 # include <string>
+#include "../Command.hpp"
 
-class Part
+class Part : public Command
 {
 	public:
 		Part();
-		Part(Part const &src);
+		Part(Server *serv);
 		~Part();
+
+	std::string help_msg() const;
+	void    execute(std::string line, Client &user);
 };
 
 

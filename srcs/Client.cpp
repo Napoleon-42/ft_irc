@@ -166,3 +166,15 @@ void Client::getLoggedOn() {
     serverLogMssg(buffer);
     send(getFd(), buffer.c_str(), buffer.length(), 0);
 }
+
+std::vector<std::string> Client::get_all_channels()
+{
+    std::vector<std::string> channames;
+    for (Server::channelmap::const_iterator it = _serv->getChannels().begin(); it != _serv->getChannels().end(); ++it) {
+        if (it->second.searchClient(this->getNname()))
+        {
+            channames.push_back(it->second.getName());
+        }
+    }
+    return channames;
+}
