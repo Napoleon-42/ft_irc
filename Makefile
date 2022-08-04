@@ -47,6 +47,7 @@ SRCS		=	srcs/main.cpp \
 				srcs/commands/Quit.cpp \
 				srcs/commands/Ping.cpp \
 				srcs/commands/Kick.cpp \
+				srcs/commands/Names.cpp \
 				srcs/commands/Pass.cpp \
 				srcs/commands/PrivMsg.cpp \
 				srcs/commands/Oper.cpp \
