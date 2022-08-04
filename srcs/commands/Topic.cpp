@@ -75,6 +75,11 @@ void Topic::execute(std::string line, Client &user) {
 			if (chan && chan->searchClient(user.getNname()) != NULL)
 			{
 				chan->changeTopic(newTopicName);
+	       	    for (Channel::clientlist::const_iterator it = chan->getClients().begin(); it != chan->getClients().end(); ++it)
+        	    {
+        	        if ((it->second)->getNname() != user.getNname())
+        	            (it->second)->receive_reply(332, targetChannel, newTopicName);
+	       	    }
 				user.receive_reply(332, targetChannel, newTopicName);
 			}
 			else if (!chan)
