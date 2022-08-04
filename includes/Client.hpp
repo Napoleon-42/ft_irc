@@ -13,6 +13,7 @@
 #ifndef CLIENT_HPP
 #define CLIENT_HPP
 #include <map>
+#include <vector>
 #include <string>
 #include <sstream>
 #include "commands/codes.hpp"
@@ -136,6 +137,7 @@ class Client
 		Server *getServer() const {
 			return (_serv);
 		}
+		std::vector<std::string> get_all_channels();
 };
 
 #include "Server.hpp"

@@ -30,6 +30,8 @@
 #include "commands/Usercmd.hpp"
 #include "commands/PrivMsg.hpp"
 #include "commands/ChannelBan.hpp"
+#include "commands/Part.hpp"
+
 
 class Server
 {
