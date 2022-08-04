@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 18:02:52 by lnelson           #+#    #+#             */
-/*   Updated: 2022/07/27 18:12:50 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/08/04 02:53:20 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ void Nick::execute(std::string line, Client &user) {
         std::vector<std::string> channames;
         std::string nicksender = user.getNname();
         Channel::clientlist receivers;
+		receivers.insert(std::make_pair(user.getNname(), &user));
         for (Server::channelmap::const_iterator it = _serv->getChannels().begin(); it != _serv->getChannels().end(); ++it) {
             clientLogMssg(it->second.getName());
             if (it->second.searchClient(nicksender))
