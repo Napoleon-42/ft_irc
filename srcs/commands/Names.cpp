@@ -27,6 +27,7 @@ void Names::execute(std::string line, Client &user) {
             Channel::clientlist::const_iterator ite = chan->getClients().end();
             while (it != ite) {
                 user.receive_reply(353, chan->getName(), it->first);
+				it++;
             }
             user.receive_reply(366, chan->getName());
         }
@@ -41,6 +42,7 @@ void Names::execute(std::string line, Client &user) {
                 Channel::clientlist::const_iterator ite = chan->getClients().end();
                 while (it != ite) {
                     user.receive_reply(353, chan->getName(), it->first);
+					it++;
                 }
                 user.receive_reply(366, chan->getName());
             }
