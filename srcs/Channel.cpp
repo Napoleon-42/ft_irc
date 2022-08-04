@@ -74,6 +74,18 @@ bool    Channel::kickFromChannel(Client *toKick, Client &kicker)
     }
 }
 
+bool    Channel::Leavechannel(Client *toKick)
+{
+    clientlist::iterator it = _clients.find(toKick->getNname());
+    if (it == _clients.end())
+        return (0);
+    else
+    {
+        _serv->sendToClient(*toKick, ":" + toKick->getPrefix(), "PART " + getName() + " " + toKick->getNname());
+        _clients.erase(it);
+        return (true);
+    }
+}
 
 void	Channel::changeTopic(std::string newTopic)
 {

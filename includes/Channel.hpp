@@ -54,6 +54,7 @@ class Channel
         Client *searchBanned(std::string nickname);
         const clientlist getBannedClients() const;
         const clientlist    &getClients() const;
+        bool   Leavechannel(Client *toKick);
         std::string getTopic() const{
 		return (_topic);
 	}

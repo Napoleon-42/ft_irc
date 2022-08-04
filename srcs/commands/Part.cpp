@@ -29,7 +29,7 @@ void Part::execute(std::string line, Client &user)
 			{
 				if (chan->searchClient(user.getNname()))
 				{
-					chan->kickFromChannel(&user, user);
+					chan->Leavechannel(&user);
 				}
 				else
 				{
