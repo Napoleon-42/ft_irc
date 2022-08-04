@@ -113,6 +113,10 @@ RFC 2812          Internet Relay Chat: Client Protocol        April 2000
               "<channel> <# visible> :<topic>"
        323    RPL_LISTEND
               ":End of LIST"
+       322    RPL_LIST
+              "<channel> <# visible> :<topic>"
+       323    RPL_LISTEND
+              ":End of LIST"
 
          - Replies RPL_LIST, RPL_LISTEND mark the actual replies
            with data and end of the server's response to a LIST
