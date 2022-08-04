@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 18:06:57 by lnelson           #+#    #+#             */
-/*   Updated: 2022/08/03 21:57:12 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/08/04 01:42:55 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ _server_pwd(pwd)
 	_servercommands.insert(std::make_pair("PING", new Ping(this)));
 	_servercommands.insert(std::make_pair("PRIVMSG", new PrivMsg(this)));
 	_servercommands.insert(std::make_pair("PASS", new Pass(this)));
+	_servercommands.insert(std::make_pair("TOPIC", new Topic(this)));
 
     _opcommands.insert(std::make_pair("BAN", new ChannelBan(this)));
 	_opcommands.insert(std::make_pair("KICK", new Kick(this)));

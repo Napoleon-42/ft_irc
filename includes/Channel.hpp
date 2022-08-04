@@ -35,6 +35,7 @@ class Channel
 		std::map<std::string, bool>         _params;
 		clientlist                  		_clients;
 		clientlist                  		_clientsban;
+		std::string							_topic;
 
 	public:
 		Channel();
@@ -46,12 +47,15 @@ class Channel
         bool    addClient(Client *toAdd);
         bool    addToBanList(Client *toBan);
         bool    kickFromChannel(Client *toKick);
+		void	changeTopic(std::string newTopic);
 		Client *searchClient(std::string nickname);
         Client *searchBanned(std::string nickname);
         const clientlist getBannedClients() const;
         const clientlist    &getClients() const;
         std::string getName();
-
+		std::string getTopic(){
+			return (_topic);
+		}
 };
 
 #include "Server.hpp"

@@ -17,9 +17,12 @@
 	/*004*/
 	std::string RPL_MYINFO(std::string servername, std::string version, std::string umodes, std::string cmodes)
 	{return servername + version + umodes + cmodes;}
+	/*331*/
+	std::string RPL_NOTOPIC(std::string channel)
+	{return channel + " :No topic set";}
 	/*332*/
 	std::string RPL_TOPIC(std::string channel, std::string topic)
-	{return channel + topic;}
+	{return channel + " :" + topic;}
 	/*382*/
 	std::string RPL_REHASHING(std::string config_file)
 	{return config_file + " :Rehashing";}
@@ -52,7 +55,7 @@
 	{return channel + " :Cannot join channel (+b)";}
     /*442*/
     std::string ERR_NOTONCHANNEL(std::string channel)
-    {return channel + ":You're not on that channel";}
+    {return channel + " :You're not on that channel";}
 
 
     std::string get_reply(int code, std::string arg1 = std::string(""), std::string arg2 = std::string(""), std::string arg3 = std::string("") , std::string arg4 = std::string(""))
@@ -68,6 +71,8 @@
 			return RPL_CREATED(arg1);
 		case 004:
 			return RPL_MYINFO(arg1,arg2,arg3,arg4);
+		case 331:
+			return RPL_NOTOPIC(arg1);
 		case 332:
 			return RPL_TOPIC(arg1, arg2);
 		case 382:
