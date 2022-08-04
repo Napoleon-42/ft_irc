@@ -17,6 +17,7 @@
 #include "Client.hpp"
 #include "Channel.hpp"
 #include "Command.hpp"
+#include "commands/Notice.hpp"
 #include "commands/Nick.hpp"
 #include "commands/Topic.hpp"
 #include "commands/Help.hpp"
@@ -27,9 +28,12 @@
 #include "commands/Kick.hpp"
 #include "commands/Quit.hpp"
 #include "commands/Pass.hpp"
+#include "commands/Names.hpp"
 #include "commands/Usercmd.hpp"
 #include "commands/PrivMsg.hpp"
 #include "commands/ChannelBan.hpp"
+#include "commands/Part.hpp"
+
 
 class Server
 {

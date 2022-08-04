@@ -17,6 +17,12 @@
 	/*004*/
 	std::string RPL_MYINFO(std::string servername, std::string version, std::string umodes, std::string cmodes)
 	{return servername + version + umodes + cmodes;}
+    /*322*/
+	std::string RPL_LIST(std::string channame, std::string nbr, std::string topic)
+    {return channame + " " + nbr + " :" + topic;}
+    /*322*/
+	std::string RPL_LISTEND()
+    {return ":End of LIST";}
 	/*331*/
 	std::string RPL_NOTOPIC(std::string channel)
 	{return channel + " :No topic set";}
@@ -53,10 +59,24 @@
 	/*474*/    
 	std::string ERR_BANNEDFROMCHAN(std::string channel)
 	{return channel + " :Cannot join channel (+b)";}
+    /*440*/
+    //std::string ERR_NOTONACHANNEL(std::string channel)
+    //{return "You're not on a channel";}
     /*442*/
     std::string ERR_NOTONCHANNEL(std::string channel)
     {return channel + " :You're not on that channel";}
-
+    /*441*/
+    std::string ERR_USERNOTINCHANNEL(std::string nickname, std::string channel)
+    {return nickname + " " + channel + " :They aren't on that channel";}
+    /*381*/
+    std::string RPL_YOUREOPER()
+    {return ":You are now an IRC operator";}
+	//353
+	std::string RPL_NAMREPLY(std::string channel, std::string nick)
+	{return channel + " : " + nick;}
+	//366
+	std::string RPL_ENDOFNAMES(std::string channel)
+	{return channel + " :End of NAMES list";}
 
     std::string get_reply(int code, std::string arg1 = std::string(""), std::string arg2 = std::string(""), std::string arg3 = std::string("") , std::string arg4 = std::string(""))
 	{
@@ -73,8 +93,16 @@
 			return RPL_MYINFO(arg1,arg2,arg3,arg4);
 		case 331:
 			return RPL_NOTOPIC(arg1);
+		case 322:
+			return RPL_LIST(arg1, arg2, arg3);
+		case 323:
+			return RPL_LISTEND();
 		case 332:
 			return RPL_TOPIC(arg1, arg2);
+		case 353:
+			return RPL_NAMREPLY(arg1, arg2);
+		case 366:
+			return RPL_ENDOFNAMES(arg1);
 		case 382:
 			return RPL_REHASHING(arg1);
 		case 403:
@@ -97,6 +125,10 @@
 			return ERR_BANNEDFROMCHAN(arg1);
         case 442:
             return ERR_NOTONCHANNEL(arg1);
+        case 441:
+            return ERR_USERNOTINCHANNEL(arg1, arg2);
+        case 381:
+            return RPL_YOUREOPER();
 		default:
 			return "";
 		}

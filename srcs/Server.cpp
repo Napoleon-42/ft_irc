@@ -28,6 +28,7 @@ _server_pwd(pwd)
 	init_socket(port);
 	_clientSockets.push_back(this->createPollfd(_entrySocket));
 
+	_servercommands.insert(std::make_pair("NOTICE", new Notice(this)));
 	_servercommands.insert(std::make_pair("NICK", new Nick(this)));
 	_servercommands.insert(std::make_pair("OPER", new Oper(this)));
 	_servercommands.insert(std::make_pair("HELP", new Help(this)));
@@ -39,6 +40,8 @@ _server_pwd(pwd)
 	_servercommands.insert(std::make_pair("PRIVMSG", new PrivMsg(this)));
 	_servercommands.insert(std::make_pair("PASS", new Pass(this)));
 	_servercommands.insert(std::make_pair("TOPIC", new Topic(this)));
+	_servercommands.insert(std::make_pair("PART", new Part(this)));
+	_servercommands.insert(std::make_pair("NAMES", new Names(this)));
 
     _opcommands.insert(std::make_pair("BAN", new ChannelBan(this)));
 	_opcommands.insert(std::make_pair("KICK", new Kick(this)));
@@ -49,9 +52,11 @@ _server_pwd(pwd)
 
 
 	/**************************************************************************/
+	_passop = "mpm";
 	Client tmp(this, "Server_Machine_Admin", "SM_Admin", "SM_Admin");
 	_clientSockets.push_back(createPollfd(0));
 	tmp.changeName(std::string("ServerAdmin"));
+	tmp.addBasicCommands();
 	tmp.becomeOperator();
 	addClient(tmp, 0);
 	/**************************************************************************/

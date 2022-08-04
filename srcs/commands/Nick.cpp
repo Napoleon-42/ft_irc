@@ -25,7 +25,6 @@ std::string Nick::help_msg() const {
 }
 
 void Nick::execute(std::string line, Client &user) {
-    std::string channame = line;
     std::vector<std::string> params = ftirc_split(line, " ");
     if (params.size() == 0)
     {
@@ -39,8 +38,30 @@ void Nick::execute(std::string line, Client &user) {
     }
     if (!user.isPending())
     {
-        for (Server::clientmap::const_iterator it = _serv->getClients().begin(); it != _serv->getClients().end(); ++it)
-            _serv->sendToClient(it->second, ":" + user.getPrefix(), "NICK :" + line);
+        std::vector<std::string> channames;
+        std::string nicksender = user.getNname();
+        Channel::clientlist receivers;
+        for (Server::channelmap::const_iterator it = _serv->getChannels().begin(); it != _serv->getChannels().end(); ++it) {
+            clientLogMssg(it->second.getName());
+            if (it->second.searchClient(nicksender))
+            {
+                channames.push_back(it->second.getName());
+                clientLogMssg(it->second.getName());
+                for (Channel::clientlist::const_iterator itc = it->second.getClients().begin(); itc != it->second.getClients().end(); ++itc)
+                {
+                    receivers.insert(*itc);
+                }
+            }
+        }
+        for (Channel::clientlist::const_iterator it = receivers.begin(); it != receivers.end(); ++it)
+            _serv->sendToClient(*it->second, ":" + user.getPrefix(), "NICK :" + line);
+        for (std::vector<std::string>::const_iterator it = channames.begin(); it != channames.end(); ++it) {
+            Channel *chan = _serv->searchChannel(*it);
+            if (chan)
+                chan->changenickClient(line, nicksender);
+        }
+
+        
     }
 //    else{
 //        _serv->sendToClient(user, ":" + user.getPrefix(), "NICK :" + line);

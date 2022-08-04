@@ -42,7 +42,6 @@ void        Client::addOpCommands() {
     }
 }
 
-
 Client::Client(): _username("non-spec")
 {
     clientLogMssg(std::string("Client " + _username + " created"));
@@ -71,7 +70,7 @@ Client::Client(Server *current, std::string uname, std::string hname, std::strin
     _serv = current;
     clientLogMssg(std::string("Client " + _username + " created"));
     _currentChannel = NULL;
-    addBasicCommands();
+    addLoginCommands();
 
 }
 
@@ -88,7 +87,7 @@ Client::Client(Client const & var)
 	_pwdPass = var.getPassStatus();
 	_nick = var.getNickstatus();
 	_user = var.getUserStatus();
-	addBasicCommands();
+    _commands = var.getCommands();
 }
 
 Client::~Client()
@@ -166,4 +165,16 @@ void Client::getLoggedOn() {
 	buffer += ":" + getPrefix() + " 004 " + this->getNname() + " "  + get_reply(004, "ft_irc", " 0.9", "", "") + "\r\n";
     serverLogMssg(buffer);
     send(getFd(), buffer.c_str(), buffer.length(), 0);
+}
+
+std::vector<std::string> Client::get_all_channels()
+{
+    std::vector<std::string> channames;
+    for (Server::channelmap::const_iterator it = _serv->getChannels().begin(); it != _serv->getChannels().end(); ++it) {
+        if (it->second.searchClient(this->getNname()))
+        {
+            channames.push_back(it->second.getName());
+        }
+    }
+    return channames;
 }
